@@ -1,6 +1,6 @@
 import "./globals.css";
 
-import AppHeader from "../components/AppHeader";
+import AppShell from "../components/AppShell";
 
 export const metadata = {
   title: "School Organiser",
@@ -11,10 +11,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <div className="app-shell">
-          <AppHeader />
-          <main className="main-content">{children}</main>
-        </div>
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );
