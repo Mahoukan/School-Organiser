@@ -43,6 +43,11 @@ import {
   validateClassAbsence,
   validateTeacherAbsence,
 } from "../../lib/scheduleOverlays";
+import {
+  getBlockOccupant,
+  getMovementForOccurrence,
+  validateLessonMovement,
+} from "../../lib/lessonMovements";
 
 const SchoolDataContext = createContext(null);
 
@@ -65,6 +70,7 @@ export default function SchoolDataProvider({ children }) {
   const [teacherAbsences, setTeacherAbsences] = useState([]);
   const [classAbsences, setClassAbsences] = useState([]);
   const [calendarExceptions, setCalendarExceptions] = useState([]);
+  const [lessonMovements, setLessonMovements] = useState([]);
 
   const createClass = useCallback((values) => {
     const newClass = {
@@ -188,6 +194,24 @@ export default function SchoolDataProvider({ children }) {
   );
 
   const removeAssignment = useCallback((cycleWeek, weekday, periodId) => {
+    const assignment = findAssignmentForSlot(
+      recurringAssignments,
+      cycleWeek,
+      weekday,
+      periodId,
+    );
+    if (
+      assignment &&
+      lessonMovements.some(
+        (movement) => movement.recurringAssignmentId === assignment.id,
+      )
+    ) {
+      return {
+        ok: false,
+        message:
+          "This timetable assignment has dated lesson changes. Restore those lessons before removing the recurring assignment.",
+      };
+    }
     setRecurringAssignments((current) =>
       current.filter(
         (assignment) =>
@@ -198,7 +222,8 @@ export default function SchoolDataProvider({ children }) {
           ),
       ),
     );
-  }, []);
+    return { ok: true };
+  }, [lessonMovements, recurringAssignments]);
 
   const saveTimetableBlock = useCallback(
     (values) => {
@@ -210,6 +235,19 @@ export default function SchoolDataProvider({ children }) {
       const existing = values.id
         ? resolveTimetableBlock(timetableBlocks, values.id)
         : null;
+      const movementCount = values.id
+        ? lessonMovements.filter(
+            (movement) => movement.destinationPeriodId === values.id,
+          ).length
+        : 0;
+      if (existing?.isTeaching && !values.isTeaching && movementCount) {
+        return {
+          ok: false,
+          errors: {
+            isTeaching: `${existing.name} is used by one-off lesson movements. Restore or change those moved lessons first.`,
+          },
+        };
+      }
       if (existing?.isTeaching && !values.isTeaching && assignmentCount) {
         return { ok: false, errors: { isTeaching: `${existing.name} is used by recurring assignments. Remove those assignments first.` } };
       }
@@ -231,13 +269,24 @@ export default function SchoolDataProvider({ children }) {
       );
       return { ok: true, block };
     },
-    [recurringAssignments, timetableBlocks],
+    [lessonMovements, recurringAssignments, timetableBlocks],
   );
 
   const removeTimetableBlock = useCallback(
     (blockId) => {
       if (recurringAssignments.some((item) => item.periodId === blockId)) {
         return { ok: false, message: "Remove recurring class assignments from this block first." };
+      }
+      if (
+        lessonMovements.some(
+          (movement) => movement.destinationPeriodId === blockId,
+        )
+      ) {
+        return {
+          ok: false,
+          message:
+            "This block is used by one-off lesson movements. Restore or change those moved lessons before removing it.",
+        };
       }
       const block = resolveTimetableBlock(timetableBlocks, blockId);
       setTimetableBlocks((current) =>
@@ -249,7 +298,7 @@ export default function SchoolDataProvider({ children }) {
       );
       return { ok: true };
     },
-    [recurringAssignments, timetableBlocks],
+    [lessonMovements, recurringAssignments, timetableBlocks],
   );
 
   const moveBlock = useCallback((blockId, direction) => {
@@ -283,6 +332,83 @@ export default function SchoolDataProvider({ children }) {
   const removeTeacherAbsence = useCallback((id) => setTeacherAbsences((current) => current.filter((item) => item.id !== id)), []);
   const removeClassAbsence = useCallback((id) => setClassAbsences((current) => current.filter((item) => item.id !== id)), []);
   const removeCalendarException = useCallback((id) => setCalendarExceptions((current) => current.filter((item) => item.id !== id)), []);
+
+  const findLessonMovement = useCallback(
+    (date, recurringAssignmentId) =>
+      getMovementForOccurrence(lessonMovements, date, recurringAssignmentId),
+    [lessonMovements],
+  );
+
+  const saveLessonMovement = useCallback(
+    (values) => {
+      const validation = validateLessonMovement({
+        ...values,
+        recurringAssignments,
+        timetableBlocks,
+        lessonMovements,
+        teachingWeeks,
+      });
+      if (!validation.ok) return validation;
+      const existing = getMovementForOccurrence(
+        lessonMovements,
+        values.date,
+        values.recurringAssignmentId,
+      );
+      const movement = {
+        id: existing?.id ?? `movement-${crypto.randomUUID()}`,
+        date: values.date,
+        recurringAssignmentId: values.recurringAssignmentId,
+        destinationPeriodId: values.destinationPeriodId,
+      };
+      setLessonMovements((current) =>
+        existing
+          ? current.map((item) => (item.id === existing.id ? movement : item))
+          : [...current, movement],
+      );
+      return { ok: true, movement };
+    },
+    [lessonMovements, recurringAssignments, teachingWeeks, timetableBlocks],
+  );
+
+  const removeLessonMovement = useCallback(
+    (date, recurringAssignmentId) => {
+      const assignment = recurringAssignments.find(
+        (item) => item.id === recurringAssignmentId,
+      );
+      if (!assignment) return { ok: false, message: "Timetable assignment not found." };
+      const occupant = getBlockOccupant({
+        date,
+        cycleWeek: assignment.cycleWeek,
+        weekday: assignment.weekday,
+        periodId: assignment.periodId,
+        recurringAssignments,
+        lessonMovements,
+        ignoreAssignmentId: recurringAssignmentId,
+      });
+      if (occupant) {
+        const occupiedClass = occupant.assignment
+          ? classes.find((item) => item.id === occupant.assignment.classId)
+          : null;
+        return {
+          ok: false,
+          message: occupiedClass
+            ? `${occupiedClass.shortCode} currently occupies the original block.`
+            : "The original block is currently occupied.",
+        };
+      }
+      setLessonMovements((current) =>
+        current.filter(
+          (movement) =>
+            !(
+              movement.date === date &&
+              movement.recurringAssignmentId === recurringAssignmentId
+            ),
+        ),
+      );
+      return { ok: true };
+    },
+    [classes, lessonMovements, recurringAssignments],
+  );
 
   const saveTerm = useCallback(
     (values) => {
@@ -411,6 +537,7 @@ export default function SchoolDataProvider({ children }) {
       teacherAbsences,
       classAbsences,
       calendarExceptions,
+      lessonMovements,
       createClass,
       updateClass,
       archiveClass,
@@ -434,6 +561,9 @@ export default function SchoolDataProvider({ children }) {
       removeTeacherAbsence,
       removeClassAbsence,
       removeCalendarException,
+      findLessonMovement,
+      saveLessonMovement,
+      removeLessonMovement,
     }),
     [
       academicYear,
@@ -446,6 +576,7 @@ export default function SchoolDataProvider({ children }) {
       teacherAbsences,
       classAbsences,
       calendarExceptions,
+      lessonMovements,
       createClass,
       updateClass,
       archiveClass,
@@ -469,6 +600,9 @@ export default function SchoolDataProvider({ children }) {
       removeTeacherAbsence,
       removeClassAbsence,
       removeCalendarException,
+      findLessonMovement,
+      saveLessonMovement,
+      removeLessonMovement,
     ],
   );
 

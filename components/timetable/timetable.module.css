@@ -292,6 +292,12 @@
   text-transform: uppercase;
 }
 
+.movedMarker {
+  color: var(--class-text, var(--color-primary));
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
 .cancellationReason {
   margin-top: 0.2rem;
   overflow: hidden;

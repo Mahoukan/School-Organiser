@@ -25,6 +25,7 @@ export default function TimetableCard({
     teacherAbsences,
     classAbsences,
     calendarExceptions,
+    timetableBlocks,
   } = useSchoolData();
   const compact = detail === "fortnight";
 
@@ -112,6 +113,13 @@ export default function TimetableCard({
       <span className={styles.entryCode}>{classDetails.shortCode}</span>
       {status !== "planned" && (!compact || status === "cancelled") && (
         <span className={styles.statusMarker}>{statusLabel}</span>
+      )}
+      {entry.movedFromPeriodId && detail !== "fortnight" && (
+        <span className={styles.movedMarker}>
+          {detail === "day"
+            ? `Moved from ${timetableBlocks.find((block) => block.id === entry.movedFromPeriodId)?.name ?? "original block"}`
+            : "Moved"}
+        </span>
       )}
       {detail === "day" && status === "cancelled" && (
         <span className={styles.cancellationReason}>

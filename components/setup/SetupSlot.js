@@ -10,6 +10,7 @@ export default function SetupSlot({
   weekdayLabel,
   period,
   onChoose,
+  onMessage,
 }) {
   const { classes, recurringAssignments, removeAssignment } = useSchoolData();
   const event = getTemporaryEvent(cycleWeek, weekday, period.id);
@@ -85,7 +86,10 @@ export default function SetupSlot({
         <button
           type="button"
           aria-label={`Remove ${classItem.shortCode} from Week ${cycleWeek}, ${weekdayLabel}, ${period.name}`}
-          onClick={() => removeAssignment(cycleWeek, weekday, period.id)}
+          onClick={() => {
+            const result = removeAssignment(cycleWeek, weekday, period.id);
+            if (!result.ok) onMessage?.(result.message);
+          }}
         >
           Remove
         </button>

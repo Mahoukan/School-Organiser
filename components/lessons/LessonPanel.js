@@ -17,11 +17,13 @@ import { getTeachingWeekForDate } from "../../lib/academicCalendar";
 import { formatBlockTime, resolveTimetableBlock } from "../../lib/periodStructures";
 import { formatDayHeading } from "../../lib/timetableDates";
 import { getEffectiveCancellation } from "../../lib/scheduleOverlays";
+import { getEffectivePeriodId, getMovementDestinationOptions } from "../../lib/lessonMovements";
 import { useSchoolData } from "../providers/SchoolDataProvider";
 import CarryForwardDialog from "./CarryForwardDialog";
 import MarkdownContent from "./MarkdownContent";
 import styles from "./lessons.module.css";
 import UnsavedChangesDialog from "./UnsavedChangesDialog";
+import MoveLessonDialog from "./MoveLessonDialog";
 
 const emptyContent = {
   title: "",
@@ -55,12 +57,16 @@ export default function LessonPanel({ selection, onClose }) {
     teacherAbsences,
     classAbsences,
     calendarExceptions,
+    lessonMovements,
+    saveLessonMovement,
+    removeLessonMovement,
     getLessonOccurrence,
     saveLessonOccurrence,
   } = useSchoolData();
   const dialogRef = useRef(null);
   const titleInputRef = useRef(null);
   const carryForwardButtonRef = useRef(null);
+  const moveLessonButtonRef = useRef(null);
   const [isEditing, setIsEditing] = useState(false);
   const [showDiscardConfirmation, setShowDiscardConfirmation] = useState(false);
   const [draft, setDraft] = useState(emptyContent);
@@ -68,6 +74,8 @@ export default function LessonPanel({ selection, onClose }) {
   const [planMode, setPlanMode] = useState("write");
   const [carryTarget, setCarryTarget] = useState(null);
   const [feedback, setFeedback] = useState(null);
+  const [showMoveDialog, setShowMoveDialog] = useState(false);
+  const [showRestoreConfirmation, setShowRestoreConfirmation] = useState(false);
 
   const occurrence = getLessonOccurrence(
     selection.date,
@@ -77,7 +85,11 @@ export default function LessonPanel({ selection, onClose }) {
   const classDetails = classes.find(
     (classItem) => classItem.id === selection.classId,
   );
-  const period = resolveTimetableBlock(timetableBlocks, selection.periodId);
+  const assignment = recurringAssignments.find((item) => item.id === selection.recurringAssignmentId);
+  const movement = lessonMovements.find((item) => item.date === selection.date && item.recurringAssignmentId === selection.recurringAssignmentId);
+  const originalPeriod = resolveTimetableBlock(timetableBlocks, assignment?.periodId);
+  const effectivePeriodId = assignment ? getEffectivePeriodId(assignment, selection.date, lessonMovements) : selection.periodId;
+  const period = resolveTimetableBlock(timetableBlocks, effectivePeriodId);
   const date = getDateFromKey(selection.date);
   const underlyingStatus = getEffectiveLessonStatus(occurrence);
   const effectiveCancellation = getEffectiveCancellation({
@@ -101,7 +113,7 @@ export default function LessonPanel({ selection, onClose }) {
     if (!dialog.open) dialog.showModal();
   }, []);
 
-  if (!classDetails || !period) return null;
+  if (!classDetails || !period || !assignment || !originalPeriod) return null;
 
   const colour = getClassColourOption(classDetails.colour);
 
@@ -165,6 +177,7 @@ export default function LessonPanel({ selection, onClose }) {
       classId: selection.classId,
       currentDate: selection.date,
       currentPeriodId: selection.periodId,
+      currentRecurringAssignmentId: selection.recurringAssignmentId,
       recurringAssignments,
       lessonOccurrences,
       teachingWeeks,
@@ -172,6 +185,7 @@ export default function LessonPanel({ selection, onClose }) {
       teacherAbsences,
       classAbsences,
       calendarExceptions,
+      lessonMovements,
     });
 
     if (!destination) {
@@ -237,6 +251,31 @@ export default function LessonPanel({ selection, onClose }) {
     onClose();
   }
 
+  function closeMoveDialog() {
+    setShowMoveDialog(false);
+    requestAnimationFrame(() => moveLessonButtonRef.current?.focus());
+  }
+
+  function saveMovement(destinationPeriodId) {
+    const result = saveLessonMovement({ date: selection.date, recurringAssignmentId: selection.recurringAssignmentId, destinationPeriodId });
+    if (result.ok) {
+      const destination = resolveTimetableBlock(timetableBlocks, destinationPeriodId);
+      setShowMoveDialog(false);
+      setFeedback({ type: "success", message: `${classDetails.shortCode} moved to ${destination.name} for ${formatDayHeading(date)}.` });
+      requestAnimationFrame(() => moveLessonButtonRef.current?.focus());
+    }
+    return result;
+  }
+
+  function restoreMovement() {
+    const result = removeLessonMovement(selection.date, selection.recurringAssignmentId);
+    setShowRestoreConfirmation(false);
+    setFeedback(result.ok
+      ? { type: "success", message: `${classDetails.shortCode} restored to ${originalPeriod.name}.` }
+      : { type: "error", message: result.message });
+    requestAnimationFrame(() => moveLessonButtonRef.current?.focus());
+  }
+
   function keepEditing() {
     setShowDiscardConfirmation(false);
     requestAnimationFrame(() => titleInputRef.current?.focus());
@@ -249,6 +288,14 @@ export default function LessonPanel({ selection, onClose }) {
       aria-labelledby="lesson-panel-title"
       onCancel={(event) => {
         event.preventDefault();
+        if (showMoveDialog) {
+          closeMoveDialog();
+          return;
+        }
+        if (showRestoreConfirmation) {
+          setShowRestoreConfirmation(false);
+          return;
+        }
         if (carryTarget) {
           closeCarryForward();
           return;
@@ -267,7 +314,7 @@ export default function LessonPanel({ selection, onClose }) {
     >
       <div
         className={styles.lessonPanel}
-        inert={showDiscardConfirmation || carryTarget ? true : undefined}
+        inert={showDiscardConfirmation || carryTarget || showMoveDialog || showRestoreConfirmation ? true : undefined}
       >
         <header className={styles.panelHeader}>
           <div className={styles.classHeading}>
@@ -294,6 +341,11 @@ export default function LessonPanel({ selection, onClose }) {
             Week {teachingWeek?.cycleWeek ?? "unconfigured"} · {period.name} · {formatBlockTime(period.startTime)}–{formatBlockTime(period.endTime)}
           </span>
           <span>{classDetails.room ? `Room ${classDetails.room}` : "No room set"}</span>
+          {movement && (
+            <span>
+              Moved from {originalPeriod.name} · {formatBlockTime(originalPeriod.startTime)}–{formatBlockTime(originalPeriod.endTime)}
+            </span>
+          )}
         </div>
 
         {isEditing ? (
@@ -559,6 +611,8 @@ export default function LessonPanel({ selection, onClose }) {
               )}
             </div>
             <footer className={styles.panelFooter}>
+              <button ref={moveLessonButtonRef} type="button" className={styles.secondaryButton} onClick={() => setShowMoveDialog(true)}>Move Lesson</button>
+              {movement && <button type="button" className={styles.secondaryButton} onClick={() => setShowRestoreConfirmation(true)}>Restore Original Time</button>}
               <button
                 ref={carryForwardButtonRef}
                 type="button"
@@ -595,6 +649,8 @@ export default function LessonPanel({ selection, onClose }) {
           onConfirm={confirmCarryForward}
         />
       )}
+      {showMoveDialog && <MoveLessonDialog classDetails={classDetails} date={selection.date} originalBlock={originalPeriod} currentBlock={period} options={getMovementDestinationOptions({ date: selection.date, assignment, recurringAssignments, timetableBlocks, lessonMovements })} onCancel={closeMoveDialog} onSave={saveMovement} />}
+      {showRestoreConfirmation && <div className={styles.confirmOverlay}><div className={styles.confirmDialog} role="alertdialog" aria-modal="true" aria-labelledby="restore-movement-title"><h3 id="restore-movement-title">Restore {classDetails.shortCode} to {originalPeriod.name}?</h3><p>This removes only the dated movement. Lesson planning and status data remain unchanged.</p><div className={styles.confirmActions}><button type="button" className={styles.secondaryButton} onClick={() => setShowRestoreConfirmation(false)}>Cancel</button><button type="button" className={styles.primaryButton} onClick={restoreMovement}>Restore</button></div></div></div>}
     </dialog>
   );
 }

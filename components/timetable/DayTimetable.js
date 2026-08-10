@@ -5,7 +5,8 @@ import {
   isWeekend,
 } from "../../lib/timetableDates";
 import { getTeachingWeekForDate } from "../../lib/academicCalendar";
-import { getTimetableEntry } from "../../lib/recurringTimetable";
+import { getDatedTimetableEntry } from "../../lib/recurringTimetable";
+import { getDateKey } from "../../lib/lessonOccurrences";
 import { useSchoolData } from "../providers/SchoolDataProvider";
 import TimetableCard from "./TimetableCard";
 import styles from "./timetable.module.css";
@@ -16,7 +17,7 @@ export default function DayTimetable({
   showHeading = true,
   onOpenLesson,
 }) {
-  const { recurringAssignments, teachingWeeks, timetableBlocks } = useSchoolData();
+  const { recurringAssignments, teachingWeeks, timetableBlocks, lessonMovements } = useSchoolData();
   const teachingWeek = getTeachingWeekForDate(date, teachingWeeks);
 
   if (isWeekend(date)) {
@@ -70,12 +71,7 @@ export default function DayTimetable({
 
       <div className={styles.daySchedule}>
         {periods.map((period) => {
-          const entry = getTimetableEntry(
-            recurringAssignments,
-            teachingWeek.cycleWeek,
-            weekday.key,
-            period,
-          );
+          const entry = getDatedTimetableEntry({ recurringAssignments, lessonMovements, date: getDateKey(date), cycleWeek: teachingWeek.cycleWeek, weekday: weekday.key, period });
           const isBreak = !period.isTeaching;
 
           return (

@@ -19,6 +19,7 @@ export default function RecurringTimetableSetup() {
   const [cycleWeek, setCycleWeek] = useState("A");
   const [selectedWeekday, setSelectedWeekday] = useState(0);
   const [selectedSlot, setSelectedSlot] = useState(null);
+  const [message, setMessage] = useState("");
   const triggerRef = useRef(null);
 
   function openSlot(weekday, period, trigger) {
@@ -83,14 +84,16 @@ export default function RecurringTimetableSetup() {
         </div>
 
         <div className={styles.desktopEditor}>
-          <SetupWeekGrid cycleWeek={cycleWeek} onChooseSlot={openSlot} />
+          <SetupWeekGrid cycleWeek={cycleWeek} onChooseSlot={openSlot} onMessage={setMessage} />
         </div>
+        {message && <p className={styles.setupMessage} role="status">{message}</p>}
         <div className={styles.mobileEditorWrapper}>
           <MobileSetupDay
             cycleWeek={cycleWeek}
             selectedWeekday={selectedWeekday}
             onSelectWeekday={setSelectedWeekday}
             onChooseSlot={openSlot}
+            onMessage={setMessage}
           />
         </div>
       {selectedSlot && (

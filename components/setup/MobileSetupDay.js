@@ -9,6 +9,7 @@ export default function MobileSetupDay({
   selectedWeekday,
   onSelectWeekday,
   onChooseSlot,
+  onMessage,
 }) {
   const weekday = weekdays[selectedWeekday];
   const { timetableBlocks } = useSchoolData();
@@ -47,6 +48,7 @@ export default function MobileSetupDay({
               weekday={weekday.key}
               weekdayLabel={weekday.label}
               period={period}
+              onMessage={onMessage}
               onChoose={(selectedPeriod, trigger) =>
                 onChooseSlot(weekday.key, selectedPeriod, trigger)
               }
