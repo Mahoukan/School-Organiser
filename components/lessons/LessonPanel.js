@@ -5,6 +5,7 @@ import { periods } from "../../data/sampleTimetable";
 import { getDateFromKey } from "../../lib/lessonOccurrences";
 import { formatDayHeading, getWeekType } from "../../lib/timetableDates";
 import { useSchoolData } from "../providers/SchoolDataProvider";
+import MarkdownContent from "./MarkdownContent";
 import styles from "./lessons.module.css";
 import UnsavedChangesDialog from "./UnsavedChangesDialog";
 
@@ -37,6 +38,7 @@ export default function LessonPanel({ selection, onClose }) {
   const [showDiscardConfirmation, setShowDiscardConfirmation] = useState(false);
   const [draft, setDraft] = useState(emptyContent);
   const [errors, setErrors] = useState({});
+  const [planMode, setPlanMode] = useState("write");
 
   const occurrence = getLessonOccurrence(
     selection.date,
@@ -65,6 +67,7 @@ export default function LessonPanel({ selection, onClose }) {
   function beginEditing() {
     setDraft(savedContent);
     setErrors({});
+    setPlanMode("write");
     setIsEditing(true);
     requestAnimationFrame(() => titleInputRef.current?.focus());
   }
@@ -77,6 +80,7 @@ export default function LessonPanel({ selection, onClose }) {
   function cancelEditing() {
     setDraft(savedContent);
     setErrors({});
+    setPlanMode("write");
     setIsEditing(false);
   }
 
@@ -204,13 +208,50 @@ export default function LessonPanel({ selection, onClose }) {
               </div>
 
               <div className={styles.formField}>
-                <label htmlFor="lesson-plan">Full Lesson Plan</label>
-                <textarea
-                  id="lesson-plan"
-                  className={styles.planTextarea}
-                  value={draft.plan}
-                  onChange={(event) => updateDraft("plan", event.target.value)}
-                />
+                <div className={styles.planFieldHeader}>
+                  <span id="lesson-plan-label" className={styles.planLabel}>
+                    Full Lesson Plan
+                  </span>
+                  <div className={styles.modeSelector} aria-label="Lesson plan mode">
+                    <button
+                      type="button"
+                      aria-pressed={planMode === "write"}
+                      onClick={() => setPlanMode("write")}
+                    >
+                      Write
+                    </button>
+                    <button
+                      type="button"
+                      aria-pressed={planMode === "preview"}
+                      onClick={() => setPlanMode("preview")}
+                    >
+                      Preview
+                    </button>
+                  </div>
+                </div>
+                {planMode === "write" ? (
+                  <textarea
+                    id="lesson-plan"
+                    className={styles.planTextarea}
+                    value={draft.plan}
+                    aria-labelledby="lesson-plan-label"
+                    aria-describedby="markdown-guidance"
+                    onChange={(event) => updateDraft("plan", event.target.value)}
+                  />
+                ) : (
+                  <div
+                    className={styles.markdownPreview}
+                    aria-labelledby="lesson-plan-label"
+                  >
+                    <MarkdownContent emptyMessage="Nothing to preview yet.">
+                      {draft.plan}
+                    </MarkdownContent>
+                  </div>
+                )}
+                <p id="markdown-guidance" className={styles.markdownGuidance}>
+                  Markdown supported: **bold**, *italic*, headings, lists, links,
+                  quotes and code. Images are omitted.
+                </p>
               </div>
             </div>
             <footer className={styles.panelFooter}>
@@ -241,7 +282,7 @@ export default function LessonPanel({ selection, onClose }) {
                   {occurrence.plan.trim() && (
                     <section>
                       <h4>Full Lesson Plan</h4>
-                      <p className={styles.plainPlan}>{occurrence.plan}</p>
+                      <MarkdownContent>{occurrence.plan}</MarkdownContent>
                     </section>
                   )}
                 </div>
