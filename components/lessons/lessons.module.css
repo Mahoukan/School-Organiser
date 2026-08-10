@@ -145,6 +145,58 @@
   gap: var(--space-4);
 }
 
+.statusSummary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.statusSummary > span {
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.statusBadge {
+  display: inline-flex;
+  min-height: 1.75rem;
+  align-items: center;
+  padding-inline: 0.65rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.status-planned {
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.status-completed {
+  border-color: #b9decf;
+  color: #176342;
+  background: #e5f4ed;
+}
+
+.status-partially-completed {
+  border-color: #ead1a9;
+  color: #82520c;
+  background: #fbf0dc;
+}
+
+.status-cancelled {
+  border-color: #d2bfc1;
+  color: #7a3d43;
+  background: #f5e8e9;
+}
+
 .savedLesson section {
   display: grid;
   gap: var(--space-1);
@@ -160,6 +212,21 @@
 
 .savedLesson p {
   margin: 0;
+}
+
+.cancellationDetails {
+  padding: var(--space-3);
+  border: 1px solid #d2bfc1;
+  border-radius: 0.55rem;
+  background: #fbf2f3;
+}
+
+.cancellationDetails strong {
+  font-size: 0.9rem;
+}
+
+.cancellationDetails p {
+  color: var(--color-text-muted);
 }
 
 .lessonForm {
@@ -201,7 +268,8 @@
 }
 
 .formField input,
-.formField textarea {
+.formField textarea,
+.formField select {
   width: 100%;
   padding: 0.7rem 0.75rem;
   border: 1px solid #cbd2dd;
@@ -215,12 +283,25 @@
   min-height: 2.75rem;
 }
 
+.formField select {
+  min-height: 2.75rem;
+}
+
 .formField textarea {
   line-height: 1.5;
 }
 
 .formField .planTextarea {
   min-height: 18rem;
+}
+
+.cancellationFields {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid #d2bfc1;
+  border-radius: 0.6rem;
+  background: #fbf7f7;
 }
 
 .planFieldHeader {
@@ -429,7 +510,8 @@
 }
 
 .formField input[aria-invalid="true"],
-.formField textarea[aria-invalid="true"] {
+.formField textarea[aria-invalid="true"],
+.formField select[aria-invalid="true"] {
   border-color: #b84a4a;
 }
 
@@ -519,6 +601,42 @@
   color: var(--color-text-muted);
 }
 
+.carryDestination {
+  display: grid;
+  gap: 0.15rem;
+  margin-top: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: 0.55rem;
+  background: var(--color-surface-subtle);
+}
+
+.carryDestination span {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+.actionFeedback {
+  margin: var(--space-4) 0 0;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid;
+  border-radius: 0.55rem;
+  font-size: 0.8rem;
+  font-weight: 650;
+}
+
+.feedbackSuccess {
+  border-color: #b9decf;
+  color: #176342;
+  background: #e5f4ed;
+}
+
+.feedbackError {
+  border-color: #d2bfc1;
+  color: #7a3d43;
+  background: #f5e8e9;
+}
+
 .confirmActions {
   display: flex;
   justify-content: flex-end;
@@ -533,7 +651,8 @@
 .modeSelector button:focus-visible,
 .markdownContent a:focus-visible,
 .formField input:focus-visible,
-.formField textarea:focus-visible {
+.formField textarea:focus-visible,
+.formField select:focus-visible {
   outline: 3px solid var(--color-primary);
   outline-offset: 2px;
 }

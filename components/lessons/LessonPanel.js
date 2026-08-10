@@ -2,14 +2,34 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { getClassColourOption } from "../../data/sampleClasses";
 import { periods } from "../../data/sampleTimetable";
-import { getDateFromKey } from "../../lib/lessonOccurrences";
+import {
+  CANCELLATION_REASONS,
+  LESSON_STATUSES,
+  getCancellationReasonLabel,
+  getDateFromKey,
+  getEffectiveLessonStatus,
+  getLessonStatusLabel,
+  hasLessonPlanContent,
+} from "../../lib/lessonOccurrences";
+import {
+  findNextClassOccurrence,
+  getCarryForwardAvailability,
+} from "../../lib/carryForward";
 import { formatDayHeading, getWeekType } from "../../lib/timetableDates";
 import { useSchoolData } from "../providers/SchoolDataProvider";
+import CarryForwardDialog from "./CarryForwardDialog";
 import MarkdownContent from "./MarkdownContent";
 import styles from "./lessons.module.css";
 import UnsavedChangesDialog from "./UnsavedChangesDialog";
 
-const emptyContent = { title: "", summary: "", plan: "" };
+const emptyContent = {
+  title: "",
+  summary: "",
+  plan: "",
+  status: "planned",
+  cancellationReason: "",
+  cancellationNote: "",
+};
 
 function getPeriodName(period) {
   const periodNumber = period.label.match(/^P(\d+)$/)?.[1];
@@ -22,6 +42,9 @@ function getDraft(occurrence) {
         title: occurrence.title,
         summary: occurrence.summary,
         plan: occurrence.plan,
+        status: getEffectiveLessonStatus(occurrence),
+        cancellationReason: occurrence.cancellationReason ?? "",
+        cancellationNote: occurrence.cancellationNote ?? "",
       }
     : { ...emptyContent };
 }
@@ -29,16 +52,21 @@ function getDraft(occurrence) {
 export default function LessonPanel({ selection, onClose }) {
   const {
     classes,
+    recurringAssignments,
+    lessonOccurrences,
     getLessonOccurrence,
     saveLessonOccurrence,
   } = useSchoolData();
   const dialogRef = useRef(null);
   const titleInputRef = useRef(null);
+  const carryForwardButtonRef = useRef(null);
   const [isEditing, setIsEditing] = useState(false);
   const [showDiscardConfirmation, setShowDiscardConfirmation] = useState(false);
   const [draft, setDraft] = useState(emptyContent);
   const [errors, setErrors] = useState({});
   const [planMode, setPlanMode] = useState("write");
+  const [carryTarget, setCarryTarget] = useState(null);
+  const [feedback, setFeedback] = useState(null);
 
   const occurrence = getLessonOccurrence(
     selection.date,
@@ -50,10 +78,10 @@ export default function LessonPanel({ selection, onClose }) {
   );
   const period = periods.find((item) => item.id === selection.periodId);
   const date = getDateFromKey(selection.date);
-  const isDirty =
-    draft.title !== savedContent.title ||
-    draft.summary !== savedContent.summary ||
-    draft.plan !== savedContent.plan;
+  const effectiveStatus = getEffectiveLessonStatus(occurrence);
+  const isDirty = Object.keys(emptyContent).some(
+    (field) => draft[field] !== savedContent[field],
+  );
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -67,6 +95,7 @@ export default function LessonPanel({ selection, onClose }) {
   function beginEditing() {
     setDraft(savedContent);
     setErrors({});
+    setFeedback(null);
     setPlanMode("write");
     setIsEditing(true);
     requestAnimationFrame(() => titleInputRef.current?.focus());
@@ -93,6 +122,13 @@ export default function LessonPanel({ selection, onClose }) {
     if (draft.summary.length > 160) {
       nextErrors.summary = "Short summary must be 160 characters or fewer.";
     }
+    if (draft.status === "cancelled" && !draft.cancellationReason) {
+      nextErrors.cancellationReason = "Choose a cancellation reason.";
+    }
+    if (draft.cancellationNote.length > 200) {
+      nextErrors.cancellationNote =
+        "Cancellation note must be 200 characters or fewer.";
+    }
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
 
@@ -101,6 +137,77 @@ export default function LessonPanel({ selection, onClose }) {
       ...draft,
     });
     setIsEditing(false);
+  }
+
+  function requestCarryForward() {
+    if (!occurrence || !hasLessonPlanContent(occurrence)) {
+      setFeedback({
+        type: "error",
+        message: "There is no lesson-plan content to carry forward.",
+      });
+      return;
+    }
+
+    const destination = findNextClassOccurrence({
+      classId: selection.classId,
+      currentDate: selection.date,
+      currentPeriodId: selection.periodId,
+      recurringAssignments,
+      lessonOccurrences,
+    });
+
+    if (!destination) {
+      setFeedback({
+        type: "error",
+        message: `No upcoming occurrence of ${classDetails.shortCode} was found.`,
+      });
+      return;
+    }
+
+    const availability = getCarryForwardAvailability(destination);
+    if (!availability.canCarry) {
+      setFeedback({
+        type: "error",
+        message:
+          "The next lesson already has a recorded teaching status and cannot be replaced automatically.",
+      });
+      return;
+    }
+
+    setFeedback(null);
+    setCarryTarget({ ...destination, ...availability });
+  }
+
+  function closeCarryForward() {
+    setCarryTarget(null);
+    requestAnimationFrame(() => carryForwardButtonRef.current?.focus());
+  }
+
+  function confirmCarryForward() {
+    const destinationPeriod = periods.find(
+      (item) => item.id === carryTarget.periodId,
+    );
+
+    saveLessonOccurrence({
+      date: carryTarget.date,
+      recurringAssignmentId: carryTarget.recurringAssignmentId,
+      classId: carryTarget.classId,
+      periodId: carryTarget.periodId,
+      title: occurrence.title,
+      summary: occurrence.summary,
+      plan: occurrence.plan,
+      status: "planned",
+      cancellationReason: "",
+      cancellationNote: "",
+    });
+    setCarryTarget(null);
+    setFeedback({
+      type: "success",
+      message: `Lesson carried forward to ${formatDayHeading(
+        getDateFromKey(carryTarget.date),
+      )}, ${destinationPeriod.label}.`,
+    });
+    requestAnimationFrame(() => carryForwardButtonRef.current?.focus());
   }
 
   function requestClose() {
@@ -123,6 +230,14 @@ export default function LessonPanel({ selection, onClose }) {
       aria-labelledby="lesson-panel-title"
       onCancel={(event) => {
         event.preventDefault();
+        if (carryTarget) {
+          closeCarryForward();
+          return;
+        }
+        if (showDiscardConfirmation) {
+          keepEditing();
+          return;
+        }
         requestClose();
       }}
       style={{
@@ -133,7 +248,7 @@ export default function LessonPanel({ selection, onClose }) {
     >
       <div
         className={styles.lessonPanel}
-        inert={showDiscardConfirmation ? true : undefined}
+        inert={showDiscardConfirmation || carryTarget ? true : undefined}
       >
         <header className={styles.panelHeader}>
           <div className={styles.classHeading}>
@@ -208,6 +323,91 @@ export default function LessonPanel({ selection, onClose }) {
               </div>
 
               <div className={styles.formField}>
+                <label htmlFor="lesson-status">Status</label>
+                <select
+                  id="lesson-status"
+                  value={draft.status}
+                  onChange={(event) => updateDraft("status", event.target.value)}
+                >
+                  {LESSON_STATUSES.map((status) => (
+                    <option key={status.value} value={status.value}>
+                      {status.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {draft.status === "cancelled" && (
+                <div className={styles.cancellationFields}>
+                  <div className={styles.formField}>
+                    <label htmlFor="cancellation-reason">
+                      Cancellation Reason
+                    </label>
+                    <select
+                      id="cancellation-reason"
+                      value={draft.cancellationReason}
+                      aria-invalid={Boolean(errors.cancellationReason)}
+                      aria-describedby={
+                        errors.cancellationReason
+                          ? "cancellation-reason-error"
+                          : undefined
+                      }
+                      onChange={(event) =>
+                        updateDraft("cancellationReason", event.target.value)
+                      }
+                    >
+                      <option value="">Choose a reason</option>
+                      {CANCELLATION_REASONS.map((reason) => (
+                        <option key={reason.value} value={reason.value}>
+                          {reason.label}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.cancellationReason && (
+                      <p
+                        id="cancellation-reason-error"
+                        className={styles.fieldError}
+                      >
+                        {errors.cancellationReason}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className={styles.formField}>
+                    <div className={styles.fieldLabelRow}>
+                      <label htmlFor="cancellation-note">Optional Note</label>
+                      <span id="cancellation-note-count" aria-live="polite">
+                        {draft.cancellationNote.length} / 200
+                      </span>
+                    </div>
+                    <textarea
+                      id="cancellation-note"
+                      rows={3}
+                      maxLength={200}
+                      value={draft.cancellationNote}
+                      aria-invalid={Boolean(errors.cancellationNote)}
+                      aria-describedby={`cancellation-note-count${
+                        errors.cancellationNote
+                          ? " cancellation-note-error"
+                          : ""
+                      }`}
+                      onChange={(event) =>
+                        updateDraft("cancellationNote", event.target.value)
+                      }
+                    />
+                    {errors.cancellationNote && (
+                      <p
+                        id="cancellation-note-error"
+                        className={styles.fieldError}
+                      >
+                        {errors.cancellationNote}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <div className={styles.formField}>
                 <div className={styles.planFieldHeader}>
                   <span id="lesson-plan-label" className={styles.planLabel}>
                     Full Lesson Plan
@@ -270,6 +470,14 @@ export default function LessonPanel({ selection, onClose }) {
         ) : (
           <>
             <div className={styles.lessonBody}>
+              <div className={styles.statusSummary}>
+                <span>Status</span>
+                <strong
+                  className={`${styles.statusBadge} ${styles[`status-${effectiveStatus}`]}`}
+                >
+                  {getLessonStatusLabel(effectiveStatus)}
+                </strong>
+              </div>
               {occurrence ? (
                 <div className={styles.savedLesson}>
                   {occurrence.title && <h3>{occurrence.title}</h3>}
@@ -285,6 +493,19 @@ export default function LessonPanel({ selection, onClose }) {
                       <MarkdownContent>{occurrence.plan}</MarkdownContent>
                     </section>
                   )}
+                  {effectiveStatus === "cancelled" && (
+                    <section className={styles.cancellationDetails}>
+                      <h4>Cancellation</h4>
+                      <strong>
+                        {getCancellationReasonLabel(
+                          occurrence.cancellationReason,
+                        )}
+                      </strong>
+                      {occurrence.cancellationNote && (
+                        <p>{occurrence.cancellationNote}</p>
+                      )}
+                    </section>
+                  )}
                 </div>
               ) : (
                 <div className={styles.emptyLesson}>
@@ -294,8 +515,28 @@ export default function LessonPanel({ selection, onClose }) {
                   </p>
                 </div>
               )}
+              {feedback && (
+                <p
+                  className={`${styles.actionFeedback} ${
+                    feedback.type === "error"
+                      ? styles.feedbackError
+                      : styles.feedbackSuccess
+                  }`}
+                  role="status"
+                >
+                  {feedback.message}
+                </p>
+              )}
             </div>
             <footer className={styles.panelFooter}>
+              <button
+                ref={carryForwardButtonRef}
+                type="button"
+                className={styles.secondaryButton}
+                onClick={requestCarryForward}
+              >
+                Carry Forward
+              </button>
               <button
                 type="button"
                 className={styles.primaryButton}
@@ -312,6 +553,16 @@ export default function LessonPanel({ selection, onClose }) {
         <UnsavedChangesDialog
           onKeepEditing={keepEditing}
           onDiscard={onClose}
+        />
+      )}
+      {carryTarget && (
+        <CarryForwardDialog
+          classDetails={classDetails}
+          destination={carryTarget}
+          period={periods.find((item) => item.id === carryTarget.periodId)}
+          replacesPlan={carryTarget.replacesPlan}
+          onCancel={closeCarryForward}
+          onConfirm={confirmCarryForward}
         />
       )}
     </dialog>

@@ -27,3 +27,7 @@ Thumbs.db
 # Next.js generated files
 next-env.d.ts
 *.tsbuildinfo
+
+#
+AGENTS.md
+CLAUDE.md

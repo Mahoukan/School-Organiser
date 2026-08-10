@@ -3,7 +3,10 @@ import {
 } from "../../data/sampleClasses";
 import {
   findLessonOccurrence,
+  getCancellationReasonLabel,
   getDateKey,
+  getEffectiveLessonStatus,
+  getLessonStatusLabel,
 } from "../../lib/lessonOccurrences";
 import { formatDayHeading } from "../../lib/timetableDates";
 import { useSchoolData } from "../providers/SchoolDataProvider";
@@ -62,6 +65,8 @@ export default function TimetableCard({
     dateKey,
     entry.recurringAssignmentId,
   );
+  const status = getEffectiveLessonStatus(occurrence);
+  const statusLabel = getLessonStatusLabel(status);
   const weekPreview = occurrence?.title || occurrence?.summary;
 
   function openLesson(event) {
@@ -79,8 +84,8 @@ export default function TimetableCard({
   return (
     <button
       type="button"
-      className={`${styles.entryCard} ${styles.classCard}`}
-      aria-label={`${classDetails.shortCode} on ${formatDayHeading(date)}, ${period.label}. Open lesson details.`}
+      className={`${styles.entryCard} ${styles.classCard} ${styles[`classCard-${status}`]}`}
+      aria-label={`${classDetails.shortCode} on ${formatDayHeading(date)}, ${period.label}. Status: ${statusLabel}. Open lesson details.`}
       onClick={openLesson}
       style={{
         "--class-background": colourDetails.background,
@@ -89,6 +94,14 @@ export default function TimetableCard({
       }}
     >
       <span className={styles.entryCode}>{classDetails.shortCode}</span>
+      {status !== "planned" && (!compact || status === "cancelled") && (
+        <span className={styles.statusMarker}>{statusLabel}</span>
+      )}
+      {detail === "day" && status === "cancelled" && (
+        <span className={styles.cancellationReason}>
+          {getCancellationReasonLabel(occurrence.cancellationReason)}
+        </span>
+      )}
       {detail === "day" && (
         <span className={styles.entryName}>{classDetails.name}</span>
       )}
