@@ -12,8 +12,8 @@ export async function POST(request, { params }) {
     const { action, payload = {} } = await request.json();
     return NextResponse.json(await mutateSchoolData(user.id, resource, action, payload));
   } catch (error) {
-    console.error(`School data ${resource} mutation failed:`, error);
     if (error instanceof AuthenticationRequiredError) return NextResponse.json({ error: "Authentication required." }, { status: 401 });
+    console.error(`School data ${resource} mutation failed.`, { name: error?.name, code: error?.code });
     if (!process.env.DATABASE_URL) return NextResponse.json({ error: "Database persistence is not configured. Set DATABASE_URL and run migrations." }, { status: 503 });
     const status = error?.code ? 409 : 400;
     return NextResponse.json({ error: error?.code ? "The change conflicts with existing organiser data." : error.message || "The change could not be saved." }, { status });

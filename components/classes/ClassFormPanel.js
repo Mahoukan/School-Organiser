@@ -254,7 +254,7 @@ export default function ClassFormPanel({
           <div className={styles.readOnlyField}>
             <span>Academic Year</span>
             <strong>{CLASS_ACADEMIC_YEAR}</strong>
-            <small>Fixed for this prototype.</small>
+            <small>Academic year cannot be changed after the class is created.</small>
           </div>
         </div>
 

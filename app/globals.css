@@ -398,3 +398,5 @@ textarea:disabled {
 .route-error p { margin: 0; }
 .route-error p { color: var(--color-text-muted); }
 .route-error button { min-height: 2.75rem; border: 0; border-radius: .55rem; color: white; background: var(--color-primary); font-weight: 700; cursor: pointer; }
+.route-error a { display: inline-flex; min-height: 2.75rem; align-items: center; padding-inline: var(--space-3); border-radius: .55rem; color: white; background: var(--color-primary); font-weight: 700; }
+.route-error a:focus-visible, .route-error button:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
