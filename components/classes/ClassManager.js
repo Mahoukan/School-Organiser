@@ -54,15 +54,16 @@ export default function ClassManager() {
   async function saveClass(values) {
     if (formState.mode === "edit") {
       const result = await updateClass(formState.classItem.id, values);
-      if (!result.ok) { setNotice({ type: "error", message: result.message }); return; }
+      if (!result.ok) { setNotice({ type: "error", message: result.message }); return result; }
       setNotice({ type: "success", message: `${values.shortCode} updated.` });
     } else {
       const result = await createClass(values);
-      if (!result.ok) { setNotice({ type: "error", message: result.message }); return; }
+      if (!result.ok) { setNotice({ type: "error", message: result.message }); return result; }
       setView("active");
       setNotice({ type: "success", message: `${values.shortCode} created.` });
     }
     setFormState(null);
+    return { ok: true };
   }
 
   async function confirmArchive() {

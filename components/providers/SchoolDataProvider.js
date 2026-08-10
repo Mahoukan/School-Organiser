@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { findLessonOccurrence } from "../../lib/lessonOccurrences";
 import { getMovementForOccurrence, validateLessonMovement } from "../../lib/lessonMovements";
@@ -31,6 +31,7 @@ export default function SchoolDataProvider({ children }) {
   const [data, setData] = useState(null);
   const [loadError, setLoadError] = useState("");
   const [loading, setLoading] = useState(true);
+  const pendingOperations = useRef(new Set());
 
   const load = useCallback(async () => {
     setLoading(true); setLoadError("");
@@ -56,8 +57,12 @@ export default function SchoolDataProvider({ children }) {
   }, [router]);
 
   const operation = useCallback(async (resource, action, payload, success = {}) => {
+    const key = `${resource}:${action}`;
+    if (pendingOperations.current.has(key)) return { ok: false, pending: true, message: "This change is already being saved.", errors: { form: "This change is already being saved." } };
+    pendingOperations.current.add(key);
     try { await persist(resource, action, payload); return { ok: true, ...success }; }
     catch (error) { return { ok: false, message: error.message, errors: { form: error.message } }; }
+    finally { pendingOperations.current.delete(key); }
   }, [persist]);
 
   const createClass = useCallback(async (values) => operation("classes", "save", { values }, { classItem: values }), [operation]);
@@ -101,7 +106,7 @@ export default function SchoolDataProvider({ children }) {
   const value = useMemo(() => data ? { ...data, createClass, updateClass, archiveClass, restoreClass, getAssignmentCount, assignClassToSlot, removeAssignment, createDayTemplate, renameDayTemplate, deleteDayTemplate, saveDayTemplateBlock, removeDayTemplateBlock, moveDayTemplateBlock, assignDayTemplate, bulkAssignDayTemplate, saveTerm, removeTerm, saveTeachingWeek, removeTeachingWeek, generateTeachingWeeks, getLessonOccurrence, saveLessonOccurrence, saveTeacherAbsence, saveClassAbsence, saveCalendarException, removeTeacherAbsence, removeClassAbsence, removeCalendarException, findLessonMovement, saveLessonMovement, removeLessonMovement, saveRecurringEvent, removeRecurringEvent } : null, [data, createClass, updateClass, archiveClass, restoreClass, getAssignmentCount, assignClassToSlot, removeAssignment, createDayTemplate, renameDayTemplate, deleteDayTemplate, saveDayTemplateBlock, removeDayTemplateBlock, moveDayTemplateBlock, assignDayTemplate, bulkAssignDayTemplate, saveTerm, removeTerm, saveTeachingWeek, removeTeachingWeek, generateTeachingWeeks, getLessonOccurrence, saveLessonOccurrence, saveTeacherAbsence, saveClassAbsence, saveCalendarException, removeTeacherAbsence, removeClassAbsence, removeCalendarException, findLessonMovement, saveLessonMovement, removeLessonMovement, saveRecurringEvent, removeRecurringEvent]);
 
   if (loading) return <div className="data-state" role="status">Loading your organiser…</div>;
-  if (loadError) return <div className="data-state" role="alert"><h1>We couldn&apos;t load your organiser data.</h1><p>{loadError}</p><button type="button" onClick={load}>Try Again</button></div>;
+  if (loadError) return <div className="data-state" role="alert"><h1>We couldn&apos;t load your organiser.</h1><p>{loadError}</p><p>Your saved data has not been changed.</p><button type="button" onClick={load}>Try Again</button></div>;
   if (!data?.academicYear) return <div className="data-state"><h1>Your organiser is ready for setup.</h1><p>No academic year is configured for this account yet.</p><button type="button" onClick={load}>Check Again</button></div>;
   return <SchoolDataContext.Provider value={value}>{children}</SchoolDataContext.Provider>;
 }

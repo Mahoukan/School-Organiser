@@ -7,13 +7,17 @@ export default function RecurringEventForm({ slot, event, onSave, onRemove, onCl
   const initialType = event?.type ?? "duty";
   const [values, setValues] = useState(event ?? { type: initialType, title: "Duty", detail: "", colour: RECURRING_EVENT_TYPES.find((item) => item.value === initialType).colour });
   const [errors, setErrors] = useState({});
+  const [saving, setSaving] = useState(false);
   function changeType(type) {
     const option = RECURRING_EVENT_TYPES.find((item) => item.value === type);
     setValues((current) => ({ ...current, type, title: current.title === RECURRING_EVENT_TYPES.find((item) => item.value === current.type)?.label ? option.label : current.title, colour: event ? current.colour : option.colour }));
   }
   async function submit(formEvent) {
     formEvent.preventDefault();
+    if (saving) return;
+    setSaving(true);
     const result = await onSave({ ...values, id: event?.id, cycleWeek: slot.cycleWeek, weekday: slot.weekday, periodId: slot.period.id });
+    setSaving(false);
     if (!result.ok) setErrors(result.errors);
   }
   return <ModalDialog className={styles.eventDialog} labelledBy="event-form-title" describedBy="event-form-context" onClose={onClose}>
@@ -27,7 +31,7 @@ export default function RecurringEventForm({ slot, event, onSave, onRemove, onCl
         <fieldset><legend>Colour</legend><div className={styles.eventColours}>{RECURRING_EVENT_COLOURS.map((colour) => <label key={colour.value} style={{ "--event-colour": colour.value }}><input type="radio" name="event-colour" value={colour.value} checked={values.colour === colour.value} onChange={() => setValues({ ...values, colour: colour.value })} /><span>{colour.label}</span></label>)}</div>{errors.colour && <span>{errors.colour}</span>}</fieldset>
         {errors.periodId && <p className={styles.setupError}>{errors.periodId}</p>}
       </div>
-      <div className={styles.formActions}>{event && <button type="button" className={styles.dangerSetupButton} onClick={() => onRemove(event)}>Remove</button>}<button type="button" className={styles.secondarySetupButton} onClick={onClose}>Cancel</button><button className={styles.primarySetupButton}>Save Item</button></div>
+      <div className={styles.formActions}>{event && <button type="button" className={styles.dangerSetupButton} onClick={() => onRemove(event)} disabled={saving}>Remove</button>}<button type="button" className={styles.secondarySetupButton} onClick={onClose} disabled={saving}>Cancel</button><button className={styles.primarySetupButton} disabled={saving}>{saving ? "Saving…" : "Save Item"}</button></div>
     </form>
   </ModalDialog>;
 }

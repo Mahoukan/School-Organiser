@@ -12,9 +12,13 @@ const emptyTerm = { name: "", startDate: "", endDate: "" };
 function TermForm({ initial, onSave, onCancel }) {
   const [values, setValues] = useState(initial ?? emptyTerm);
   const [errors, setErrors] = useState({});
+  const [saving, setSaving] = useState(false);
   async function submit(event) {
     event.preventDefault();
+    if (saving) return;
+    setSaving(true);
     const result = await onSave(values);
+    setSaving(false);
     if (!result.ok) setErrors(result.errors);
   }
   return (
@@ -26,7 +30,7 @@ function TermForm({ initial, onSave, onCancel }) {
         <label>End Date<input type="date" value={values.endDate} aria-invalid={Boolean(errors.endDate || errors.dateRange)} onChange={(e) => setValues({ ...values, endDate: e.target.value })} />{errors.endDate && <span>{errors.endDate}</span>}</label>
       </div>
       {errors.dateRange && <p className={styles.formError}>{errors.dateRange}</p>}
-      <div className={styles.formActions}><button type="button" className={styles.secondary} onClick={onCancel}>Cancel</button><button className={styles.primary}>Save Term</button></div>
+      <div className={styles.formActions}><button type="button" className={styles.secondary} onClick={onCancel} disabled={saving}>Cancel</button><button className={styles.primary} disabled={saving}>{saving ? "Saving…" : "Save Term"}</button></div>
     </form>
   );
 }
@@ -34,9 +38,13 @@ function TermForm({ initial, onSave, onCancel }) {
 function WeekForm({ term, initial, onSave, onCancel }) {
   const [values, setValues] = useState(initial ?? { termId: term.id, weekStartDate: "", cycleWeek: "A" });
   const [errors, setErrors] = useState({});
+  const [saving, setSaving] = useState(false);
   async function submit(event) {
     event.preventDefault();
+    if (saving) return;
+    setSaving(true);
     const result = await onSave(values);
+    setSaving(false);
     if (!result.ok) setErrors(result.errors);
   }
   return (
@@ -44,7 +52,7 @@ function WeekForm({ term, initial, onSave, onCancel }) {
       <strong>{initial?.id ? "Edit teaching week" : "Add teaching week"}</strong>
       <label>Monday / Start Date<input type="date" value={values.weekStartDate} aria-invalid={Boolean(errors.weekStartDate)} onChange={(e) => setValues({ ...values, weekStartDate: e.target.value })} />{errors.weekStartDate && <span>{errors.weekStartDate}</span>}</label>
       <fieldset><legend>Cycle week</legend><div className={styles.cycleSelector}>{["A", "B"].map((cycle) => <button key={cycle} type="button" aria-pressed={values.cycleWeek === cycle} onClick={() => setValues({ ...values, cycleWeek: cycle })}>Week {cycle}</button>)}</div></fieldset>
-      <div className={styles.formActions}><button type="button" className={styles.secondary} onClick={onCancel}>Cancel</button><button className={styles.primary}>Save Week</button></div>
+      <div className={styles.formActions}><button type="button" className={styles.secondary} onClick={onCancel} disabled={saving}>Cancel</button><button className={styles.primary} disabled={saving}>{saving ? "Saving…" : "Save Week"}</button></div>
     </form>
   );
 }

@@ -18,7 +18,7 @@ export default function ClassDetail({ classId }) {
   const entries = useMemo(() => classItem ? getClassScheduledOccurrences({ classId, ...data }) : [], [classId, classItem, data]);
   const history = useMemo(() => splitClassHistory(entries), [entries]);
 
-  if (!classItem) return <section className={styles.detailPage}><div className={styles.notFound}><h1>Class not found.</h1><p>This class may have been removed when temporary data reset.</p><Link href="/classes">Back to Classes</Link></div></section>;
+  if (!classItem) return <section className={styles.detailPage}><div className={styles.notFound}><h1>Class not found.</h1><p>This class is unavailable or does not belong to your organiser.</p><Link href="/classes">Back to Classes</Link></div></section>;
 
   const colour = getClassColourOption(classItem.colour);
   const details = [classItem.subject, classItem.yearLevel && `Year ${classItem.yearLevel}`, classItem.room && `Room ${classItem.room}`].filter(Boolean);

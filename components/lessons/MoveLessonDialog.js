@@ -8,10 +8,14 @@ export default function MoveLessonDialog({ classDetails, date, originalBlock, cu
   const cancelRef = useRef(null);
   const [destinationPeriodId, setDestinationPeriodId] = useState("");
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
   useEffect(() => cancelRef.current?.focus(), []);
   async function submit(event) {
     event.preventDefault();
+    if (saving) return;
+    setSaving(true);
     const result = await onSave(destinationPeriodId);
+    setSaving(false);
     if (!result.ok) setError(result.message);
   }
   return <div className={styles.confirmOverlay}>
@@ -29,7 +33,7 @@ export default function MoveLessonDialog({ classDetails, date, originalBlock, cu
         </label>)}
       </fieldset>
       {error && <p className={styles.feedbackError} role="alert">{error}</p>}
-      <div className={styles.confirmActions}><button ref={cancelRef} type="button" className={styles.secondaryButton} onClick={onCancel}>Cancel</button><button className={styles.primaryButton} disabled={!destinationPeriodId}>Move Lesson</button></div>
+      <div className={styles.confirmActions}><button ref={cancelRef} type="button" className={styles.secondaryButton} onClick={onCancel} disabled={saving}>Cancel</button><button className={styles.primaryButton} disabled={!destinationPeriodId || saving}>{saving ? "Moving…" : "Move Lesson"}</button></div>
     </form>
   </div>;
 }

@@ -82,6 +82,7 @@ export default function ClassFormPanel({
       : emptyClass,
   );
   const [errors, setErrors] = useState({});
+  const [saving, setSaving] = useState(false);
   const title = editingClass ? `Edit ${editingClass.shortCode}` : "Add Class";
 
   function updateField(field, value) {
@@ -128,11 +129,15 @@ export default function ClassFormPanel({
     const result = validate();
     if (!result.valid) return;
 
-    await onSave({
+    if (saving) return;
+    setSaving(true);
+    const saveResult = await onSave({
       ...result.values,
       academicYear: CLASS_ACADEMIC_YEAR,
       archived: editingClass?.archived ?? false,
     });
+    if (saveResult?.ok === false) setErrors((current) => ({ ...current, form: saveResult.message }));
+    setSaving(false);
   }
 
   const colourErrorId = "class-colour-error";
@@ -162,6 +167,7 @@ export default function ClassFormPanel({
         </header>
 
         <div className={styles.formBody}>
+          {errors.form && <p className={styles.fieldError} role="alert">{errors.form}</p>}
           <TextField
             id="class-name"
             label="Class Name"
@@ -253,11 +259,11 @@ export default function ClassFormPanel({
         </div>
 
         <footer className={styles.panelFooter}>
-          <button type="button" className={styles.secondaryButton} onClick={onClose}>
+          <button type="button" className={styles.secondaryButton} onClick={onClose} disabled={saving}>
             Cancel
           </button>
-          <button type="submit" className={styles.primaryButton}>
-            {editingClass ? "Save Changes" : "Create Class"}
+          <button type="submit" className={styles.primaryButton} disabled={saving}>
+            {saving ? "Saving…" : editingClass ? "Save Changes" : "Create Class"}
           </button>
         </footer>
       </form>

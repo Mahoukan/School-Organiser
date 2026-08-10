@@ -18,14 +18,15 @@ function OverlayForm({ kind, initial, classes, onSave, onCancel }) {
   const defaults = kind === "teacher" ? { startDate: today, endDate: today, note: "" } : kind === "class" ? { classIds: [], startDate: today, endDate: today, reason: "" } : { type: "public-holiday", startDate: today, endDate: today, note: "" };
   const [values, setValues] = useState(initial ?? defaults);
   const [errors, setErrors] = useState({});
-  async function submit(event) { event.preventDefault(); const result = await onSave(values); if (!result.ok) setErrors(result.errors); }
+  const [saving, setSaving] = useState(false);
+  async function submit(event) { event.preventDefault(); if (saving) return; setSaving(true); const result = await onSave(values); setSaving(false); if (!result.ok) setErrors(result.errors); }
   const title = kind === "teacher" ? "Teacher Absence" : kind === "class" ? "Class Absence" : "Calendar Exception";
   return <form className={styles.overlayForm} onSubmit={submit} noValidate><h2>{initial?.id ? `Edit ${title}` : `Add ${title}`}</h2>
     {kind === "exception" && <label>Type<select value={values.type} aria-invalid={Boolean(errors.type)} onChange={(e) => setValues({ ...values, type: e.target.value })}>{CALENDAR_EXCEPTION_TYPES.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select>{errors.type && <span>{errors.type}</span>}</label>}
     {kind === "class" && <fieldset><legend>Classes</legend><div className={styles.classChecks}>{classes.filter((item) => !item.archived).map((classItem) => { const colour = getClassColourOption(classItem.colour); return <label key={classItem.id} style={{ "--check-colour": colour.border }}><input type="checkbox" checked={values.classIds.includes(classItem.id)} onChange={(e) => setValues({ ...values, classIds: e.target.checked ? [...values.classIds, classItem.id] : values.classIds.filter((id) => id !== classItem.id) })} /><span><strong>{classItem.shortCode}</strong>{classItem.name}</span></label>; })}</div>{errors.classIds && <span>{errors.classIds}</span>}</fieldset>}
     <RangeFields values={values} setValues={setValues} errors={errors} />
     {kind === "class" ? <label>Reason<textarea maxLength={200} rows={3} value={values.reason} aria-invalid={Boolean(errors.reason)} onChange={(e) => setValues({ ...values, reason: e.target.value })} />{errors.reason && <span>{errors.reason}</span>}</label> : <label>{kind === "exception" && values.type === "other" ? "Note (required)" : "Note (optional)"}<textarea maxLength={200} rows={3} value={values.note} aria-invalid={Boolean(errors.note)} onChange={(e) => setValues({ ...values, note: e.target.value })} />{errors.note && <span>{errors.note}</span>}</label>}
-    <div className={styles.formActions}><button type="button" className={styles.secondary} onClick={onCancel}>Cancel</button><button className={styles.primary}>Save</button></div>
+    <div className={styles.formActions}><button type="button" className={styles.secondary} onClick={onCancel} disabled={saving}>Cancel</button><button className={styles.primary} disabled={saving}>{saving ? "Saving…" : "Save"}</button></div>
   </form>;
 }
 

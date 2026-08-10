@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { getClassColourOption } from "../../data/sampleClasses";
 import { findAssignmentForSlot } from "../../lib/recurringTimetable";
 import { getRecurringEventColour, getRecurringEventForBlock, getRecurringEventTypeLabel } from "../../lib/recurringEvents";
 import { useSchoolData } from "../providers/SchoolDataProvider";
 import styles from "./setup.module.css";
+import ModalDialog from "../classes/ModalDialog";
 
 export default function SetupSlot({
   cycleWeek,
@@ -13,6 +15,8 @@ export default function SetupSlot({
   onMessage,
 }) {
   const { classes, recurringAssignments, recurringEvents, removeAssignment } = useSchoolData();
+  const [confirmRemoval, setConfirmRemoval] = useState(false);
+  const [removing, setRemoving] = useState(false);
   const event = getRecurringEventForBlock(recurringEvents, cycleWeek, weekday, period.id);
 
   if (event) {
@@ -59,7 +63,17 @@ export default function SetupSlot({
 
   const colour = getClassColourOption(classItem.colour);
 
+  async function removeClassAssignment() {
+    if (removing) return;
+    setRemoving(true);
+    const result = await removeAssignment(cycleWeek, weekday, period.id);
+    setRemoving(false);
+    if (!result.ok) onMessage?.(result.message);
+    else setConfirmRemoval(false);
+  }
+
   return (
+    <>
     <div
       className={`${styles.setupSlot} ${styles.assignedSlot}`}
       style={{
@@ -85,14 +99,13 @@ export default function SetupSlot({
         <button
           type="button"
           aria-label={`Remove ${classItem.shortCode} from Week ${cycleWeek}, ${weekdayLabel}, ${period.name}`}
-          onClick={async () => {
-            const result = await removeAssignment(cycleWeek, weekday, period.id);
-            if (!result.ok) onMessage?.(result.message);
-          }}
+          onClick={() => setConfirmRemoval(true)}
         >
           Remove
         </button>
       </div>
     </div>
+    {confirmRemoval && <ModalDialog className={styles.assignmentDialog} labelledBy="remove-assignment-title" describedBy="remove-assignment-description" onClose={() => setConfirmRemoval(false)}><h2 id="remove-assignment-title">Remove {classItem.shortCode} from {period.name}?</h2><p id="remove-assignment-description">This removes the recurring Week {cycleWeek} {weekdayLabel} assignment. Existing saved lesson history is preserved.</p><div className={styles.formActions}><button type="button" className={styles.secondarySetupButton} disabled={removing} onClick={() => setConfirmRemoval(false)}>Cancel</button><button type="button" className={styles.dangerSetupButton} disabled={removing} onClick={removeClassAssignment}>{removing ? "Removing…" : "Remove Assignment"}</button></div></ModalDialog>}
+    </>
   );
 }

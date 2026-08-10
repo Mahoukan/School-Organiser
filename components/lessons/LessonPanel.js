@@ -77,6 +77,7 @@ export default function LessonPanel({ selection, onClose }) {
   const [feedback, setFeedback] = useState(null);
   const [showMoveDialog, setShowMoveDialog] = useState(false);
   const [showRestoreConfirmation, setShowRestoreConfirmation] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const occurrence = getLessonOccurrence(
     selection.date,
@@ -114,6 +115,13 @@ export default function LessonPanel({ selection, onClose }) {
     if (!dialog.open) dialog.showModal();
   }, []);
 
+  useEffect(() => {
+    if (!isEditing || !isDirty) return undefined;
+    const protectDraft = (event) => { event.preventDefault(); event.returnValue = ""; };
+    window.addEventListener("beforeunload", protectDraft);
+    return () => window.removeEventListener("beforeunload", protectDraft);
+  }, [isDirty, isEditing]);
+
   if (!classDetails || !period || !assignment || !originalPeriod) return null;
 
   const colour = getClassColourOption(classDetails.colour);
@@ -141,6 +149,7 @@ export default function LessonPanel({ selection, onClose }) {
 
   async function saveLesson(event) {
     event.preventDefault();
+    if (saving) return;
     const nextErrors = {};
     if (draft.title.length > 100) {
       nextErrors.title = "Lesson title must be 100 characters or fewer.";
@@ -158,10 +167,12 @@ export default function LessonPanel({ selection, onClose }) {
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
 
+    setSaving(true);
     const result = await saveLessonOccurrence({
       ...selection,
       ...draft,
     });
+    setSaving(false);
     if (!result.ok) { setErrors({ form: result.message }); return; }
     setIsEditing(false);
   }
@@ -542,8 +553,8 @@ export default function LessonPanel({ selection, onClose }) {
               >
                 Cancel
               </button>
-              <button type="submit" className={styles.primaryButton}>
-                Save Lesson
+              <button type="submit" className={styles.primaryButton} disabled={saving}>
+                {saving ? "Saving…" : "Save Lesson"}
               </button>
             </footer>
           </form>
