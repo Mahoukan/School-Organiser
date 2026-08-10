@@ -12,6 +12,7 @@ export default function MobileWeek({
   selectedWeekday,
   onSelectWeekday,
   compact = false,
+  onOpenLesson,
 }) {
   const selectedDate = addDays(monday, selectedWeekday);
   const weekType = getWeekType(monday);
@@ -35,7 +36,12 @@ export default function MobileWeek({
           </button>
         ))}
       </div>
-      <DayTimetable date={selectedDate} compact={compact} showHeading={false} />
+      <DayTimetable
+        date={selectedDate}
+        compact={compact}
+        showHeading={false}
+        onOpenLesson={onOpenLesson}
+      />
     </section>
   );
 }

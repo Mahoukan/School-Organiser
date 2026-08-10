@@ -202,9 +202,24 @@
 }
 
 .classCard {
+  width: 100%;
+  border-style: solid;
   border-color: var(--class-border);
   color: var(--class-text);
   background: var(--class-background);
+  text-align: left;
+  cursor: pointer;
+  appearance: none;
+}
+
+.classCard:hover {
+  filter: brightness(0.98);
+  box-shadow: 0 2px 7px rgb(23 32 51 / 12%);
+}
+
+.classCard:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 .eventCard {
@@ -253,6 +268,37 @@
   opacity: 0.82;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.lessonTitle,
+.lessonSummary,
+.lessonPreview {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+}
+
+.lessonTitle {
+  margin-top: 0.35rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+  -webkit-line-clamp: 1;
+}
+
+.lessonSummary {
+  margin-top: 0.15rem;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  opacity: 0.9;
+  -webkit-line-clamp: 2;
+}
+
+.lessonPreview {
+  margin-top: 0.15rem;
+  font-size: 0.68rem;
+  font-weight: 650;
+  line-height: 1.25;
+  -webkit-line-clamp: 2;
 }
 
 .freeLabel {

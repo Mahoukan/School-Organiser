@@ -1,0 +1,368 @@
+.lessonDialog {
+  width: min(34rem, 100%);
+  max-width: 100%;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0 0 0 auto;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-left: 1px solid var(--color-border);
+  border-radius: var(--radius) 0 0 var(--radius);
+  color: var(--color-text);
+  background: var(--color-surface);
+  box-shadow: -1rem 0 3rem rgb(23 32 51 / 18%);
+}
+
+.lessonDialog::backdrop {
+  background: rgb(23 32 51 / 32%);
+  backdrop-filter: blur(1px);
+}
+
+.lessonPanel {
+  display: flex;
+  height: 100%;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.classHeading {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-2);
+}
+
+.classSwatch {
+  width: 0.9rem;
+  height: 0.9rem;
+  margin-top: 0.35rem;
+  border: 2px solid var(--lesson-border);
+  border-radius: 50%;
+  background: var(--lesson-accent);
+  box-shadow: 0 0 0 0.25rem var(--lesson-tint);
+}
+
+.classHeading p {
+  color: var(--color-primary);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.classHeading h2 {
+  margin: 0.15rem 0 0;
+  font-size: 1.45rem;
+  letter-spacing: -0.025em;
+}
+
+.classHeading div > span {
+  display: block;
+  margin-top: 0.1rem;
+  color: var(--color-text-muted);
+  font-size: 0.88rem;
+}
+
+.closeButton {
+  display: grid;
+  width: 2.75rem;
+  min-width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0.55rem;
+  color: var(--color-text-muted);
+  background: transparent;
+  cursor: pointer;
+  font-size: 1.5rem;
+  place-items: center;
+}
+
+.closeButton:hover {
+  color: var(--color-text);
+  background: var(--color-surface-subtle);
+}
+
+.lessonContext {
+  display: grid;
+  gap: 0.2rem;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--lesson-tint);
+}
+
+.lessonContext strong {
+  font-size: 0.9rem;
+}
+
+.lessonContext span {
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.lessonBody,
+.formBody {
+  min-height: 0;
+  flex: 1;
+  padding: var(--space-4);
+  overflow-y: auto;
+}
+
+.emptyLesson {
+  display: grid;
+  min-height: 16rem;
+  place-items: center;
+  align-content: center;
+  text-align: center;
+}
+
+.emptyLesson h3,
+.savedLesson h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+}
+
+.emptyLesson p {
+  max-width: 25rem;
+  margin-top: var(--space-1);
+  color: var(--color-text-muted);
+}
+
+.savedLesson {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.savedLesson section {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.savedLesson h4 {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.savedLesson p {
+  margin: 0;
+}
+
+.plainPlan {
+  line-height: 1.65;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.lessonForm {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.formBody {
+  display: grid;
+  align-content: start;
+  gap: var(--space-4);
+}
+
+.formField {
+  min-width: 0;
+}
+
+.formField label,
+.fieldLabelRow label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+
+.fieldLabelRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.fieldLabelRow span {
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.formField input,
+.formField textarea {
+  width: 100%;
+  padding: 0.7rem 0.75rem;
+  border: 1px solid #cbd2dd;
+  border-radius: 0.55rem;
+  color: var(--color-text);
+  background: var(--color-surface);
+  resize: vertical;
+}
+
+.formField input {
+  min-height: 2.75rem;
+}
+
+.formField textarea {
+  line-height: 1.5;
+}
+
+.formField .planTextarea {
+  min-height: 18rem;
+}
+
+.formField input[aria-invalid="true"],
+.formField textarea[aria-invalid="true"] {
+  border-color: #b84a4a;
+}
+
+.fieldError {
+  margin-top: 0.3rem;
+  color: #9b3535;
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.panelFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4)
+    calc(var(--space-3) + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.primaryButton,
+.secondaryButton,
+.dangerButton {
+  min-height: 2.75rem;
+  padding-inline: var(--space-3);
+  border-radius: 0.55rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.primaryButton {
+  border: 0;
+  color: #ffffff;
+  background: var(--color-primary);
+}
+
+.primaryButton:hover {
+  background: #2849aa;
+}
+
+.secondaryButton {
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+
+.secondaryButton:hover {
+  background: var(--color-surface-subtle);
+}
+
+.dangerButton {
+  border: 0;
+  color: #ffffff;
+  background: #a53b3b;
+}
+
+.dangerButton:hover {
+  background: #893030;
+}
+
+.confirmOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  padding: var(--space-3);
+  background: rgb(23 32 51 / 34%);
+  place-items: center;
+}
+
+.confirmDialog {
+  width: min(27rem, 100%);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: 0 1rem 3rem rgb(23 32 51 / 24%);
+}
+
+.confirmDialog h3 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.confirmDialog p {
+  margin-top: var(--space-1);
+  color: var(--color-text-muted);
+}
+
+.confirmActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.closeButton:focus-visible,
+.primaryButton:focus-visible,
+.secondaryButton:focus-visible,
+.dangerButton:focus-visible,
+.formField input:focus-visible,
+.formField textarea:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+@media (max-width: 55rem) {
+  .lessonDialog {
+    width: 100%;
+    border-width: 0;
+    border-radius: 0;
+  }
+}
+
+@media (max-width: 32rem) {
+  .panelHeader,
+  .lessonContext,
+  .lessonBody,
+  .formBody,
+  .panelFooter {
+    padding-inline: var(--space-3);
+  }
+
+  .panelFooter button,
+  .confirmActions button {
+    min-width: 0;
+    flex: 1;
+    padding-inline: var(--space-1);
+  }
+
+  .confirmActions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

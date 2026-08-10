@@ -12,7 +12,12 @@ import { useSchoolData } from "../providers/SchoolDataProvider";
 import TimetableCard from "./TimetableCard";
 import styles from "./timetable.module.css";
 
-export default function DayTimetable({ date, compact = false, showHeading = true }) {
+export default function DayTimetable({
+  date,
+  compact = false,
+  showHeading = true,
+  onOpenLesson,
+}) {
   const { recurringAssignments } = useSchoolData();
   const weekType = getWeekType(date);
 
@@ -67,6 +72,9 @@ export default function DayTimetable({ date, compact = false, showHeading = true
               <TimetableCard
                 entry={entry}
                 detail={compact ? "fortnight" : "day"}
+                date={date}
+                period={period}
+                onOpenLesson={onOpenLesson}
               />
             </div>
           );

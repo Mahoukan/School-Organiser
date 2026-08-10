@@ -16,6 +16,12 @@ import {
   weekdays,
 } from "../../data/sampleTimetable";
 import { findAssignmentForSlot } from "../../lib/recurringTimetable";
+import {
+  findLessonOccurrence,
+  getLessonOccurrenceId,
+  hasLessonContent,
+  normalizeLessonContent,
+} from "../../lib/lessonOccurrences";
 
 const SchoolDataContext = createContext(null);
 
@@ -26,6 +32,7 @@ export default function SchoolDataProvider({ children }) {
   const [recurringAssignments, setRecurringAssignments] = useState(() =>
     sampleRecurringAssignments.map((assignment) => ({ ...assignment })),
   );
+  const [lessonOccurrences, setLessonOccurrences] = useState([]);
 
   const createClass = useCallback((values) => {
     const newClass = {
@@ -159,10 +166,55 @@ export default function SchoolDataProvider({ children }) {
     );
   }, []);
 
+  const getLessonOccurrence = useCallback(
+    (dateKey, recurringAssignmentId) =>
+      findLessonOccurrence(
+        lessonOccurrences,
+        dateKey,
+        recurringAssignmentId,
+      ),
+    [lessonOccurrences],
+  );
+
+  const saveLessonOccurrence = useCallback((lessonDetails) => {
+    const content = normalizeLessonContent(lessonDetails);
+    const occurrenceId = getLessonOccurrenceId(
+      lessonDetails.date,
+      lessonDetails.recurringAssignmentId,
+    );
+
+    setLessonOccurrences((current) => {
+      if (!hasLessonContent(content)) {
+        return current.filter((occurrence) => occurrence.id !== occurrenceId);
+      }
+
+      const savedOccurrence = {
+        id: occurrenceId,
+        date: lessonDetails.date,
+        recurringAssignmentId: lessonDetails.recurringAssignmentId,
+        classId: lessonDetails.classId,
+        periodId: lessonDetails.periodId,
+        ...content,
+      };
+      const existing = current.some(
+        (occurrence) => occurrence.id === occurrenceId,
+      );
+
+      return existing
+        ? current.map((occurrence) =>
+            occurrence.id === occurrenceId ? savedOccurrence : occurrence,
+          )
+        : [...current, savedOccurrence];
+    });
+
+    return hasLessonContent(content) ? { ...lessonDetails, ...content } : null;
+  }, []);
+
   const value = useMemo(
     () => ({
       classes,
       recurringAssignments,
+      lessonOccurrences,
       createClass,
       updateClass,
       archiveClass,
@@ -170,10 +222,13 @@ export default function SchoolDataProvider({ children }) {
       getAssignmentCount,
       assignClassToSlot,
       removeAssignment,
+      getLessonOccurrence,
+      saveLessonOccurrence,
     }),
     [
       classes,
       recurringAssignments,
+      lessonOccurrences,
       createClass,
       updateClass,
       archiveClass,
@@ -181,6 +236,8 @@ export default function SchoolDataProvider({ children }) {
       getAssignmentCount,
       assignClassToSlot,
       removeAssignment,
+      getLessonOccurrence,
+      saveLessonOccurrence,
     ],
   );
 

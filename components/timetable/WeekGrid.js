@@ -8,7 +8,7 @@ import { useSchoolData } from "../providers/SchoolDataProvider";
 import TimetableCard from "./TimetableCard";
 import styles from "./timetable.module.css";
 
-export default function WeekGrid({ monday, compact = false }) {
+export default function WeekGrid({ monday, compact = false, onOpenLesson }) {
   const { recurringAssignments } = useSchoolData();
   const weekType = getWeekType(monday);
 
@@ -43,19 +43,25 @@ export default function WeekGrid({ monday, compact = false }) {
               </span>
             )}
           </div>
-          {weekdays.map((weekday) => (
-            <div key={weekday.key} className={styles.gridEntryCell} role="cell">
-              <TimetableCard
-                entry={getTimetableEntry(
-                  recurringAssignments,
-                  weekType,
-                  weekday.key,
-                  period,
-                )}
-                detail={compact ? "fortnight" : "week"}
-              />
-            </div>
-          ))}
+          {weekdays.map((weekday, index) => {
+            const date = addDays(monday, index);
+            return (
+              <div key={weekday.key} className={styles.gridEntryCell} role="cell">
+                <TimetableCard
+                  entry={getTimetableEntry(
+                    recurringAssignments,
+                    weekType,
+                    weekday.key,
+                    period,
+                  )}
+                  detail={compact ? "fortnight" : "week"}
+                  date={date}
+                  period={period}
+                  onOpenLesson={onOpenLesson}
+                />
+              </div>
+            );
+          })}
         </div>
       ))}
     </div>

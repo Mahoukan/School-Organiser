@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import {
   addDays,
@@ -12,6 +12,7 @@ import {
   getWeekdayIndex,
   toDateOnly,
 } from "../../lib/timetableDates";
+import LessonPanel from "../lessons/LessonPanel";
 import DayTimetable from "./DayTimetable";
 import FortnightTimetable from "./FortnightTimetable";
 import TimetableToolbar from "./TimetableToolbar";
@@ -55,6 +56,8 @@ export default function TimetablePrototype() {
   const [selectedWeekday, setSelectedWeekday] = useState(() =>
     getWeekdayIndex(new Date()),
   );
+  const [selectedLesson, setSelectedLesson] = useState(null);
+  const lessonTriggerRef = useRef(null);
   const toolbarDetails = getToolbarDetails(view, displayedDate);
 
   function changeView(nextView) {
@@ -74,6 +77,17 @@ export default function TimetablePrototype() {
     setSelectedWeekday(getWeekdayIndex(today));
   }
 
+  function openLesson(selection, trigger) {
+    lessonTriggerRef.current = trigger;
+    setSelectedLesson(selection);
+  }
+
+  function closeLesson() {
+    const trigger = lessonTriggerRef.current;
+    setSelectedLesson(null);
+    requestAnimationFrame(() => trigger?.focus());
+  }
+
   return (
     <section className={styles.timetablePage} aria-labelledby="timetable-title">
       <TimetableToolbar
@@ -87,12 +101,15 @@ export default function TimetablePrototype() {
       />
 
       <div className={styles.timetableContent}>
-        {view === "day" && <DayTimetable date={displayedDate} />}
+        {view === "day" && (
+          <DayTimetable date={displayedDate} onOpenLesson={openLesson} />
+        )}
         {view === "week" && (
           <WeekTimetable
             monday={getMonday(displayedDate)}
             selectedWeekday={selectedWeekday}
             onSelectWeekday={setSelectedWeekday}
+            onOpenLesson={openLesson}
           />
         )}
         {view === "fortnight" && (
@@ -100,9 +117,18 @@ export default function TimetablePrototype() {
             startDate={getFortnightStart(displayedDate)}
             selectedWeekday={selectedWeekday}
             onSelectWeekday={setSelectedWeekday}
+            onOpenLesson={openLesson}
           />
         )}
       </div>
+
+      {selectedLesson && (
+        <LessonPanel
+          key={`${selectedLesson.date}-${selectedLesson.recurringAssignmentId}`}
+          selection={selectedLesson}
+          onClose={closeLesson}
+        />
+      )}
     </section>
   );
 }

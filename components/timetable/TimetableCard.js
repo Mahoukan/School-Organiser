@@ -1,11 +1,22 @@
 import {
   getClassColourOption,
 } from "../../data/sampleClasses";
+import {
+  findLessonOccurrence,
+  getDateKey,
+} from "../../lib/lessonOccurrences";
+import { formatDayHeading } from "../../lib/timetableDates";
 import { useSchoolData } from "../providers/SchoolDataProvider";
 import styles from "./timetable.module.css";
 
-export default function TimetableCard({ entry, detail = "week" }) {
-  const { classes } = useSchoolData();
+export default function TimetableCard({
+  entry,
+  detail = "week",
+  date,
+  period,
+  onOpenLesson,
+}) {
+  const { classes, lessonOccurrences } = useSchoolData();
   const compact = detail === "fortnight";
 
   if (entry.type === "free") {
@@ -45,10 +56,32 @@ export default function TimetableCard({ entry, detail = "week" }) {
     );
   }
   const colourDetails = getClassColourOption(classDetails.colour);
+  const dateKey = getDateKey(date);
+  const occurrence = findLessonOccurrence(
+    lessonOccurrences,
+    dateKey,
+    entry.recurringAssignmentId,
+  );
+  const weekPreview = occurrence?.title || occurrence?.summary;
+
+  function openLesson(event) {
+    onOpenLesson?.(
+      {
+        date: dateKey,
+        recurringAssignmentId: entry.recurringAssignmentId,
+        classId: entry.classId,
+        periodId: period.id,
+      },
+      event.currentTarget,
+    );
+  }
 
   return (
-    <div
+    <button
+      type="button"
       className={`${styles.entryCard} ${styles.classCard}`}
+      aria-label={`${classDetails.shortCode} on ${formatDayHeading(date)}, ${period.label}. Open lesson details.`}
+      onClick={openLesson}
       style={{
         "--class-background": colourDetails.background,
         "--class-border": colourDetails.border,
@@ -59,7 +92,18 @@ export default function TimetableCard({ entry, detail = "week" }) {
       {detail === "day" && (
         <span className={styles.entryName}>{classDetails.name}</span>
       )}
-      <span className={styles.entryRoom}>Room {classDetails.room}</span>
-    </div>
+      {detail === "day" && occurrence?.title && (
+        <span className={styles.lessonTitle}>{occurrence.title}</span>
+      )}
+      {detail === "day" && occurrence?.summary && (
+        <span className={styles.lessonSummary}>{occurrence.summary}</span>
+      )}
+      {detail === "week" && weekPreview && (
+        <span className={styles.lessonPreview}>{weekPreview}</span>
+      )}
+      {classDetails.room && (
+        <span className={styles.entryRoom}>Room {classDetails.room}</span>
+      )}
+    </button>
   );
 }
