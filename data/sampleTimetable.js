@@ -23,45 +23,6 @@ export const periods = [
   { id: "p6", label: "P6", start: "2:30", end: "3:25", type: "teaching" },
 ];
 
-export const sampleClasses = {
-  "10dgt": {
-    id: "10dgt",
-    name: "Year 10 Digital Technology",
-    shortCode: "10DGT",
-    room: "DT1",
-    colour: "#dce8ff",
-    borderColour: "#99b8f4",
-    textColour: "#173a72",
-  },
-  "12cs": {
-    id: "12cs",
-    name: "Year 12 Computer Science",
-    shortCode: "12CS",
-    room: "DT2",
-    colour: "#e5def8",
-    borderColour: "#b7a4e2",
-    textColour: "#493279",
-  },
-  "9mat": {
-    id: "9mat",
-    name: "Year 9 Mathematics",
-    shortCode: "9MAT",
-    room: "M3",
-    colour: "#d9efe4",
-    borderColour: "#91c9ab",
-    textColour: "#1f5b3f",
-  },
-  "11dgt": {
-    id: "11dgt",
-    name: "Year 11 Digital Technology",
-    shortCode: "11DGT",
-    room: "DT1",
-    colour: "#f7e3d4",
-    borderColour: "#dfa982",
-    textColour: "#75401f",
-  },
-};
-
 const classEntry = (classId) => ({ type: "class", classId });
 const freeEntry = { type: "free" };
 

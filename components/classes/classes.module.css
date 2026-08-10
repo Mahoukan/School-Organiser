@@ -1,0 +1,569 @@
+.classesPage {
+  min-width: 0;
+}
+
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.pageHeader h1 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+}
+
+.pageHeader p {
+  margin-top: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: clamp(1rem, 2vw, 1.125rem);
+}
+
+.primaryButton,
+.secondaryButton,
+.dangerButton,
+.cardActions button,
+.viewSelector button,
+.closeButton {
+  border: 0;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primaryButton,
+.secondaryButton,
+.dangerButton {
+  min-height: 2.75rem;
+  padding-inline: var(--space-3);
+  border-radius: 0.55rem;
+}
+
+.primaryButton {
+  color: #ffffff;
+  background: var(--color-primary);
+}
+
+.primaryButton:hover {
+  background: #2849aa;
+}
+
+.secondaryButton {
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+
+.secondaryButton:hover {
+  background: var(--color-surface-subtle);
+}
+
+.dangerButton {
+  color: #ffffff;
+  background: #a53b3b;
+}
+
+.dangerButton:hover {
+  background: #893030;
+}
+
+.listToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-block: var(--space-4);
+}
+
+.viewSelector {
+  display: inline-flex;
+  padding: 0.2rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.65rem;
+  background: var(--color-surface-subtle);
+}
+
+.viewSelector button {
+  min-height: 2.5rem;
+  padding-inline: var(--space-3);
+  border-radius: 0.45rem;
+  color: var(--color-text-muted);
+  background: transparent;
+  font-size: 0.85rem;
+}
+
+.viewSelector button:hover {
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+
+.viewSelector button[aria-pressed="true"] {
+  color: var(--color-primary);
+  background: var(--color-surface);
+  box-shadow: 0 1px 3px rgb(23 32 51 / 12%);
+}
+
+.notice {
+  margin-bottom: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid #a7d1b8;
+  border-radius: 0.55rem;
+  color: #245a3b;
+  background: #e9f6ee;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.errorNotice {
+  border-color: #e2aaaa;
+  color: #7e2e2e;
+  background: #faeded;
+}
+
+.classList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(22rem, 100%), 1fr));
+  gap: var(--space-3);
+}
+
+.classCard {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--class-accent);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.cardBody {
+  display: flex;
+  min-height: 10rem;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.classIdentity {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+
+.colourMarker {
+  width: 0.8rem;
+  height: 0.8rem;
+  margin-top: 0.35rem;
+  border: 2px solid var(--class-border);
+  border-radius: 50%;
+  background: var(--class-accent);
+  box-shadow: 0 0 0 0.25rem var(--class-tint);
+}
+
+.codeRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.codeRow h2 {
+  margin: 0;
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+}
+
+.archivedLabel {
+  padding: 0.15rem 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-text-muted);
+  background: var(--color-surface-subtle);
+  font-size: 0.68rem;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+.className {
+  margin-top: 0.35rem;
+  font-weight: 650;
+}
+
+.classDetails {
+  margin-top: 0.3rem;
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+}
+
+.cardActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-1);
+}
+
+.cardActions button {
+  min-height: 2.4rem;
+  padding-inline: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  color: var(--color-text);
+  background: var(--color-surface);
+  font-size: 0.8rem;
+}
+
+.cardActions button:hover {
+  background: var(--color-surface-subtle);
+}
+
+.cardActions .archiveButton {
+  color: #873535;
+}
+
+.archivedCard {
+  border-left-color: #9ca5b4;
+  background: #fafbfc;
+}
+
+.archivedCard .colourMarker {
+  filter: saturate(0.35);
+  opacity: 0.75;
+}
+
+.emptyState {
+  display: grid;
+  min-height: 16rem;
+  padding: var(--space-5);
+  border: 1px dashed #cbd2dd;
+  border-radius: var(--radius);
+  background: rgb(255 255 255 / 55%);
+  place-items: center;
+  align-content: center;
+  text-align: center;
+}
+
+.emptyState h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.emptyState p {
+  max-width: 28rem;
+  margin-top: var(--space-1);
+  color: var(--color-text-muted);
+}
+
+.emptyState .primaryButton {
+  margin-top: var(--space-3);
+}
+
+.formPanel,
+.confirmDialog {
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  background: var(--color-surface);
+  box-shadow: 0 1.5rem 4rem rgb(23 32 51 / 22%);
+}
+
+.formPanel::backdrop,
+.confirmDialog::backdrop {
+  background: rgb(23 32 51 / 38%);
+  backdrop-filter: blur(2px);
+}
+
+.formPanel {
+  width: min(32rem, 100%);
+  max-width: 100%;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0 0 0 auto;
+  border-radius: var(--radius) 0 0 var(--radius);
+}
+
+.classForm {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.panelHeader h2,
+.confirmContent h2 {
+  margin: 0.15rem 0 0;
+  font-size: 1.35rem;
+  letter-spacing: -0.025em;
+}
+
+.panelEyebrow {
+  color: var(--color-primary);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.closeButton {
+  width: 2.5rem;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  color: var(--color-text-muted);
+  background: transparent;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.closeButton:hover {
+  color: var(--color-text);
+  background: var(--color-surface-subtle);
+}
+
+.formBody {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  overflow-y: auto;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.formField {
+  min-width: 0;
+}
+
+.formField label,
+.colourFieldset legend,
+.readOnlyField > span {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+
+.formField input {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #cbd2dd;
+  border-radius: 0.5rem;
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+
+.formField input::placeholder {
+  color: #9aa3b1;
+}
+
+.formField input[aria-invalid="true"] {
+  border-color: #b84a4a;
+}
+
+.fieldError {
+  margin-top: 0.3rem;
+  color: #9b3535;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.colourFieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.colourOptions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-1);
+}
+
+.colourOption {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-weight: 650;
+}
+
+.colourOption:hover {
+  background: var(--color-surface-subtle);
+}
+
+.colourOption:has(input:checked) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.colourOption input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.colourOption:focus-within {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.colourSwatch {
+  width: 1rem;
+  min-width: 1rem;
+  height: 1rem;
+  border: 2px solid rgb(255 255 255 / 80%);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgb(23 32 51 / 18%);
+}
+
+.readOnlyField {
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: 0.55rem;
+  background: var(--color-surface-subtle);
+}
+
+.readOnlyField strong {
+  display: block;
+  font-size: 1rem;
+}
+
+.readOnlyField small {
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+}
+
+.panelFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: auto;
+  padding: var(--space-3) var(--space-4)
+    calc(var(--space-3) + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.confirmDialog {
+  width: min(28rem, calc(100% - 2rem));
+  max-width: 28rem;
+  border-radius: var(--radius);
+}
+
+.confirmContent {
+  padding: var(--space-4);
+}
+
+.confirmContent > p:last-child {
+  margin-top: var(--space-2);
+  color: var(--color-text-muted);
+}
+
+.confirmActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface-subtle);
+}
+
+.primaryButton:focus-visible,
+.secondaryButton:focus-visible,
+.dangerButton:focus-visible,
+.cardActions button:focus-visible,
+.viewSelector button:focus-visible,
+.closeButton:focus-visible,
+.formField input:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+@media (max-width: 42rem) {
+  .pageHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .pageHeader .primaryButton {
+    width: 100%;
+  }
+
+  .viewSelector {
+    width: 100%;
+  }
+
+  .viewSelector button {
+    min-width: 0;
+    flex: 1;
+    padding-inline: var(--space-1);
+  }
+
+  .cardBody {
+    min-height: auto;
+    padding: var(--space-3);
+  }
+
+  .cardActions button {
+    min-height: 2.75rem;
+    flex: 1;
+  }
+
+  .formPanel {
+    width: 100%;
+    border-width: 0;
+    border-radius: 0;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 24rem) {
+  .colourOptions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .panelHeader,
+  .formBody {
+    padding-inline: var(--space-3);
+  }
+
+  .panelFooter {
+    padding-inline: var(--space-3);
+  }
+
+  .panelFooter button {
+    min-width: 0;
+    flex: 1;
+    padding-inline: var(--space-1);
+  }
+}

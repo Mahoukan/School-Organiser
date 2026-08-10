@@ -1,4 +1,7 @@
-import { sampleClasses } from "../../data/sampleTimetable";
+import {
+  getClassColourOption,
+  sampleClassesById,
+} from "../../data/sampleClasses";
 import styles from "./timetable.module.css";
 
 export default function TimetableCard({ entry, detail = "week" }) {
@@ -32,15 +35,16 @@ export default function TimetableCard({ entry, detail = "week" }) {
     );
   }
 
-  const classDetails = sampleClasses[entry.classId];
+  const classDetails = sampleClassesById[entry.classId];
+  const colourDetails = getClassColourOption(classDetails.colour);
 
   return (
     <div
       className={`${styles.entryCard} ${styles.classCard}`}
       style={{
-        "--class-background": classDetails.colour,
-        "--class-border": classDetails.borderColour,
-        "--class-text": classDetails.textColour,
+        "--class-background": colourDetails.background,
+        "--class-border": colourDetails.border,
+        "--class-text": colourDetails.text,
       }}
     >
       <span className={styles.entryCode}>{classDetails.shortCode}</span>

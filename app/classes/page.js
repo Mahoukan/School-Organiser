@@ -1,10 +1,5 @@
-import SectionIntro from "../../components/SectionIntro";
+import ClassManager from "../../components/classes/ClassManager";
 
 export default function ClassesPage() {
-  return (
-    <SectionIntro
-      title="Classes"
-      description="Manage your classes and lesson history."
-    />
-  );
+  return <ClassManager />;
 }
