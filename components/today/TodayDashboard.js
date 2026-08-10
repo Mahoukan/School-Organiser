@@ -12,6 +12,7 @@ import { getLessonStatusLabel, hasLessonPlanContent } from "../../lib/lessonOccu
 import { getRecurringEventColour, getRecurringEventTypeLabel } from "../../lib/recurringEvents";
 import LessonPanel from "../lessons/LessonPanel";
 import { useSchoolData } from "../providers/SchoolDataProvider";
+import UpcomingPlanning from "./UpcomingPlanning";
 import styles from "./today.module.css";
 
 function BlockSummary({ item }) {
@@ -45,7 +46,7 @@ function ScheduleItem({ item, timeState, date, onOpenLesson }) {
 
 export default function TodayDashboard() {
   const data = useSchoolData();
-  const [today] = useState(() => toDateOnly(new Date()));
+  const [today, setToday] = useState(() => toDateOnly(new Date()));
   const [now, setNow] = useState(() => new Date());
   const [selectedLesson, setSelectedLesson] = useState(null);
   const lessonTrigger = useRef(null);
@@ -63,7 +64,7 @@ export default function TodayDashboard() {
 
   function openLesson(item, trigger) {
     lessonTrigger.current = trigger;
-    setSelectedLesson({ date: schedule.dateKey, recurringAssignmentId: item.entry.recurringAssignmentId, classId: item.entry.classId, periodId: item.period.id });
+    setSelectedLesson({ date: item.date ?? schedule.dateKey, recurringAssignmentId: item.recurringAssignmentId ?? item.entry.recurringAssignmentId, classId: item.classId ?? item.entry.classId, periodId: item.period.id });
   }
   function closeLesson() {
     const trigger = lessonTrigger.current;
@@ -85,6 +86,7 @@ export default function TodayDashboard() {
 
     {schedule.weekend ? <div className={styles.emptyState}><h2>No school timetable today.</h2><p>Your weekday timetable remains available in Timetable.</p></div> : !schedule.teachingWeek ? <div className={styles.emptyState}><h2>No teaching timetable today.</h2><p>This date is not part of a configured teaching week.</p></div> : !schedule.blocks.length ? <div className={styles.emptyState}><h2>No timetable blocks are configured.</h2><p>Configure and assign a Day Timetable Template in Setup.</p></div> : <section className={styles.schedule} aria-labelledby="schedule-title"><div className={styles.sectionHeading}><div><span className={styles.eyebrow}>Full day</span><h2 id="schedule-title">Today’s schedule</h2></div>{schedule.dayTemplate && <span>{schedule.dayTemplate.name}</span>}</div><div className={styles.scheduleList}>{schedule.blocks.map((item) => { const state = clock.block?.period.id === item.period.id && clock.state === "current" ? "current" : item.period.endTime <= `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}` ? "past" : "future"; const movedFromName = item.entry.movedFromPeriodId ? data.timetableBlocks.find((block) => block.id === item.entry.movedFromPeriodId)?.name : null; return <ScheduleItem key={item.period.id} item={{ ...item, movedFromName }} timeState={state} date={today} onOpenLesson={openLesson} />; })}</div></section>}
 
+    <UpcomingPlanning data={data} today={today} onOpenLesson={openLesson} />
     {selectedLesson && <LessonPanel key={`${selectedLesson.date}-${selectedLesson.recurringAssignmentId}`} selection={selectedLesson} onClose={closeLesson} />}
   </section>;
 }

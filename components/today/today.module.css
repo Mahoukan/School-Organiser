@@ -39,5 +39,25 @@ button.scheduleItem:focus-visible, .primaryLink:focus-visible, .notice a:focus-v
 .emptyState { padding: 2.5rem 1.25rem; border: 1px dashed var(--color-border); border-radius: 1rem; text-align: center; }
 .emptyState h2 { margin: 0; }
 .emptyState p { color: var(--color-text-muted); }
-@media (max-width: 55rem) { .header { align-items: start; flex-direction: column; } .summaryGrid { grid-template-columns: 1fr; } .overview dl { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (max-width: 32rem) { .todayPage { gap: 1rem; } .scheduleItem { grid-template-columns: 1fr; gap: .65rem; } .periodMeta { display: grid; grid-template-columns: 1fr auto; } .periodMeta .nowMarker { grid-column: 1 / -1; } .overview dl { grid-template-columns: repeat(2, minmax(0, 1fr)); } .notice, .sectionHeading { align-items: start; flex-direction: column; } .primaryLink { width: 100%; } }
+.emptyState a { color: var(--color-primary); font-weight: 750; }
+.planning { display: grid; gap: 1rem; margin-top: 1rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border); }
+.planningHeading { display: flex; align-items: end; justify-content: space-between; gap: 1rem; }
+.planningHeading h2 { margin: .25rem 0; font-size: 1.5rem; }
+.planningHeading p { margin: 0; color: var(--color-text-muted); }
+.planningFilters { display: flex; align-items: end; gap: .65rem; }
+.planningFilters label { display: grid; gap: .25rem; color: var(--color-text-muted); font-size: .72rem; font-weight: 750; }
+.planningFilters select { min-height: 2.6rem; max-width: 12rem; padding: .45rem 2rem .45rem .65rem; border: 1px solid var(--color-border); border-radius: .55rem; color: var(--color-text); background: var(--color-surface); }
+.configurationNotice { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .8rem 1rem; border: 1px solid #e8ca82; border-radius: .7rem; background: #fff8e5; }
+.configurationNotice a { color: var(--color-primary); font-weight: 750; }
+.planningGroups, .planningGroup { display: grid; gap: .75rem; }
+.planningGroup h3 { margin: .35rem 0 0; font-size: 1rem; }
+.planningList { display: grid; gap: .5rem; }
+.planningItem { display: grid; width: 100%; min-height: 5.25rem; grid-template-columns: minmax(9rem, .8fr) minmax(0, 1.25fr) minmax(8rem, .65fr); align-items: center; gap: 1rem; padding: .8rem 1rem; border: 1px solid var(--planning-border); border-left-width: .3rem; border-radius: .7rem; color: var(--planning-text); background: var(--planning-bg); font: inherit; text-align: left; cursor: pointer; }
+.planningItem:hover { filter: brightness(.985); box-shadow: 0 .3rem .9rem rgb(23 32 51 / 8%); }
+.planningIdentity, .planningLesson, .planningPeriod { display: grid; gap: .15rem; min-width: 0; }
+.planningIdentity span, .planningIdentity small, .planningLesson span, .planningPeriod span, .planningPeriod small { color: var(--color-text-muted); font-size: .78rem; }
+.planningState { width: fit-content; margin-top: .2rem; padding: .15rem .45rem; border-radius: 999px; color: #75401f; background: #fff3cd; font-weight: 750; }
+.planningPeriod { justify-self: end; text-align: right; }
+.showMore { width: fit-content; min-height: 2.75rem; justify-self: center; padding: .55rem 1rem; border: 1px solid var(--color-border); border-radius: .55rem; color: var(--color-primary); background: var(--color-surface); font-weight: 750; cursor: pointer; }
+@media (max-width: 55rem) { .header, .planningHeading { align-items: start; flex-direction: column; } .summaryGrid { grid-template-columns: 1fr; } .overview dl { grid-template-columns: repeat(3, minmax(0, 1fr)); } .planningFilters { width: 100%; flex-wrap: wrap; } .planningFilters label { min-width: min(12rem, 100%); flex: 1; } .planningFilters select { width: 100%; max-width: none; } .planningItem { grid-template-columns: minmax(8rem, .8fr) minmax(0, 1.2fr); } .planningPeriod { grid-column: 1 / -1; justify-self: start; text-align: left; } }
+@media (max-width: 32rem) { .todayPage { gap: 1rem; } .scheduleItem, .planningItem { grid-template-columns: 1fr; gap: .65rem; } .periodMeta { display: grid; grid-template-columns: 1fr auto; } .periodMeta .nowMarker { grid-column: 1 / -1; } .overview dl { grid-template-columns: repeat(2, minmax(0, 1fr)); } .notice, .sectionHeading, .configurationNotice { align-items: start; flex-direction: column; } .primaryLink { width: 100%; } .planningPeriod { grid-column: auto; } }
