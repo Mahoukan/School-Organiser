@@ -1,0 +1,48 @@
+.dialog { width: min(38rem, calc(100% - 2rem)); max-height: calc(100dvh - 2rem); padding: 0; border: 0; border-radius: var(--radius); overflow: auto; }
+.dialog::backdrop { background: rgb(23 32 51 / 40%); }
+.form { display: grid; gap: var(--space-3); padding: var(--space-4); }
+.form header, .form footer { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.form header h2, .form header span, .conflicts h3, .conflicts p { margin: 0; }
+.form header span { color: var(--color-text-muted); font-size: .72rem; font-weight: 800; text-transform: uppercase; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+.grid label { display: grid; gap: .35rem; min-width: 0; font-size: .78rem; font-weight: 750; }
+.grid input, .grid select, .grid textarea { width: 100%; min-width: 0; min-height: 2.75rem; padding: .6rem; border: 1px solid #cbd2dd; border-radius: .5rem; font: inherit; }
+.grid textarea { resize: vertical; }
+.grid small, .error { margin: 0; color: #9b3535; font-size: .75rem; }
+.full { grid-column: 1 / -1; }
+.primary, .secondary, .warningButton, .iconButton { min-height: 2.6rem; padding: .5rem .85rem; border-radius: .5rem; font-weight: 750; cursor: pointer; }
+.primary { border: 0; color: white; background: var(--color-primary); }
+.secondary { border: 1px solid var(--color-border); background: white; }
+.warningButton { justify-self: start; border: 0; color: white; background: #8b5b17; }
+.iconButton { min-width: 2.6rem; border: 0; background: transparent; font-size: 1.4rem; }
+.conflicts { display: grid; gap: .6rem; padding: var(--space-3); border: 1px solid #e1bd77; border-radius: .6rem; background: #fff8e8; }
+.conflicts > div { display: flex; justify-content: space-between; gap: 1rem; }
+.conflicts span { color: var(--color-text-muted); font-size: .82rem; }
+.card { display: grid; gap: .2rem; width: 100%; min-height: 3.6rem; padding: .7rem .8rem; border: 1px solid var(--event-border); border-left: 4px solid var(--event-border); border-radius: .55rem; color: var(--event-text); background: var(--event-bg); text-align: left; }
+button.card { cursor: pointer; }
+.card span, .card small { color: var(--color-text-muted); font-size: .78rem; }
+.eventTime { font-weight: 800; }
+.compact { min-height: 0; padding: .45rem .55rem; font-size: .8rem; }
+.compact .eventTime { font-size: .72rem; }
+.primary:focus-visible, .secondary:focus-visible, .warningButton:focus-visible, .iconButton:focus-visible, .card:focus-visible, .grid input:focus-visible, .grid select:focus-visible, .grid textarea:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
+@media (max-width: 32rem) { .dialog { width: calc(100% - 1rem); max-height: calc(100dvh - 1rem); } .form { padding: var(--space-3); } .grid { grid-template-columns: 1fr; } .full { grid-column: auto; } .form footer > * { flex: 1; } .conflicts > div { flex-direction: column; gap: .15rem; } }
+.manager { display: grid; gap: var(--space-4); }
+.managerHeading { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.managerHeading h2, .managerHeading p, .manager section h3, .empty p { margin: 0; }
+.managerHeading p { color: var(--color-text-muted); }
+.manager section { display: grid; gap: var(--space-2); }
+.managerList { display: grid; gap: var(--space-2); }
+.managerRow { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--space-2); }
+.managerRow > div { display: grid; grid-template-columns: 7rem minmax(0, 1fr); align-items: center; gap: var(--space-2); }
+.managerRow > div > span { color: var(--color-text-muted); font-size: .78rem; font-weight: 800; }
+.deleteLink { min-height: 2.6rem; padding: .4rem .6rem; border: 0; color: #8b3b43; background: transparent; font-weight: 750; cursor: pointer; }
+.empty { display: grid; justify-items: start; gap: var(--space-2); padding: var(--space-5); border: 1px dashed var(--color-border); border-radius: var(--radius); }
+.confirmDialog { width: min(28rem, calc(100% - 2rem)); padding: var(--space-4); border: 0; border-radius: var(--radius); }
+.confirmDialog::backdrop { background: rgb(23 32 51 / 40%); }
+.confirmActions { display: flex; justify-content: flex-end; gap: var(--space-2); }
+.danger { min-height: 2.6rem; padding: .5rem .85rem; border: 0; border-radius: .5rem; color: white; background: #a53b3b; font-weight: 750; }
+@media (max-width: 32rem) { .managerHeading { align-items: stretch; flex-direction: column; } .managerRow > div { grid-template-columns: 1fr; gap: .35rem; } }
+.strip { display: grid; gap: var(--space-2); margin-bottom: var(--space-3); }
+.strip > div { display: grid; gap: var(--space-2); }
+.stripCompact { margin: .45rem; }
+.stripCompact > strong { font-size: .72rem; }

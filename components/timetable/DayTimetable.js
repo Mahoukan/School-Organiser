@@ -10,24 +10,25 @@ import { getDateKey } from "../../lib/lessonOccurrences";
 import { useSchoolData } from "../providers/SchoolDataProvider";
 import TimetableCard from "./TimetableCard";
 import styles from "./timetable.module.css";
+import DatedEventsStrip from "../events/DatedEventsStrip";
 
 export default function DayTimetable({
   date,
   compact = false,
   showHeading = true,
   onOpenLesson,
+  onOpenEvent,
 }) {
-  const { recurringAssignments, recurringEvents, teachingWeeks, timetableBlocks, lessonMovements } = useSchoolData();
+  const { recurringAssignments, recurringEvents, datedEvents, teachingWeeks, timetableBlocks, lessonMovements } = useSchoolData();
   const teachingWeek = getTeachingWeekForDate(date, teachingWeeks);
 
   if (isWeekend(date)) {
     return (
       <section className={styles.dayPanel}>
         {showHeading && (
-          <div className={styles.dayHeading}>
-            <h2>{formatDayHeading(date)}</h2>
-          </div>
+          <div className={styles.dayHeading}><h2>{formatDayHeading(date)}</h2><button type="button" onClick={(e) => onOpenEvent(null, e.currentTarget, date)}>Add Event</button></div>
         )}
+        <DatedEventsStrip events={datedEvents} date={date} onSelect={onOpenEvent} compact={compact} />
         <div className={styles.emptyDay}>
           <p>No school timetable for this day.</p>
         </div>
@@ -38,7 +39,8 @@ export default function DayTimetable({
   if (!teachingWeek) {
     return (
       <section className={styles.dayPanel}>
-        {showHeading && <div className={styles.dayHeading}><h2>{formatDayHeading(date)}</h2><span className={styles.cycleBadge}>No teaching week</span></div>}
+        {showHeading && <div className={styles.dayHeading}><h2>{formatDayHeading(date)}</h2><div className={styles.dayHeadingActions}><button type="button" onClick={(e) => onOpenEvent(null, e.currentTarget, date)}>Add Event</button><span className={styles.cycleBadge}>No teaching week</span></div></div>}
+        <DatedEventsStrip events={datedEvents} date={date} onSelect={onOpenEvent} compact={compact} />
         <div className={styles.emptyDay}><p>No teaching week is configured for this date.</p></div>
       </section>
     );
@@ -54,7 +56,8 @@ export default function DayTimetable({
   if (!periods.length) {
     return (
       <section className={styles.dayPanel}>
-        {showHeading && <div className={styles.dayHeading}><h2>{formatDayHeading(date)}</h2><span className={styles.cycleBadge}>Week {teachingWeek.cycleWeek}</span></div>}
+        {showHeading && <div className={styles.dayHeading}><h2>{formatDayHeading(date)}</h2><div className={styles.dayHeadingActions}><button type="button" onClick={(e) => onOpenEvent(null, e.currentTarget, date)}>Add Event</button><span className={styles.cycleBadge}>Week {teachingWeek.cycleWeek}</span></div></div>}
+        <DatedEventsStrip events={datedEvents} date={date} onSelect={onOpenEvent} compact={compact} />
         <div className={styles.emptyDay}><p>No timetable blocks are configured for this day.</p></div>
       </section>
     );
@@ -65,10 +68,11 @@ export default function DayTimetable({
       {showHeading && (
         <div className={styles.dayHeading}>
           <h2>{formatDayHeading(date)}</h2>
-          <span className={styles.cycleBadge}>Week {teachingWeek.cycleWeek}</span>
+          <div className={styles.dayHeadingActions}><button type="button" onClick={(e) => onOpenEvent(null, e.currentTarget, date)}>Add Event</button><span className={styles.cycleBadge}>Week {teachingWeek.cycleWeek}</span></div>
         </div>
       )}
 
+      <DatedEventsStrip events={datedEvents} date={date} onSelect={onOpenEvent} compact={compact} />
       <div className={styles.daySchedule}>
         {periods.map((period) => {
           const entry = getDatedTimetableEntry({ recurringAssignments, recurringEvents, lessonMovements, date: getDateKey(date), cycleWeek: teachingWeek.cycleWeek, weekday: weekday.key, period });

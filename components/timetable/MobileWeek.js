@@ -14,6 +14,7 @@ export default function MobileWeek({
   onSelectWeekday,
   compact = false,
   onOpenLesson,
+  onOpenEvent,
 }) {
   const selectedDate = addDays(monday, selectedWeekday);
   const { teachingWeeks } = useSchoolData();
@@ -43,6 +44,7 @@ export default function MobileWeek({
         compact={compact}
         showHeading={false}
         onOpenLesson={onOpenLesson}
+        onOpenEvent={onOpenEvent}
       />
     </section>
   );

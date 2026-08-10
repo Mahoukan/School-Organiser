@@ -8,14 +8,15 @@ export default function FortnightTimetable({
   selectedWeekday,
   onSelectWeekday,
   onOpenLesson,
+  onOpenEvent,
 }) {
   const secondMonday = addDays(startDate, 7);
 
   return (
     <>
       <div className={styles.desktopFortnightView}>
-        <WeekGrid monday={startDate} compact onOpenLesson={onOpenLesson} />
-        <WeekGrid monday={secondMonday} compact onOpenLesson={onOpenLesson} />
+        <WeekGrid monday={startDate} compact onOpenLesson={onOpenLesson} onOpenEvent={onOpenEvent} />
+        <WeekGrid monday={secondMonday} compact onOpenLesson={onOpenLesson} onOpenEvent={onOpenEvent} />
       </div>
       <div className={styles.mobileFortnightView}>
         <MobileWeek
@@ -24,6 +25,7 @@ export default function FortnightTimetable({
           onSelectWeekday={onSelectWeekday}
           compact
           onOpenLesson={onOpenLesson}
+          onOpenEvent={onOpenEvent}
         />
         <MobileWeek
           monday={secondMonday}
@@ -31,6 +33,7 @@ export default function FortnightTimetable({
           onSelectWeekday={onSelectWeekday}
           compact
           onOpenLesson={onOpenLesson}
+          onOpenEvent={onOpenEvent}
         />
       </div>
     </>

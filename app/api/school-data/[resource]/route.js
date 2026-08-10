@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { mutateSchoolData } from "../../../../lib/server/schoolData";
 import { AuthenticationRequiredError, requireCurrentUser } from "../../../../lib/server/currentUser";
 
-const resources = new Set(["classes", "recurring-items", "lesson-occurrences", "overlays", "calendar", "day-templates", "movements"]);
+const resources = new Set(["classes", "recurring-items", "lesson-occurrences", "dated-events", "overlays", "calendar", "day-templates", "movements"]);
 
 export async function POST(request, { params }) {
   const { resource } = await params;

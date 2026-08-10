@@ -7,11 +7,12 @@ export default function WeekTimetable({
   selectedWeekday,
   onSelectWeekday,
   onOpenLesson,
+  onOpenEvent,
 }) {
   return (
     <>
       <div className={styles.desktopWeekView}>
-        <WeekGrid monday={monday} onOpenLesson={onOpenLesson} />
+        <WeekGrid monday={monday} onOpenLesson={onOpenLesson} onOpenEvent={onOpenEvent} />
       </div>
       <div className={styles.mobileWeekView}>
         <MobileWeek
@@ -19,6 +20,7 @@ export default function WeekTimetable({
           selectedWeekday={selectedWeekday}
           onSelectWeekday={onSelectWeekday}
           onOpenLesson={onOpenLesson}
+          onOpenEvent={onOpenEvent}
         />
       </div>
     </>

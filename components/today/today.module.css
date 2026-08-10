@@ -5,6 +5,8 @@
 .eyebrow { color: var(--color-primary); font-size: .75rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
 .primaryLink, .notice a { display: inline-flex; min-height: 2.75rem; align-items: center; justify-content: center; padding: .65rem 1rem; border-radius: .6rem; font-weight: 700; }
 .primaryLink { color: white; background: var(--color-primary); }
+.headerActions { display: flex; align-items: center; gap: .5rem; }
+.secondaryAction { min-height: 2.75rem; padding: .6rem .9rem; border: 1px solid var(--color-border); border-radius: .6rem; background: var(--color-surface); font-weight: 750; cursor: pointer; }
 .notice { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.15rem; border: 1px solid #e8ca82; border-radius: .8rem; background: #fff8e5; }
 .notice p { margin: .25rem 0 0; color: var(--color-text-muted); }
 .notice a { color: var(--color-primary); background: white; }
@@ -23,7 +25,7 @@
 .scheduleItem { display: grid; width: 100%; grid-template-columns: minmax(8rem, .3fr) minmax(0, 1fr); gap: 1rem; padding: 1rem; border: 1px solid var(--item-border, var(--color-border)); border-left-width: .3rem; border-radius: .8rem; color: var(--item-text, var(--color-text)); background: var(--item-bg, var(--color-surface)); font: inherit; text-align: left; }
 button.scheduleItem { cursor: pointer; }
 button.scheduleItem:hover { filter: brightness(.985); box-shadow: 0 .35rem 1rem rgb(23 32 51 / 8%); }
-button.scheduleItem:focus-visible, .primaryLink:focus-visible, .notice a:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
+button.scheduleItem:focus-visible, .primaryLink:focus-visible, .secondaryAction:focus-visible, .notice a:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
 .periodMeta, .occupant { display: flex; flex-direction: column; gap: .25rem; }
 .periodMeta span, .occupant small, .occupant > span { color: var(--color-text-muted); }
 .nowMarker { width: fit-content; margin-top: .3rem; padding: .15rem .45rem; border-radius: 999px; color: white !important; background: var(--color-primary); font-size: .7rem; font-weight: 800; text-transform: uppercase; }

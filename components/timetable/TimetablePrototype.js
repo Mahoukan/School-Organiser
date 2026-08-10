@@ -12,6 +12,7 @@ import {
   toDateOnly,
 } from "../../lib/timetableDates";
 import { getTeachingWeekForDate } from "../../lib/academicCalendar";
+import { getDateKey } from "../../lib/lessonOccurrences";
 import { useSchoolData } from "../providers/SchoolDataProvider";
 import LessonPanel from "../lessons/LessonPanel";
 import DayTimetable from "./DayTimetable";
@@ -19,6 +20,7 @@ import FortnightTimetable from "./FortnightTimetable";
 import TimetableToolbar from "./TimetableToolbar";
 import WeekTimetable from "./WeekTimetable";
 import styles from "./timetable.module.css";
+import DatedEventDialog from "../events/DatedEventDialog";
 
 const navigationSteps = {
   day: 1,
@@ -63,7 +65,9 @@ export default function TimetablePrototype() {
     getWeekdayIndex(new Date()),
   );
   const [selectedLesson, setSelectedLesson] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const lessonTriggerRef = useRef(null);
+  const eventTriggerRef = useRef(null);
   const toolbarDetails = getToolbarDetails(view, displayedDate, teachingWeeks);
 
   function changeView(nextView) {
@@ -93,6 +97,8 @@ export default function TimetablePrototype() {
     setSelectedLesson(null);
     requestAnimationFrame(() => trigger?.focus());
   }
+  function openEvent(item, trigger, date = displayedDate) { eventTriggerRef.current = trigger; setSelectedEvent(item ?? { new: true, date }); }
+  function closeEvent() { setSelectedEvent(null); requestAnimationFrame(() => eventTriggerRef.current?.focus()); }
 
   return (
     <section className={styles.timetablePage} aria-labelledby="timetable-title">
@@ -108,7 +114,7 @@ export default function TimetablePrototype() {
 
       <div className={styles.timetableContent}>
         {view === "day" && (
-          <DayTimetable date={displayedDate} onOpenLesson={openLesson} />
+          <DayTimetable date={displayedDate} onOpenLesson={openLesson} onOpenEvent={openEvent} />
         )}
         {view === "week" && (
           <WeekTimetable
@@ -116,6 +122,7 @@ export default function TimetablePrototype() {
             selectedWeekday={selectedWeekday}
             onSelectWeekday={setSelectedWeekday}
             onOpenLesson={openLesson}
+            onOpenEvent={openEvent}
           />
         )}
         {view === "fortnight" && (
@@ -124,6 +131,7 @@ export default function TimetablePrototype() {
             selectedWeekday={selectedWeekday}
             onSelectWeekday={setSelectedWeekday}
             onOpenLesson={openLesson}
+            onOpenEvent={openEvent}
           />
         )}
       </div>
@@ -135,6 +143,7 @@ export default function TimetablePrototype() {
           onClose={closeLesson}
         />
       )}
+      {selectedEvent && <DatedEventDialog event={selectedEvent.new ? null : selectedEvent} defaultDate={getDateKey(selectedEvent.date ?? displayedDate)} onClose={closeEvent} />}
     </section>
   );
 }

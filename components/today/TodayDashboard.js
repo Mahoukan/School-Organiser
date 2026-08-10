@@ -8,11 +8,13 @@ import { getExceptionTypeLabel } from "../../lib/scheduleOverlays";
 import { formatDayHeading, isSameDate, toDateOnly } from "../../lib/timetableDates";
 import { deriveTodaySchedule } from "../../lib/todaySchedule";
 import { getCurrentBlockState } from "../../lib/currentBlock";
-import { getLessonStatusLabel, hasLessonPlanContent } from "../../lib/lessonOccurrences";
+import { getDateKey, getLessonStatusLabel, hasLessonPlanContent } from "../../lib/lessonOccurrences";
 import { getRecurringEventColour, getRecurringEventTypeLabel } from "../../lib/recurringEvents";
 import LessonPanel from "../lessons/LessonPanel";
 import { useSchoolData } from "../providers/SchoolDataProvider";
 import UpcomingPlanning from "./UpcomingPlanning";
+import DatedEventDialog from "../events/DatedEventDialog";
+import DatedEventsStrip from "../events/DatedEventsStrip";
 import styles from "./today.module.css";
 
 function BlockSummary({ item }) {
@@ -49,7 +51,9 @@ export default function TodayDashboard() {
   const [today, setToday] = useState(() => toDateOnly(new Date()));
   const [now, setNow] = useState(() => new Date());
   const [selectedLesson, setSelectedLesson] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const lessonTrigger = useRef(null);
+  const eventTrigger = useRef(null);
   const schedule = useMemo(() => deriveTodaySchedule(data, today), [data, today]);
   const clock = getCurrentBlockState(schedule.blocks, now);
 
@@ -71,22 +75,26 @@ export default function TodayDashboard() {
     setSelectedLesson(null);
     requestAnimationFrame(() => trigger?.focus());
   }
+  function openEvent(item, trigger) { eventTrigger.current = trigger; setSelectedEvent(item ?? { new: true }); }
+  function closeEvent() { setSelectedEvent(null); requestAnimationFrame(() => eventTrigger.current?.focus()); }
 
   const context = schedule.teachingWeek ? `${schedule.term?.name ?? "Teaching term"} · Week ${schedule.teachingWeek.cycleWeek}` : "No teaching week";
   return <section className={styles.todayPage} aria-labelledby="today-title">
-    <header className={styles.header}><div><span className={styles.eyebrow}>Today</span><h1 id="today-title">{formatDayHeading(today)}</h1><p>{context}{schedule.dayTemplate ? ` · ${schedule.dayTemplate.name}` : ""}</p></div><Link className={styles.primaryLink} href="/timetable">Open Day Timetable</Link></header>
+    <header className={styles.header}><div><span className={styles.eyebrow}>Today</span><h1 id="today-title">{formatDayHeading(today)}</h1><p>{context}{schedule.dayTemplate ? ` · ${schedule.dayTemplate.name}` : ""}</p></div><div className={styles.headerActions}><button type="button" className={styles.secondaryAction} onClick={(e) => openEvent(null, e.currentTarget)}>Add Event</button><Link className={styles.primaryLink} href="/timetable">Open Day Timetable</Link></div></header>
 
     {schedule.teacherAbsence && <aside className={styles.notice}><div><strong>You are marked away today.</strong>{schedule.teacherAbsence.note && <p>{schedule.teacherAbsence.note}</p>}</div><Link href="/calendar">Manage absence</Link></aside>}
     {schedule.calendarException && <aside className={styles.notice}><div><strong>{getExceptionTypeLabel(schedule.calendarException.type)}</strong>{schedule.calendarException.note && <p>{schedule.calendarException.note}</p>}</div><Link href="/calendar">View calendar</Link></aside>}
 
     {!schedule.weekend && schedule.teachingWeek && schedule.blocks.length > 0 && <div className={styles.summaryGrid}>
       <section className={styles.currentCard} aria-labelledby="current-block-title"><span id="current-block-title" className={styles.eyebrow}>{clock.state === "current" ? "Now" : clock.state === "next" ? "Next" : "Today"}</span>{clock.block ? <><h2>{clock.block.period.name} · {formatBlockTime(clock.block.period.startTime)}–{formatBlockTime(clock.block.period.endTime)}</h2><BlockSummary item={clock.block} /></> : <h2>{clock.state === "finished" ? "Today’s timetable is finished." : "No blocks configured."}</h2>}</section>
-      <section className={styles.overview} aria-labelledby="overview-title"><h2 id="overview-title">Daily overview</h2><dl>{Object.entries({ Classes: schedule.overview.classes, Completed: schedule.overview.completed, Remaining: schedule.overview.remaining, Cancelled: schedule.overview.cancelled, "Other commitments": schedule.overview.commitments }).map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl></section>
+      <section className={styles.overview} aria-labelledby="overview-title"><h2 id="overview-title">Daily overview</h2><dl>{Object.entries({ Classes: schedule.overview.classes, Completed: schedule.overview.completed, Remaining: schedule.overview.remaining, Cancelled: schedule.overview.cancelled, "Other commitments": schedule.overview.commitments, Events: data.datedEvents.filter((item) => item.date === getDateKey(today)).length }).map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl></section>
     </div>}
 
     {schedule.weekend ? <div className={styles.emptyState}><h2>No school timetable today.</h2><p>Your weekday timetable remains available in Timetable.</p></div> : !schedule.teachingWeek ? <div className={styles.emptyState}><h2>No teaching timetable today.</h2><p>This date is not part of a configured teaching week.</p></div> : !schedule.blocks.length ? <div className={styles.emptyState}><h2>No timetable blocks are configured.</h2><p>Configure and assign a Day Timetable Template in Setup.</p></div> : <section className={styles.schedule} aria-labelledby="schedule-title"><div className={styles.sectionHeading}><div><span className={styles.eyebrow}>Full day</span><h2 id="schedule-title">Today’s schedule</h2></div>{schedule.dayTemplate && <span>{schedule.dayTemplate.name}</span>}</div><div className={styles.scheduleList}>{schedule.blocks.map((item) => { const state = clock.block?.period.id === item.period.id && clock.state === "current" ? "current" : item.period.endTime <= `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}` ? "past" : "future"; const movedFromName = item.entry.movedFromPeriodId ? data.timetableBlocks.find((block) => block.id === item.entry.movedFromPeriodId)?.name : null; return <ScheduleItem key={item.period.id} item={{ ...item, movedFromName }} timeState={state} date={today} onOpenLesson={openLesson} />; })}</div></section>}
 
+    <DatedEventsStrip events={data.datedEvents} date={today} title="Today’s Events" onSelect={openEvent} />
     <UpcomingPlanning data={data} today={today} onOpenLesson={openLesson} />
     {selectedLesson && <LessonPanel key={`${selectedLesson.date}-${selectedLesson.recurringAssignmentId}`} selection={selectedLesson} onClose={closeLesson} />}
+    {selectedEvent && <DatedEventDialog event={selectedEvent.new ? null : selectedEvent} defaultDate={getDateKey(today)} onClose={closeEvent} />}
   </section>;
 }
