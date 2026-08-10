@@ -1,10 +1,5 @@
-import SectionIntro from "../../components/SectionIntro";
+import TimetablePrototype from "../../components/timetable/TimetablePrototype";
 
 export default function TimetablePage() {
-  return (
-    <SectionIntro
-      title="Timetable"
-      description="View your day, week or fortnight timetable."
-    />
-  );
+  return <TimetablePrototype />;
 }
