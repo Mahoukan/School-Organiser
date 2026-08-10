@@ -10,6 +10,21 @@ import { validateCalendarException, validateClassAbsence, validateTeacherAbsence
 
 const SchoolDataContext = createContext(null);
 
+function hydrateSchoolData(payload) {
+  return {
+    ...payload,
+    lessonOccurrences: (payload.lessonOccurrences ?? []).map((occurrence) => ({
+      ...occurrence,
+      title: occurrence.title ?? "",
+      summary: occurrence.summary ?? "",
+      plan: occurrence.plan ?? "",
+      status: occurrence.status ?? "planned",
+      cancellationReason: occurrence.cancellationReason ?? "",
+      cancellationNote: occurrence.cancellationNote ?? "",
+    })),
+  };
+}
+
 export default function SchoolDataProvider({ children }) {
   const [data, setData] = useState(null);
   const [loadError, setLoadError] = useState("");
@@ -21,7 +36,7 @@ export default function SchoolDataProvider({ children }) {
       const response = await fetch("/api/school-data", { cache: "no-store" });
       const body = await response.json();
       if (!response.ok) throw new Error(body.error || "We couldn't load your organiser data.");
-      setData(body);
+      setData(hydrateSchoolData(body));
     } catch (error) { setLoadError(error.message); }
     finally { setLoading(false); }
   }, []);
@@ -31,8 +46,9 @@ export default function SchoolDataProvider({ children }) {
     const response = await fetch(`/api/school-data/${resource}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action, payload }) });
     const body = await response.json();
     if (!response.ok) throw new Error(body.error || "The change could not be saved.");
-    setData(body);
-    return body;
+    const hydrated = hydrateSchoolData(body);
+    setData(hydrated);
+    return hydrated;
   }, []);
 
   const operation = useCallback(async (resource, action, payload, success = {}) => {

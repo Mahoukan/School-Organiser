@@ -37,9 +37,9 @@ const emptyContent = {
 function getDraft(occurrence) {
   return occurrence
     ? {
-        title: occurrence.title,
-        summary: occurrence.summary,
-        plan: occurrence.plan,
+        title: occurrence.title ?? "",
+        summary: occurrence.summary ?? "",
+        plan: occurrence.plan ?? "",
         status: getEffectiveLessonStatus(occurrence),
         cancellationReason: occurrence.cancellationReason ?? "",
         cancellationNote: occurrence.cancellationNote ?? "",
@@ -567,7 +567,7 @@ export default function LessonPanel({ selection, onClose }) {
                       <p>{occurrence.summary}</p>
                     </section>
                   )}
-                  {occurrence.plan.trim() && (
+                  {occurrence.plan?.trim() && (
                     <section>
                       <h4>Full Lesson Plan</h4>
                       <MarkdownContent>{occurrence.plan}</MarkdownContent>
