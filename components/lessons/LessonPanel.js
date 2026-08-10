@@ -4,7 +4,6 @@ import { getClassColourOption } from "../../data/sampleClasses";
 import {
   CANCELLATION_REASONS,
   LESSON_STATUSES,
-  getCancellationReasonLabel,
   getDateFromKey,
   getEffectiveLessonStatus,
   getLessonStatusLabel,
@@ -17,6 +16,7 @@ import {
 import { getTeachingWeekForDate } from "../../lib/academicCalendar";
 import { formatBlockTime, resolveTimetableBlock } from "../../lib/periodStructures";
 import { formatDayHeading } from "../../lib/timetableDates";
+import { getEffectiveCancellation } from "../../lib/scheduleOverlays";
 import { useSchoolData } from "../providers/SchoolDataProvider";
 import CarryForwardDialog from "./CarryForwardDialog";
 import MarkdownContent from "./MarkdownContent";
@@ -52,6 +52,9 @@ export default function LessonPanel({ selection, onClose }) {
     lessonOccurrences,
     teachingWeeks,
     timetableBlocks,
+    teacherAbsences,
+    classAbsences,
+    calendarExceptions,
     getLessonOccurrence,
     saveLessonOccurrence,
   } = useSchoolData();
@@ -76,7 +79,18 @@ export default function LessonPanel({ selection, onClose }) {
   );
   const period = resolveTimetableBlock(timetableBlocks, selection.periodId);
   const date = getDateFromKey(selection.date);
-  const effectiveStatus = getEffectiveLessonStatus(occurrence);
+  const underlyingStatus = getEffectiveLessonStatus(occurrence);
+  const effectiveCancellation = getEffectiveCancellation({
+    dateKey: selection.date,
+    classId: selection.classId,
+    occurrence,
+    teacherAbsences,
+    classAbsences,
+    calendarExceptions,
+  });
+  const effectiveStatus = effectiveCancellation.isCancelled
+    ? "cancelled"
+    : underlyingStatus;
   const teachingWeek = getTeachingWeekForDate(date, teachingWeeks);
   const isDirty = Object.keys(emptyContent).some(
     (field) => draft[field] !== savedContent[field],
@@ -155,6 +169,9 @@ export default function LessonPanel({ selection, onClose }) {
       lessonOccurrences,
       teachingWeeks,
       timetableBlocks,
+      teacherAbsences,
+      classAbsences,
+      calendarExceptions,
     });
 
     if (!destination) {
@@ -329,6 +346,7 @@ export default function LessonPanel({ selection, onClose }) {
                 <select
                   id="lesson-status"
                   value={draft.status}
+                  disabled={effectiveCancellation.isOverlay}
                   onChange={(event) => updateDraft("status", event.target.value)}
                 >
                   {LESSON_STATUSES.map((status) => (
@@ -337,6 +355,11 @@ export default function LessonPanel({ selection, onClose }) {
                     </option>
                   ))}
                 </select>
+                {effectiveCancellation.isOverlay && (
+                  <p className={styles.overlayNotice}>
+                    Status is controlled by the active {effectiveCancellation.sourceLabel.toLowerCase()} record. You can still edit the lesson content.
+                  </p>
+                )}
               </div>
 
               {draft.status === "cancelled" && (
@@ -495,17 +518,14 @@ export default function LessonPanel({ selection, onClose }) {
                       <MarkdownContent>{occurrence.plan}</MarkdownContent>
                     </section>
                   )}
-                  {effectiveStatus === "cancelled" && (
+                  {effectiveCancellation.isCancelled && (
                     <section className={styles.cancellationDetails}>
                       <h4>Cancellation</h4>
-                      <strong>
-                        {getCancellationReasonLabel(
-                          occurrence.cancellationReason,
-                        )}
-                      </strong>
-                      {occurrence.cancellationNote && (
-                        <p>{occurrence.cancellationNote}</p>
+                      <strong>{effectiveCancellation.reasonLabel}</strong>
+                      {effectiveCancellation.isOverlay && (
+                        <p>Applied by: {effectiveCancellation.sourceLabel}</p>
                       )}
+                      {effectiveCancellation.note && <p>{effectiveCancellation.note}</p>}
                     </section>
                   )}
                 </div>
@@ -516,6 +536,14 @@ export default function LessonPanel({ selection, onClose }) {
                     Add a title, short summary and full plan for this lesson.
                   </p>
                 </div>
+              )}
+              {!occurrence && effectiveCancellation.isCancelled && (
+                <section className={styles.cancellationDetails}>
+                  <h4>Cancellation</h4>
+                  <strong>{effectiveCancellation.reasonLabel}</strong>
+                  <p>Applied by: {effectiveCancellation.sourceLabel}</p>
+                  {effectiveCancellation.note && <p>{effectiveCancellation.note}</p>}
+                </section>
               )}
               {feedback && (
                 <p

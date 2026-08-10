@@ -3,12 +3,12 @@ import {
 } from "../../data/sampleClasses";
 import {
   findLessonOccurrence,
-  getCancellationReasonLabel,
   getDateKey,
   getEffectiveLessonStatus,
   getLessonStatusLabel,
 } from "../../lib/lessonOccurrences";
 import { formatDayHeading } from "../../lib/timetableDates";
+import { getEffectiveCancellation } from "../../lib/scheduleOverlays";
 import { useSchoolData } from "../providers/SchoolDataProvider";
 import styles from "./timetable.module.css";
 
@@ -19,7 +19,13 @@ export default function TimetableCard({
   period,
   onOpenLesson,
 }) {
-  const { classes, lessonOccurrences } = useSchoolData();
+  const {
+    classes,
+    lessonOccurrences,
+    teacherAbsences,
+    classAbsences,
+    calendarExceptions,
+  } = useSchoolData();
   const compact = detail === "fortnight";
 
   if (entry.type === "free") {
@@ -65,7 +71,17 @@ export default function TimetableCard({
     dateKey,
     entry.recurringAssignmentId,
   );
-  const status = getEffectiveLessonStatus(occurrence);
+  const cancellation = getEffectiveCancellation({
+    dateKey,
+    classId: entry.classId,
+    occurrence,
+    teacherAbsences,
+    classAbsences,
+    calendarExceptions,
+  });
+  const status = cancellation.isCancelled
+    ? "cancelled"
+    : getEffectiveLessonStatus(occurrence);
   const statusLabel = getLessonStatusLabel(status);
   const weekPreview = occurrence?.title || occurrence?.summary;
 
@@ -99,7 +115,8 @@ export default function TimetableCard({
       )}
       {detail === "day" && status === "cancelled" && (
         <span className={styles.cancellationReason}>
-          {getCancellationReasonLabel(occurrence.cancellationReason)}
+          {cancellation.reasonLabel}
+          {cancellation.note ? ` — ${cancellation.note}` : ""}
         </span>
       )}
       {detail === "day" && (

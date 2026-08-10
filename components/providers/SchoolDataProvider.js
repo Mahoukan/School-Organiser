@@ -38,6 +38,11 @@ import {
   hasLessonContent,
   normalizeLessonContent,
 } from "../../lib/lessonOccurrences";
+import {
+  validateCalendarException,
+  validateClassAbsence,
+  validateTeacherAbsence,
+} from "../../lib/scheduleOverlays";
 
 const SchoolDataContext = createContext(null);
 
@@ -57,6 +62,9 @@ export default function SchoolDataProvider({ children }) {
     sampleTimetableBlocks.map((block) => ({ ...block })),
   );
   const [lessonOccurrences, setLessonOccurrences] = useState([]);
+  const [teacherAbsences, setTeacherAbsences] = useState([]);
+  const [classAbsences, setClassAbsences] = useState([]);
+  const [calendarExceptions, setCalendarExceptions] = useState([]);
 
   const createClass = useCallback((values) => {
     const newClass = {
@@ -248,6 +256,34 @@ export default function SchoolDataProvider({ children }) {
     setTimetableBlocks((current) => moveTimetableBlock(current, blockId, direction));
   }, []);
 
+  const saveTeacherAbsence = useCallback((values) => {
+    const errors = validateTeacherAbsence(values, academicYear);
+    if (Object.keys(errors).length) return { ok: false, errors };
+    const record = { id: values.id ?? `teacher-absence-${crypto.randomUUID()}`, startDate: values.startDate, endDate: values.endDate, note: values.note.trim() };
+    setTeacherAbsences((current) => values.id ? current.map((item) => item.id === values.id ? record : item) : [...current, record]);
+    return { ok: true, record };
+  }, [academicYear]);
+
+  const saveClassAbsence = useCallback((values) => {
+    const errors = validateClassAbsence(values, academicYear);
+    if (Object.keys(errors).length) return { ok: false, errors };
+    const record = { id: values.id ?? `class-absence-${crypto.randomUUID()}`, classIds: [...values.classIds], startDate: values.startDate, endDate: values.endDate, reason: values.reason.trim() };
+    setClassAbsences((current) => values.id ? current.map((item) => item.id === values.id ? record : item) : [...current, record]);
+    return { ok: true, record };
+  }, [academicYear]);
+
+  const saveCalendarException = useCallback((values) => {
+    const errors = validateCalendarException(values, academicYear);
+    if (Object.keys(errors).length) return { ok: false, errors };
+    const record = { id: values.id ?? `calendar-exception-${crypto.randomUUID()}`, type: values.type, startDate: values.startDate, endDate: values.endDate, note: values.note.trim() };
+    setCalendarExceptions((current) => values.id ? current.map((item) => item.id === values.id ? record : item) : [...current, record]);
+    return { ok: true, record };
+  }, [academicYear]);
+
+  const removeTeacherAbsence = useCallback((id) => setTeacherAbsences((current) => current.filter((item) => item.id !== id)), []);
+  const removeClassAbsence = useCallback((id) => setClassAbsences((current) => current.filter((item) => item.id !== id)), []);
+  const removeCalendarException = useCallback((id) => setCalendarExceptions((current) => current.filter((item) => item.id !== id)), []);
+
   const saveTerm = useCallback(
     (values) => {
       const errors = validateTerm(values, terms, teachingWeeks, academicYear, values.id);
@@ -372,6 +408,9 @@ export default function SchoolDataProvider({ children }) {
       recurringAssignments,
       timetableBlocks,
       lessonOccurrences,
+      teacherAbsences,
+      classAbsences,
+      calendarExceptions,
       createClass,
       updateClass,
       archiveClass,
@@ -389,6 +428,12 @@ export default function SchoolDataProvider({ children }) {
       generateTeachingWeeks,
       getLessonOccurrence,
       saveLessonOccurrence,
+      saveTeacherAbsence,
+      saveClassAbsence,
+      saveCalendarException,
+      removeTeacherAbsence,
+      removeClassAbsence,
+      removeCalendarException,
     }),
     [
       academicYear,
@@ -398,6 +443,9 @@ export default function SchoolDataProvider({ children }) {
       recurringAssignments,
       timetableBlocks,
       lessonOccurrences,
+      teacherAbsences,
+      classAbsences,
+      calendarExceptions,
       createClass,
       updateClass,
       archiveClass,
@@ -415,6 +463,12 @@ export default function SchoolDataProvider({ children }) {
       generateTeachingWeeks,
       getLessonOccurrence,
       saveLessonOccurrence,
+      saveTeacherAbsence,
+      saveClassAbsence,
+      saveCalendarException,
+      removeTeacherAbsence,
+      removeClassAbsence,
+      removeCalendarException,
     ],
   );
 

@@ -229,6 +229,16 @@
   color: var(--color-text-muted);
 }
 
+.overlayNotice {
+  margin: 0;
+  padding: var(--space-2);
+  border: 1px solid #d2bfc1;
+  border-radius: 0.5rem;
+  color: #71383d;
+  background: #fbf2f3;
+  font-size: 0.8rem;
+}
+
 .lessonForm {
   display: flex;
   min-height: 0;

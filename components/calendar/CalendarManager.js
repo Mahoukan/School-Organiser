@@ -5,7 +5,6 @@ import { useState } from "react";
 import { formatCalendarDate } from "../../lib/academicCalendar";
 import ModalDialog from "../classes/ModalDialog";
 import { useSchoolData } from "../providers/SchoolDataProvider";
-import SectionIntro from "../SectionIntro";
 import styles from "./calendar.module.css";
 
 const emptyTerm = { name: "", startDate: "", endDate: "" };
@@ -77,7 +76,6 @@ export default function CalendarManager() {
   function generate(termId, firstCycle) { const count = generateTeachingWeeks(termId, firstCycle); setMessage(count ? `${count} missing teaching weeks generated.` : "All complete Mondays are already configured; nothing was overwritten."); }
   return (
     <section className={styles.page}>
-      <SectionIntro title="Calendar" description="Manage teaching weeks, absences and calendar exceptions." />
       <div className={styles.yearSummary}><span>Academic Year</span><strong>{academicYear.name}</strong></div>
       <div className={styles.heading}><div><h2>Terms</h2><p>Configure real teaching weeks and their Week A/B templates.</p></div><button className={styles.primary} onClick={() => { setTermForm({ ...emptyTerm }); setWeekForm(null); }}>Add Term</button></div>
       {message && <p className={styles.notice} role="status">{message}</p>}

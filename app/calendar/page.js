@@ -1,5 +1,5 @@
-import CalendarManager from "../../components/calendar/CalendarManager";
+import CalendarSections from "../../components/calendar/CalendarSections";
 
 export default function CalendarPage() {
-  return <CalendarManager />;
+  return <CalendarSections />;
 }
