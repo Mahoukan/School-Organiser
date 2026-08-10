@@ -28,6 +28,7 @@
 .secondaryButton,
 .dangerButton,
 .cardActions button,
+.cardActions a,
 .viewSelector button,
 .closeButton {
   border: 0;
@@ -206,7 +207,11 @@
   gap: var(--space-1);
 }
 
-.cardActions button {
+.cardActions button,
+.cardActions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-height: 2.4rem;
   padding-inline: var(--space-3);
   border: 1px solid var(--color-border);
@@ -216,7 +221,8 @@
   font-size: 0.8rem;
 }
 
-.cardActions button:hover {
+.cardActions button:hover,
+.cardActions a:hover {
   background: var(--color-surface-subtle);
 }
 
@@ -499,6 +505,7 @@
 .secondaryButton:focus-visible,
 .dangerButton:focus-visible,
 .cardActions button:focus-visible,
+.cardActions a:focus-visible,
 .viewSelector button:focus-visible,
 .closeButton:focus-visible,
 .formField input:focus-visible {
@@ -531,7 +538,8 @@
     padding: var(--space-3);
   }
 
-  .cardActions button {
+  .cardActions button,
+  .cardActions a {
     min-height: 2.75rem;
     flex: 1;
   }

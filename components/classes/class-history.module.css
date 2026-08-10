@@ -1,0 +1,40 @@
+.detailPage { min-width: 0; padding-block: var(--space-4) var(--space-6); }
+.backLink { display: inline-flex; min-height: 2.5rem; align-items: center; color: var(--color-primary); font-weight: 750; }
+.classHeader { display: flex; gap: var(--space-3); margin-top: var(--space-3); padding: var(--space-4); border: 1px solid var(--class-border); border-radius: var(--radius); background: linear-gradient(135deg, var(--class-tint), var(--color-surface)); }
+.classMarker { width: .45rem; flex: 0 0 .45rem; border-radius: 999px; background: var(--class-accent); }
+.classHeader h1, .classHeader h2, .classHeader p { margin: 0; }
+.classHeader h1 { font-size: 2rem; }
+.classHeader h2 { font-size: 1rem; font-weight: 700; }
+.classHeader p, .classHeader div > span { color: var(--color-text-muted); }
+.titleRow { display: flex; align-items: center; gap: var(--space-2); }
+.archivedBadge { padding: .2rem .55rem; border-radius: 999px; color: #654b23 !important; background: #f7e8c9; font-size: .7rem; font-weight: 800; text-transform: uppercase; }
+.historySummary { display: flex; gap: var(--space-3); margin-block: var(--space-3); color: var(--color-text-muted); }
+.historySummary span { padding: .45rem .7rem; border: 1px solid var(--color-border); border-radius: .5rem; background: var(--color-surface); }
+.historySummary strong { color: var(--color-text); }
+.historyToolbar { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-3); margin: var(--space-5) 0 var(--space-3); }
+.historyToolbar h2, .historyToolbar p { margin: 0; }
+.historyToolbar p { color: var(--color-text-muted); font-size: .86rem; }
+.modeSelector { display: flex; padding: .2rem; border: 1px solid var(--color-border); border-radius: .55rem; background: var(--color-surface-subtle); }
+.modeSelector button { min-height: 2.5rem; padding: .4rem .85rem; border: 0; border-radius: .4rem; color: var(--color-text-muted); background: transparent; font-weight: 750; cursor: pointer; }
+.modeSelector button[aria-pressed="true"] { color: var(--color-primary); background: var(--color-surface); box-shadow: 0 1px 3px rgb(23 32 51 / 12%); }
+.historyList { display: grid; gap: var(--space-3); }
+.historyCard { display: grid; width: 100%; gap: var(--space-2); padding: var(--space-3); border: 1px solid var(--color-border); border-left: 4px solid var(--class-accent); border-radius: var(--radius); color: var(--color-text); background: var(--color-surface); text-align: left; cursor: pointer; }
+.historyCard:hover { border-color: var(--class-border); box-shadow: 0 5px 16px rgb(23 32 51 / 8%); }
+.cardTopline { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
+.cardTopline > div, .lessonPreview, .cancellation { display: grid; gap: .2rem; }
+.cardTopline span, .lessonPreview p, .lessonPreview small, .cancellation span { color: var(--color-text-muted); }
+.lessonPreview p { display: -webkit-box; margin: 0; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.lessonPreview small { font-weight: 700; }
+.statusBadge, .movedLabel { flex: 0 0 auto; padding: .25rem .55rem; border-radius: 999px; font-size: .7rem; font-weight: 800; }
+.statusBadge { border: 1px solid var(--color-border); background: var(--color-surface-subtle); }
+.status-completed { color: #176342; border-color: #b9decf; background: #e5f4ed; }
+.status-partially-completed { color: #765213; border-color: #e8d39c; background: #fff5d8; }
+.status-cancelled { color: #8b3b43; border-color: #dcbec2; background: #fbebed; }
+.movedLabel { width: max-content; color: var(--color-primary); background: var(--color-primary-soft); }
+.cancellation { padding-top: var(--space-2); border-top: 1px solid var(--color-border); color: #8b3b43; }
+.emptyState, .notFound { padding: var(--space-5); border: 1px dashed var(--color-border); border-radius: var(--radius); background: var(--color-surface); text-align: center; }
+.emptyState h3, .emptyState p, .notFound h1, .notFound p { margin: 0; }
+.notFound { margin-top: var(--space-5); }
+.notFound a { display: inline-flex; margin-top: var(--space-3); color: var(--color-primary); font-weight: 750; }
+.backLink:focus-visible, .modeSelector button:focus-visible, .historyCard:focus-visible, .notFound a:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
+@media (max-width: 42rem) { .detailPage { padding-top: var(--space-2); } .historyToolbar, .cardTopline { align-items: stretch; flex-direction: column; } .modeSelector { width: 100%; } .modeSelector button { flex: 1; } .historySummary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); } .historySummary span { display: grid; } .classHeader { padding: var(--space-3); } .historyCard { padding: var(--space-3); } .statusBadge { width: max-content; } }

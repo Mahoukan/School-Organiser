@@ -1,4 +1,5 @@
 import { getClassColourOption } from "../../data/sampleClasses";
+import Link from "next/link";
 import styles from "./classes.module.css";
 
 function ClassCard({ classItem, onEdit, onArchive, onRestore }) {
@@ -39,6 +40,7 @@ function ClassCard({ classItem, onEdit, onArchive, onRestore }) {
         </div>
 
         <div className={styles.cardActions}>
+          <Link href={`/classes/${classItem.id}`}>View Class</Link>
           {classItem.archived ? (
             <button type="button" onClick={() => onRestore(classItem)}>
               Restore
