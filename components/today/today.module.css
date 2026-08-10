@@ -12,6 +12,8 @@
 .notice a { color: var(--color-primary); background: white; }
 .summaryGrid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 1rem; }
 .currentCard, .overview { padding: 1.25rem; border: 1px solid var(--color-border); border-radius: 1rem; background: var(--color-surface); box-shadow: 0 .5rem 1.75rem rgb(23 32 51 / 6%); }
+button.currentCard { width: 100%; color: var(--color-text); font: inherit; text-align: left; cursor: pointer; }
+button.currentCard:hover { border-color: var(--color-primary); }
 .currentCard h2, .overview h2 { margin: .45rem 0; font-size: 1.15rem; }
 .currentCard > strong { font-size: 1.6rem; }
 .overview dl { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .5rem; margin: .75rem 0 0; }
@@ -53,6 +55,8 @@ button.scheduleItem:focus-visible, .primaryLink:focus-visible, .secondaryAction:
 .configurationNotice a { color: var(--color-primary); font-weight: 750; }
 .planningGroups, .planningGroup { display: grid; gap: .75rem; }
 .planningGroup h3 { margin: .35rem 0 0; font-size: 1rem; }
+.planningDateHeading { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-2); }
+.planningDateHeading a { color: var(--color-primary); font-size: .8rem; font-weight: 750; }
 .planningList { display: grid; gap: .5rem; }
 .planningItem { display: grid; width: 100%; min-height: 5.25rem; grid-template-columns: minmax(9rem, .8fr) minmax(0, 1.25fr) minmax(8rem, .65fr); align-items: center; gap: 1rem; padding: .8rem 1rem; border: 1px solid var(--planning-border); border-left-width: .3rem; border-radius: .7rem; color: var(--planning-text); background: var(--planning-bg); font: inherit; text-align: left; cursor: pointer; }
 .planningItem:hover { filter: brightness(.985); box-shadow: 0 .3rem .9rem rgb(23 32 51 / 8%); }

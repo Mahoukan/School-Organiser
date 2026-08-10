@@ -111,6 +111,39 @@
   font-weight: 600;
 }
 
+.lessonNavigation {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.lessonNavigation > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.lessonNavigation .secondaryButton {
+  min-height: 2.35rem;
+}
+
+.contextLink {
+  min-height: 2.35rem;
+  padding-inline: var(--space-2);
+  border: 0;
+  color: var(--color-primary);
+  background: transparent;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.contextLink:hover { text-decoration: underline; }
+.contextLink:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
+
 .lessonBody,
 .formBody {
   min-height: 0;
@@ -689,6 +722,7 @@
 @media (max-width: 32rem) {
   .panelHeader,
   .lessonContext,
+  .lessonNavigation,
   .lessonBody,
   .formBody,
   .panelFooter {
@@ -701,6 +735,9 @@
     flex: 1;
     padding-inline: var(--space-1);
   }
+
+  .lessonNavigation { align-items: stretch; flex-direction: column; }
+  .lessonNavigation > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
   .confirmActions {
     align-items: stretch;

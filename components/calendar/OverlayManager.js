@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { getClassColourOption } from "../../data/sampleClasses";
 import { formatCalendarDate } from "../../lib/academicCalendar";
 import { getDateKey } from "../../lib/lessonOccurrences";
 import { CALENDAR_EXCEPTION_TYPES, getExceptionTypeLabel } from "../../lib/scheduleOverlays";
+import { getTimetableUrl } from "../../lib/timetableDates";
 import ModalDialog from "../classes/ModalDialog";
 import { useSchoolData } from "../providers/SchoolDataProvider";
 import styles from "./calendar.module.css";
@@ -32,7 +34,7 @@ function OverlayForm({ kind, initial, classes, onSave, onCancel }) {
 
 function formatRange(record) { return record.startDate === record.endDate ? formatCalendarDate(record.startDate, { year: "numeric" }) : `${formatCalendarDate(record.startDate)} – ${formatCalendarDate(record.endDate, { year: "numeric" })}`; }
 
-export default function OverlayManager({ mode }) {
+export default function OverlayManager({ mode, contextualDate = null }) {
   const data = useSchoolData();
   const [form, setForm] = useState(null);
   const [removeTarget, setRemoveTarget] = useState(null);
@@ -42,9 +44,9 @@ export default function OverlayManager({ mode }) {
   const teacherRecords = [...data.teacherAbsences].sort((a, b) => a.startDate.localeCompare(b.startDate));
   const classRecords = [...data.classAbsences].sort((a, b) => a.startDate.localeCompare(b.startDate));
   const exceptionRecords = [...data.calendarExceptions].sort((a, b) => a.startDate.localeCompare(b.startDate));
-  const card = (record, recordKind, heading, detail) => <article className={styles.overlayCard} key={record.id}><div><strong>{heading}</strong><span>{formatRange(record)}</span>{detail && <p>{detail}</p>}</div><div><button className={styles.textButton} onClick={() => setForm({ kind: recordKind, record })}>Edit</button><button className={styles.dangerText} onClick={() => setRemoveTarget({ kind: recordKind, record })}>Remove</button></div></article>;
+  const card = (record, recordKind, heading, detail) => <article className={styles.overlayCard} data-contextual={contextualDate && contextualDate >= record.startDate && contextualDate <= record.endDate ? "true" : undefined} key={record.id}><div><strong>{heading}</strong><span>{formatRange(record)}</span>{detail && <p>{detail}</p>}</div><div><Link className={styles.textButton} href={getTimetableUrl({ date: record.startDate, view: "day" })}>View day</Link><button className={styles.textButton} onClick={() => setForm({ kind: recordKind, record })}>Edit</button><button className={styles.dangerText} onClick={() => setRemoveTarget({ kind: recordKind, record })}>Remove</button></div></article>;
   return <section className={styles.overlaySection}>
-    {mode === "absences" ? <><div className={styles.heading}><div><h2>Teacher Absence</h2><p>Cancel dated class lessons while leaving plans and statuses untouched.</p></div><button className={styles.primary} onClick={() => setForm({ kind: "teacher", record: null })}>I&apos;m Away</button></div><div className={styles.overlayList}>{teacherRecords.length ? teacherRecords.map((record) => card(record, "teacher", "Teacher away", record.note)) : <p className={styles.emptyOverlay}>No teacher absences.</p>}</div><div className={styles.heading}><div><h2>Class Absence</h2><p>Record one or more classes as unavailable.</p></div><button className={styles.primary} onClick={() => setForm({ kind: "class", record: null })}>Add Class Absence</button></div><div className={styles.overlayList}>{classRecords.length ? classRecords.map((record) => card(record, "class", record.classIds.map((id) => data.classes.find((item) => item.id === id)?.shortCode ?? id).join(", "), record.reason)) : <p className={styles.emptyOverlay}>No class absences.</p>}</div></> : <><div className={styles.heading}><div><h2>Calendar Exceptions</h2><p>Cancel class lessons on date-specific school closures and events.</p></div><button className={styles.primary} onClick={() => setForm({ kind: "exception", record: null })}>Add Exception</button></div><div className={styles.overlayList}>{exceptionRecords.length ? exceptionRecords.map((record) => card(record, "exception", getExceptionTypeLabel(record.type), record.note)) : <p className={styles.emptyOverlay}>No calendar exceptions.</p>}</div></>}
+    {mode === "absences" ? <><div id="teacher-absences" className={styles.heading}><div><h2>Teacher Absence</h2><p>Cancel dated class lessons while leaving plans and statuses untouched.</p></div><button className={styles.primary} onClick={() => setForm({ kind: "teacher", record: null })}>I&apos;m Away</button></div><div className={styles.overlayList}>{teacherRecords.length ? teacherRecords.map((record) => card(record, "teacher", "Teacher away", record.note)) : <p className={styles.emptyOverlay}>No teacher absences.</p>}</div><div id="class-absences" className={styles.heading}><div><h2>Class Absence</h2><p>Record one or more classes as unavailable.</p></div><button className={styles.primary} onClick={() => setForm({ kind: "class", record: null })}>Add Class Absence</button></div><div className={styles.overlayList}>{classRecords.length ? classRecords.map((record) => card(record, "class", record.classIds.map((id) => data.classes.find((item) => item.id === id)?.shortCode ?? id).join(", "), record.reason)) : <p className={styles.emptyOverlay}>No class absences.</p>}</div></> : <><div id="exceptions" className={styles.heading}><div><h2>Calendar Exceptions</h2><p>Cancel class lessons on date-specific school closures and events.</p></div><button className={styles.primary} onClick={() => setForm({ kind: "exception", record: null })}>Add Exception</button></div><div className={styles.overlayList}>{exceptionRecords.length ? exceptionRecords.map((record) => card(record, "exception", getExceptionTypeLabel(record.type), record.note)) : <p className={styles.emptyOverlay}>No calendar exceptions.</p>}</div></>}
     {form && <OverlayForm key={`${kind}-${form.record?.id ?? "new"}`} kind={kind} initial={form.record} classes={data.classes} onSave={save} onCancel={() => setForm(null)} />}
     {removeTarget && <ModalDialog className={styles.confirmDialog} labelledBy="overlay-remove-title" describedBy="overlay-remove-description" onClose={() => setRemoveTarget(null)}><h2 id="overlay-remove-title">Remove this record?</h2><p id="overlay-remove-description">Removing the overlay restores every affected lesson&apos;s underlying status and plan.</p><div className={styles.formActions}><button className={styles.secondary} onClick={() => setRemoveTarget(null)}>Cancel</button><button className={styles.danger} onClick={remove}>Remove</button></div></ModalDialog>}
   </section>;

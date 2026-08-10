@@ -18,7 +18,9 @@
 .modeSelector button { min-height: 2.5rem; padding: .4rem .85rem; border: 0; border-radius: .4rem; color: var(--color-text-muted); background: transparent; font-weight: 750; cursor: pointer; }
 .modeSelector button[aria-pressed="true"] { color: var(--color-primary); background: var(--color-surface); box-shadow: 0 1px 3px rgb(23 32 51 / 12%); }
 .historyList { display: grid; gap: var(--space-3); }
-.historyCard { display: grid; width: 100%; gap: var(--space-2); padding: var(--space-3); border: 1px solid var(--color-border); border-left: 4px solid var(--class-accent); border-radius: var(--radius); color: var(--color-text); background: var(--color-surface); text-align: left; cursor: pointer; }
+.historyCard { display: grid; width: 100%; gap: var(--space-1); padding: var(--space-3); border: 1px solid var(--color-border); border-left: 4px solid var(--class-accent); border-radius: var(--radius); color: var(--color-text); background: var(--color-surface); text-align: left; }
+.historyOpen { display: grid; width: 100%; gap: var(--space-2); padding: 0; border: 0; color: inherit; background: transparent; font: inherit; text-align: left; cursor: pointer; }
+.viewDayLink { width: fit-content; color: var(--color-primary); font-size: .78rem; font-weight: 750; }
 .historyCard:hover { border-color: var(--class-border); box-shadow: 0 5px 16px rgb(23 32 51 / 8%); }
 .cardTopline { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
 .cardTopline > div, .lessonPreview, .cancellation { display: grid; gap: .2rem; }
@@ -36,5 +38,5 @@
 .emptyState h3, .emptyState p, .notFound h1, .notFound p { margin: 0; }
 .notFound { margin-top: var(--space-5); }
 .notFound a { display: inline-flex; margin-top: var(--space-3); color: var(--color-primary); font-weight: 750; }
-.backLink:focus-visible, .modeSelector button:focus-visible, .historyCard:focus-visible, .notFound a:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
+.backLink:focus-visible, .modeSelector button:focus-visible, .historyOpen:focus-visible, .viewDayLink:focus-visible, .notFound a:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
 @media (max-width: 42rem) { .detailPage { padding-top: var(--space-2); } .historyToolbar, .cardTopline { align-items: stretch; flex-direction: column; } .modeSelector { width: 100%; } .modeSelector button { flex: 1; } .historySummary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); } .historySummary span { display: grid; } .classHeader { padding: var(--space-3); } .historyCard { padding: var(--space-3); } .statusBadge { width: max-content; } }

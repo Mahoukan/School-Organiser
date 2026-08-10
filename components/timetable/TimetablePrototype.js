@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter, useSearchParams } from "next/navigation";
 import { useRef, useState } from "react";
 
 import {
@@ -9,6 +10,8 @@ import {
   getFortnightStart,
   getMonday,
   getWeekdayIndex,
+  getTimetableUrl,
+  parseDateQuery,
   toDateOnly,
 } from "../../lib/timetableDates";
 import { getTeachingWeekForDate } from "../../lib/academicCalendar";
@@ -28,63 +31,65 @@ const navigationSteps = {
   fortnight: 14,
 };
 
-function getToolbarDetails(view, displayedDate, teachingWeeks) {
+function getToolbarDetails(view, displayedDate, teachingWeeks, terms) {
   const labelFor = (date) => {
     const week = getTeachingWeekForDate(date, teachingWeeks);
     return week ? `Week ${week.cycleWeek}` : "No teaching week";
   };
   if (view === "day") {
+    const week = getTeachingWeekForDate(displayedDate, teachingWeeks);
+    const term = week && terms.find((item) => item.id === week.termId);
     return {
       dateLabel: formatDayHeading(displayedDate),
-      cycleLabel: labelFor(displayedDate),
+      cycleLabel: `${labelFor(displayedDate)}${term ? ` · ${term.name}` : ""}`,
     };
   }
 
   if (view === "fortnight") {
     const start = getFortnightStart(displayedDate);
     return {
-      dateLabel: formatDateRange(start, addDays(start, 11)),
+      dateLabel: formatDateRange(start, addDays(start, 13)),
       cycleLabel: `${labelFor(start)} · ${labelFor(addDays(start, 7))}`,
     };
   }
 
   const monday = getMonday(displayedDate);
   return {
-    dateLabel: formatDateRange(monday, addDays(monday, 4)),
+    dateLabel: formatDateRange(monday, addDays(monday, 6)),
     cycleLabel: labelFor(monday),
   };
 }
 
 export default function TimetablePrototype() {
-  const { teachingWeeks } = useSchoolData();
-  const [view, setView] = useState("week");
-  const [displayedDate, setDisplayedDate] = useState(() =>
-    toDateOnly(new Date()),
-  );
-  const [selectedWeekday, setSelectedWeekday] = useState(() =>
-    getWeekdayIndex(new Date()),
-  );
+  const { teachingWeeks, terms } = useSchoolData();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const requestedView = searchParams.get("view");
+  const view = ["day", "week", "fortnight"].includes(requestedView) ? requestedView : "week";
+  const displayedDate = parseDateQuery(searchParams.get("date")) ?? toDateOnly(new Date());
+  const selectedWeekday = getWeekdayIndex(displayedDate);
   const [selectedLesson, setSelectedLesson] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const lessonTriggerRef = useRef(null);
   const eventTriggerRef = useRef(null);
-  const toolbarDetails = getToolbarDetails(view, displayedDate, teachingWeeks);
+  const toolbarDetails = getToolbarDetails(view, displayedDate, teachingWeeks, terms);
+
+  function navigate(nextView, nextDate) {
+    router.push(getTimetableUrl({ view: nextView, date: nextDate }), { scroll: false });
+  }
 
   function changeView(nextView) {
-    setView(nextView);
-    setSelectedWeekday(getWeekdayIndex(displayedDate));
+    navigate(nextView, displayedDate);
   }
 
   function moveDate(direction) {
-    setDisplayedDate((currentDate) =>
-      addDays(currentDate, navigationSteps[view] * direction),
-    );
+    const nextDate = addDays(displayedDate, navigationSteps[view] * direction);
+    navigate(view, nextDate);
   }
 
   function returnToToday() {
     const today = toDateOnly(new Date());
-    setDisplayedDate(today);
-    setSelectedWeekday(getWeekdayIndex(today));
+    navigate(view, today);
   }
 
   function openLesson(selection, trigger) {
@@ -110,6 +115,12 @@ export default function TimetablePrototype() {
         onPrevious={() => moveDate(-1)}
         onNext={() => moveDate(1)}
         onToday={returnToToday}
+        dateValue={getDateKey(displayedDate)}
+        onDateChange={(value) => {
+          const date = parseDateQuery(value);
+          if (!date) return;
+          navigate(view, date);
+        }}
       />
 
       <div className={styles.timetableContent}>
@@ -120,7 +131,7 @@ export default function TimetablePrototype() {
           <WeekTimetable
             monday={getMonday(displayedDate)}
             selectedWeekday={selectedWeekday}
-            onSelectWeekday={setSelectedWeekday}
+            onSelectWeekday={(_, date) => navigate(view, date)}
             onOpenLesson={openLesson}
             onOpenEvent={openEvent}
           />
@@ -129,7 +140,7 @@ export default function TimetablePrototype() {
           <FortnightTimetable
             startDate={getFortnightStart(displayedDate)}
             selectedWeekday={selectedWeekday}
-            onSelectWeekday={setSelectedWeekday}
+            onSelectWeekday={(_, date) => navigate(view, date)}
             onOpenLesson={openLesson}
             onOpenEvent={openEvent}
           />

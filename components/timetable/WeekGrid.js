@@ -3,7 +3,7 @@ import { getTeachingWeekForDate } from "../../lib/academicCalendar";
 import { getDateKey } from "../../lib/lessonOccurrences";
 import { formatBlockTime, getBlocksForDay } from "../../lib/periodStructures";
 import { getDatedTimetableEntry } from "../../lib/recurringTimetable";
-import { addDays } from "../../lib/timetableDates";
+import { addDays, isSameDate, toDateOnly } from "../../lib/timetableDates";
 import { useSchoolData } from "../providers/SchoolDataProvider";
 import TimetableCard from "./TimetableCard";
 import styles from "./timetable.module.css";
@@ -18,10 +18,11 @@ export default function WeekGrid({ monday, compact = false, onOpenLesson, onOpen
   return <div className={`${styles.weekDayColumns} ${compact ? styles.compactWeekColumns : ""}`} aria-label={teachingWeek ? `Week ${teachingWeek.cycleWeek} timetable` : "One-off events in a non-teaching week"}>
     {weekdays.map((weekday, index) => {
       const date = addDays(monday, index);
+      const isToday = isSameDate(date, toDateOnly(new Date()));
       const dateKey = getDateKey(date);
       const blocks = teachingWeek ? getBlocksForDay(timetableBlocks, teachingWeek.cycleWeek, weekday.key) : [];
-      return <section className={styles.weekDayColumn} key={weekday.key}>
-        <header><strong>{weekday.shortLabel}</strong><span>{date.getDate()}</span></header>
+      return <section className={`${styles.weekDayColumn} ${isToday ? styles.todayColumn : ""}`} key={weekday.key}>
+        <header><strong>{weekday.shortLabel}</strong>{isToday && <span className={styles.todayMarker}>Today</span>}<span>{date.getDate()}</span></header>
         <DatedEventsStrip events={datedEvents} date={date} onSelect={onOpenEvent} compact />
         {blocks.length ? blocks.map((period) => <div className={`${styles.weekColumnBlock} ${!period.isTeaching ? styles.weekColumnBreak : ""}`} key={period.id}>
           <div className={styles.weekBlockMeta}><strong>{period.name}</strong>{!compact && <span>{formatBlockTime(period.startTime)}–{formatBlockTime(period.endTime)}</span>}</div>

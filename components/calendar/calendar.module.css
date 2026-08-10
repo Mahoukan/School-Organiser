@@ -5,6 +5,7 @@
 .overlaySection { display: grid; gap: var(--space-3); }
 .overlayList { display: grid; gap: var(--space-2); }
 .overlayCard { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-3); border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); }
+.overlayCard[data-contextual="true"] { border-color: var(--color-primary); background: var(--color-primary-soft); }
 .overlayCard > div:first-child { display: grid; gap: .25rem; }
 .overlayCard > div:last-child { display: flex; gap: .25rem; }
 .overlayCard span, .overlayCard p, .emptyOverlay { margin: 0; color: var(--color-text-muted); font-size: .82rem; }

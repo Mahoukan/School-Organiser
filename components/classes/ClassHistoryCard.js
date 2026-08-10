@@ -1,11 +1,14 @@
+import Link from "next/link";
 import { formatCalendarDate } from "../../lib/academicCalendar";
 import { getLessonStatusLabel } from "../../lib/lessonOccurrences";
 import { formatBlockTime } from "../../lib/periodStructures";
+import { getTimetableUrl } from "../../lib/timetableDates";
 import styles from "./class-history.module.css";
 
 export default function ClassHistoryCard({ entry, onOpen }) {
   const lesson = entry.occurrence;
-  return <button type="button" className={styles.historyCard} onClick={(event) => onOpen(entry, event.currentTarget)} aria-label={`Open ${formatCalendarDate(entry.date, { weekday: "long", year: "numeric" })}, ${entry.effectivePeriod.name}. Status: ${getLessonStatusLabel(entry.status)}.`}>
+  return <article className={styles.historyCard}>
+    <button type="button" className={styles.historyOpen} onClick={(event) => onOpen(entry, event.currentTarget)} aria-label={`Open ${formatCalendarDate(entry.date, { weekday: "long", year: "numeric" })}, ${entry.effectivePeriod.name}. Status: ${getLessonStatusLabel(entry.status)}.`}>
     <div className={styles.cardTopline}>
       <div><strong>{formatCalendarDate(entry.date, { weekday: "long", year: "numeric" })}</strong><span>{entry.effectivePeriod.name} · {formatBlockTime(entry.effectivePeriod.startTime)}–{formatBlockTime(entry.effectivePeriod.endTime)}</span></div>
       <span className={`${styles.statusBadge} ${styles[`status-${entry.status}`]}`}>{getLessonStatusLabel(entry.status)}</span>
@@ -17,5 +20,7 @@ export default function ClassHistoryCard({ entry, onOpen }) {
       {lesson?.plan?.trim() && <small>Lesson plan added</small>}
     </div>
     {entry.cancellation.isCancelled && <div className={styles.cancellation}><strong>{entry.cancellation.reasonLabel}</strong>{entry.cancellation.note && <span>{entry.cancellation.note}</span>}</div>}
-  </button>;
+    </button>
+    <Link className={styles.viewDayLink} href={getTimetableUrl({ date: entry.date, view: "day" })} aria-label={`View ${formatCalendarDate(entry.date, { weekday: "long", year: "numeric" })} in Timetable`}>View day</Link>
+  </article>;
 }

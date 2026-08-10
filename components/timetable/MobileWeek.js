@@ -2,6 +2,8 @@ import { weekdays } from "../../data/sampleTimetable";
 import {
   addDays,
   formatDayHeading,
+  isSameDate,
+  toDateOnly,
 } from "../../lib/timetableDates";
 import { getTeachingWeekForDate } from "../../lib/academicCalendar";
 import { useSchoolData } from "../providers/SchoolDataProvider";
@@ -32,10 +34,11 @@ export default function MobileWeek({
             key={weekday.key}
             type="button"
             aria-pressed={selectedWeekday === index}
-            onClick={() => onSelectWeekday(index)}
+            onClick={() => onSelectWeekday(index, addDays(monday, index))}
           >
             <span>{weekday.shortLabel}</span>
             <span>{addDays(monday, index).getDate()}</span>
+            {isSameDate(addDays(monday, index), toDateOnly(new Date())) && <span className={styles.todayMarker}>Today</span>}
           </button>
         ))}
       </div>

@@ -35,6 +35,10 @@ button.card { cursor: pointer; }
 .managerRow { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--space-2); }
 .managerRow > div { display: grid; grid-template-columns: 7rem minmax(0, 1fr); align-items: center; gap: var(--space-2); }
 .managerRow > div > span { color: var(--color-text-muted); font-size: .78rem; font-weight: 800; }
+.managerRow[data-contextual="true"] { padding: var(--space-2); border: 1px solid var(--color-primary); border-radius: .65rem; background: var(--color-primary-soft); }
+.managerRow > .rowActions { display: flex; grid-template-columns: none; align-items: center; gap: var(--space-1); }
+.rowActions a { color: var(--color-primary); font-size: .78rem; font-weight: 750; white-space: nowrap; }
+.pastHeading { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
 .deleteLink { min-height: 2.6rem; padding: .4rem .6rem; border: 0; color: #8b3b43; background: transparent; font-weight: 750; cursor: pointer; }
 .empty { display: grid; justify-items: start; gap: var(--space-2); padding: var(--space-5); border: 1px dashed var(--color-border); border-radius: var(--radius); }
 .confirmDialog { width: min(28rem, calc(100% - 2rem)); padding: var(--space-4); border: 0; border-radius: var(--radius); }

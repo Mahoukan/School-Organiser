@@ -14,6 +14,8 @@ export default function TimetableToolbar({
   onPrevious,
   onNext,
   onToday,
+  dateValue,
+  onDateChange,
 }) {
   const periodName = view === "fortnight" ? "fortnight" : view;
 
@@ -63,6 +65,10 @@ export default function TimetableToolbar({
         >
           <span aria-hidden="true">→</span>
         </button>
+        <label className={styles.datePicker}>
+          <span>Go to date</span>
+          <input type="date" value={dateValue} onChange={(event) => onDateChange(event.target.value)} />
+        </label>
       </div>
     </header>
   );

@@ -7,10 +7,22 @@ import {
 import { getTeachingWeekForDate } from "../../lib/academicCalendar";
 import { getDatedTimetableEntry } from "../../lib/recurringTimetable";
 import { getDateKey } from "../../lib/lessonOccurrences";
+import { getExceptionTypeLabel, isDateInRange } from "../../lib/scheduleOverlays";
 import { useSchoolData } from "../providers/SchoolDataProvider";
 import TimetableCard from "./TimetableCard";
 import styles from "./timetable.module.css";
 import DatedEventsStrip from "../events/DatedEventsStrip";
+
+function DayContextNotices({ date, teacherAbsences, calendarExceptions }) {
+  const dateKey = getDateKey(date);
+  const teacherAbsence = teacherAbsences.find((item) => isDateInRange(dateKey, item));
+  const exception = calendarExceptions.find((item) => isDateInRange(dateKey, item));
+  if (!teacherAbsence && !exception) return null;
+  return <div className={styles.dayNotices}>
+    {teacherAbsence && <aside><strong>Teacher absence</strong><span>{teacherAbsence.note || "You are marked away on this date."}</span></aside>}
+    {exception && <aside><strong>{getExceptionTypeLabel(exception.type)}</strong><span>{exception.note || "Calendar exception applies on this date."}</span></aside>}
+  </div>;
+}
 
 export default function DayTimetable({
   date,
@@ -19,7 +31,7 @@ export default function DayTimetable({
   onOpenLesson,
   onOpenEvent,
 }) {
-  const { recurringAssignments, recurringEvents, datedEvents, teachingWeeks, timetableBlocks, lessonMovements } = useSchoolData();
+  const { recurringAssignments, recurringEvents, datedEvents, teachingWeeks, timetableBlocks, lessonMovements, teacherAbsences, calendarExceptions } = useSchoolData();
   const teachingWeek = getTeachingWeekForDate(date, teachingWeeks);
 
   if (isWeekend(date)) {
@@ -28,6 +40,7 @@ export default function DayTimetable({
         {showHeading && (
           <div className={styles.dayHeading}><h2>{formatDayHeading(date)}</h2><button type="button" onClick={(e) => onOpenEvent(null, e.currentTarget, date)}>Add Event</button></div>
         )}
+        <DayContextNotices date={date} teacherAbsences={teacherAbsences} calendarExceptions={calendarExceptions} />
         <DatedEventsStrip events={datedEvents} date={date} onSelect={onOpenEvent} compact={compact} />
         <div className={styles.emptyDay}>
           <p>No school timetable for this day.</p>
@@ -40,6 +53,7 @@ export default function DayTimetable({
     return (
       <section className={styles.dayPanel}>
         {showHeading && <div className={styles.dayHeading}><h2>{formatDayHeading(date)}</h2><div className={styles.dayHeadingActions}><button type="button" onClick={(e) => onOpenEvent(null, e.currentTarget, date)}>Add Event</button><span className={styles.cycleBadge}>No teaching week</span></div></div>}
+        <DayContextNotices date={date} teacherAbsences={teacherAbsences} calendarExceptions={calendarExceptions} />
         <DatedEventsStrip events={datedEvents} date={date} onSelect={onOpenEvent} compact={compact} />
         <div className={styles.emptyDay}><p>No teaching week is configured for this date.</p></div>
       </section>
@@ -57,6 +71,7 @@ export default function DayTimetable({
     return (
       <section className={styles.dayPanel}>
         {showHeading && <div className={styles.dayHeading}><h2>{formatDayHeading(date)}</h2><div className={styles.dayHeadingActions}><button type="button" onClick={(e) => onOpenEvent(null, e.currentTarget, date)}>Add Event</button><span className={styles.cycleBadge}>Week {teachingWeek.cycleWeek}</span></div></div>}
+        <DayContextNotices date={date} teacherAbsences={teacherAbsences} calendarExceptions={calendarExceptions} />
         <DatedEventsStrip events={datedEvents} date={date} onSelect={onOpenEvent} compact={compact} />
         <div className={styles.emptyDay}><p>No timetable blocks are configured for this day.</p></div>
       </section>
@@ -72,6 +87,7 @@ export default function DayTimetable({
         </div>
       )}
 
+      <DayContextNotices date={date} teacherAbsences={teacherAbsences} calendarExceptions={calendarExceptions} />
       <DatedEventsStrip events={datedEvents} date={date} onSelect={onOpenEvent} compact={compact} />
       <div className={styles.daySchedule}>
         {periods.map((period) => {

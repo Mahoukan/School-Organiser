@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { getClassColourOption } from "../../data/sampleClasses";
 import { formatBlockTime } from "../../lib/periodStructures";
 import { getExceptionTypeLabel } from "../../lib/scheduleOverlays";
-import { formatDayHeading, isSameDate, toDateOnly } from "../../lib/timetableDates";
+import { formatDayHeading, getTimetableUrl, isSameDate, toDateOnly } from "../../lib/timetableDates";
 import { deriveTodaySchedule } from "../../lib/todaySchedule";
 import { getCurrentBlockState } from "../../lib/currentBlock";
 import { getDateKey, getLessonStatusLabel, hasLessonPlanContent } from "../../lib/lessonOccurrences";
@@ -23,6 +23,14 @@ function BlockSummary({ item }) {
   if (item.entry.type === "event") return <strong>{item.entry.event.title}</strong>;
   if (item.entry.type === "free") return <strong>Free</strong>;
   return <strong>{item.period.name}</strong>;
+}
+
+function CurrentContext({ clock, onOpenLesson }) {
+  const content = <><span id="current-block-title" className={styles.eyebrow}>{clock.state === "current" ? "Now" : clock.state === "next" ? "Next" : "Today"}</span>{clock.block ? <><h2>{clock.block.period.name} · {formatBlockTime(clock.block.period.startTime)}–{formatBlockTime(clock.block.period.endTime)}</h2><BlockSummary item={clock.block} /></> : <h2>{clock.state === "finished" ? "Today’s timetable is finished." : "No blocks configured."}</h2>}</>;
+  if (clock.block?.entry.type === "class" && clock.block.classDetails) {
+    return <button type="button" className={styles.currentCard} aria-label={`Open ${clock.block.classDetails.shortCode}, ${clock.block.period.name}`} onClick={(event) => onOpenLesson(clock.block, event.currentTarget)}>{content}</button>;
+  }
+  return <section className={styles.currentCard} aria-labelledby="current-block-title">{content}</section>;
 }
 
 function ScheduleItem({ item, timeState, date, onOpenLesson }) {
@@ -80,13 +88,13 @@ export default function TodayDashboard() {
 
   const context = schedule.teachingWeek ? `${schedule.term?.name ?? "Teaching term"} · Week ${schedule.teachingWeek.cycleWeek}` : "No teaching week";
   return <section className={styles.todayPage} aria-labelledby="today-title">
-    <header className={styles.header}><div><span className={styles.eyebrow}>Today</span><h1 id="today-title">{formatDayHeading(today)}</h1><p>{context}{schedule.dayTemplate ? ` · ${schedule.dayTemplate.name}` : ""}</p></div><div className={styles.headerActions}><button type="button" className={styles.secondaryAction} onClick={(e) => openEvent(null, e.currentTarget)}>Add Event</button><Link className={styles.primaryLink} href="/timetable">Open Day Timetable</Link></div></header>
+    <header className={styles.header}><div><span className={styles.eyebrow}>Today</span><h1 id="today-title">{formatDayHeading(today)}</h1><p>{context}{schedule.dayTemplate ? ` · ${schedule.dayTemplate.name}` : ""}</p></div><div className={styles.headerActions}><button type="button" className={styles.secondaryAction} onClick={(e) => openEvent(null, e.currentTarget)}>Add Event</button><Link className={styles.primaryLink} href={getTimetableUrl({ date: today, view: "day" })}>Open Day Timetable</Link></div></header>
 
-    {schedule.teacherAbsence && <aside className={styles.notice}><div><strong>You are marked away today.</strong>{schedule.teacherAbsence.note && <p>{schedule.teacherAbsence.note}</p>}</div><Link href="/calendar">Manage absence</Link></aside>}
-    {schedule.calendarException && <aside className={styles.notice}><div><strong>{getExceptionTypeLabel(schedule.calendarException.type)}</strong>{schedule.calendarException.note && <p>{schedule.calendarException.note}</p>}</div><Link href="/calendar">View calendar</Link></aside>}
+    {schedule.teacherAbsence && <aside className={styles.notice}><div><strong>You are marked away today.</strong>{schedule.teacherAbsence.note && <p>{schedule.teacherAbsence.note}</p>}</div><Link href={`/calendar?section=teacher-absences&date=${getDateKey(today)}`}>Manage absence</Link></aside>}
+    {schedule.calendarException && <aside className={styles.notice}><div><strong>{getExceptionTypeLabel(schedule.calendarException.type)}</strong>{schedule.calendarException.note && <p>{schedule.calendarException.note}</p>}</div><Link href={`/calendar?section=exceptions&date=${getDateKey(today)}`}>View calendar</Link></aside>}
 
     {!schedule.weekend && schedule.teachingWeek && schedule.blocks.length > 0 && <div className={styles.summaryGrid}>
-      <section className={styles.currentCard} aria-labelledby="current-block-title"><span id="current-block-title" className={styles.eyebrow}>{clock.state === "current" ? "Now" : clock.state === "next" ? "Next" : "Today"}</span>{clock.block ? <><h2>{clock.block.period.name} · {formatBlockTime(clock.block.period.startTime)}–{formatBlockTime(clock.block.period.endTime)}</h2><BlockSummary item={clock.block} /></> : <h2>{clock.state === "finished" ? "Today’s timetable is finished." : "No blocks configured."}</h2>}</section>
+      <CurrentContext clock={clock} onOpenLesson={openLesson} />
       <section className={styles.overview} aria-labelledby="overview-title"><h2 id="overview-title">Daily overview</h2><dl>{Object.entries({ Classes: schedule.overview.classes, Completed: schedule.overview.completed, Remaining: schedule.overview.remaining, Cancelled: schedule.overview.cancelled, "Other commitments": schedule.overview.commitments, Events: data.datedEvents.filter((item) => item.date === getDateKey(today)).length }).map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl></section>
     </div>}
 
