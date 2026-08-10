@@ -17,7 +17,7 @@ export default function DayTimetable({
   showHeading = true,
   onOpenLesson,
 }) {
-  const { recurringAssignments, teachingWeeks, timetableBlocks, lessonMovements } = useSchoolData();
+  const { recurringAssignments, recurringEvents, teachingWeeks, timetableBlocks, lessonMovements } = useSchoolData();
   const teachingWeek = getTeachingWeekForDate(date, teachingWeeks);
 
   if (isWeekend(date)) {
@@ -71,7 +71,7 @@ export default function DayTimetable({
 
       <div className={styles.daySchedule}>
         {periods.map((period) => {
-          const entry = getDatedTimetableEntry({ recurringAssignments, lessonMovements, date: getDateKey(date), cycleWeek: teachingWeek.cycleWeek, weekday: weekday.key, period });
+          const entry = getDatedTimetableEntry({ recurringAssignments, recurringEvents, lessonMovements, date: getDateKey(date), cycleWeek: teachingWeek.cycleWeek, weekday: weekday.key, period });
           const isBreak = !period.isTeaching;
 
           return (

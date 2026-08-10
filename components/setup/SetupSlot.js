@@ -1,6 +1,6 @@
 import { getClassColourOption } from "../../data/sampleClasses";
-import { getTemporaryEvent } from "../../data/sampleTimetable";
 import { findAssignmentForSlot } from "../../lib/recurringTimetable";
+import { getRecurringEventColour, getRecurringEventForBlock, getRecurringEventTypeLabel } from "../../lib/recurringEvents";
 import { useSchoolData } from "../providers/SchoolDataProvider";
 import styles from "./setup.module.css";
 
@@ -12,25 +12,24 @@ export default function SetupSlot({
   onChoose,
   onMessage,
 }) {
-  const { classes, recurringAssignments, removeAssignment } = useSchoolData();
-  const event = getTemporaryEvent(cycleWeek, weekday, period.id);
+  const { classes, recurringAssignments, recurringEvents, removeAssignment } = useSchoolData();
+  const event = getRecurringEventForBlock(recurringEvents, cycleWeek, weekday, period.id);
 
   if (event) {
+    const colour = getRecurringEventColour(event.colour);
     return (
-      <div className={`${styles.setupSlot} ${styles.eventSlot}`}>
-        <strong>{event.label}</strong>
-        <span>{event.title}</span>
-        <small>Read-only event</small>
+      <div className={`${styles.setupSlot} ${styles.eventSlot}`} style={{ "--event-accent": event.colour, "--event-background": colour.background, "--event-border": colour.border, "--event-text": colour.text }}>
+        <strong>{event.title}</strong>
+        {event.detail && <span>{event.detail}</span>}
+        <small>{getRecurringEventTypeLabel(event.type)} · Non-class item</small>
+        <div className={styles.slotActions}><button type="button" aria-label={`Edit ${event.title}`} onClick={(eventObject) => onChoose(period, eventObject.currentTarget)}>Edit</button></div>
       </div>
     );
   }
 
   if (!period.isTeaching) {
     return (
-      <div className={`${styles.setupSlot} ${styles.breakSlot}`}>
-        <strong>{period.name}</strong>
-        <small>Non-teaching block</small>
-      </div>
+      <button type="button" className={`${styles.setupSlot} ${styles.emptySlot}`} aria-label={`Add non-class item to Week ${cycleWeek}, ${weekdayLabel}, ${period.name}`} onClick={(eventObject) => onChoose(period, eventObject.currentTarget)}><span aria-hidden="true">+</span><strong>Add Non-Class Item</strong></button>
     );
   }
 
@@ -49,11 +48,11 @@ export default function SetupSlot({
       <button
         type="button"
         className={`${styles.setupSlot} ${styles.emptySlot}`}
-        aria-label={`Add class to Week ${cycleWeek}, ${weekdayLabel}, ${period.name}`}
+        aria-label={`Add class or non-class item to Week ${cycleWeek}, ${weekdayLabel}, ${period.name}`}
         onClick={(eventObject) => onChoose(period, eventObject.currentTarget)}
       >
         <span aria-hidden="true">+</span>
-        <strong>Add class</strong>
+        <strong>Add occupant</strong>
       </button>
     );
   }

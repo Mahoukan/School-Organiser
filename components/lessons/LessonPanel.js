@@ -58,6 +58,7 @@ export default function LessonPanel({ selection, onClose }) {
     classAbsences,
     calendarExceptions,
     lessonMovements,
+    recurringEvents,
     saveLessonMovement,
     removeLessonMovement,
     getLessonOccurrence,
@@ -649,7 +650,7 @@ export default function LessonPanel({ selection, onClose }) {
           onConfirm={confirmCarryForward}
         />
       )}
-      {showMoveDialog && <MoveLessonDialog classDetails={classDetails} date={selection.date} originalBlock={originalPeriod} currentBlock={period} options={getMovementDestinationOptions({ date: selection.date, assignment, recurringAssignments, timetableBlocks, lessonMovements })} onCancel={closeMoveDialog} onSave={saveMovement} />}
+      {showMoveDialog && <MoveLessonDialog classDetails={classDetails} date={selection.date} originalBlock={originalPeriod} currentBlock={period} options={getMovementDestinationOptions({ date: selection.date, assignment, recurringAssignments, recurringEvents, timetableBlocks, lessonMovements })} onCancel={closeMoveDialog} onSave={saveMovement} />}
       {showRestoreConfirmation && <div className={styles.confirmOverlay}><div className={styles.confirmDialog} role="alertdialog" aria-modal="true" aria-labelledby="restore-movement-title"><h3 id="restore-movement-title">Restore {classDetails.shortCode} to {originalPeriod.name}?</h3><p>This removes only the dated movement. Lesson planning and status data remain unchanged.</p><div className={styles.confirmActions}><button type="button" className={styles.secondaryButton} onClick={() => setShowRestoreConfirmation(false)}>Cancel</button><button type="button" className={styles.primaryButton} onClick={restoreMovement}>Restore</button></div></div></div>}
     </dialog>
   );

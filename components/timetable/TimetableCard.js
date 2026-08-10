@@ -9,6 +9,7 @@ import {
 } from "../../lib/lessonOccurrences";
 import { formatDayHeading } from "../../lib/timetableDates";
 import { getEffectiveCancellation } from "../../lib/scheduleOverlays";
+import { getRecurringEventColour, getRecurringEventTypeLabel } from "../../lib/recurringEvents";
 import { useSchoolData } from "../providers/SchoolDataProvider";
 import styles from "./timetable.module.css";
 
@@ -38,13 +39,12 @@ export default function TimetableCard({
   }
 
   if (entry.type === "event") {
+    const eventColour = getRecurringEventColour(entry.event.colour);
     return (
-      <div className={`${styles.entryCard} ${styles.eventCard}`}>
-        <span className={styles.entryCode}>{entry.label}</span>
-        {!compact && <span className={styles.entryName}>{entry.title}</span>}
-        {entry.location && (
-          <span className={styles.entryRoom}>{entry.location}</span>
-        )}
+      <div className={`${styles.entryCard} ${styles.eventCard}`} style={{ "--event-background": eventColour.background, "--event-border": eventColour.border, "--event-text": eventColour.text }}>
+        <span className={styles.entryCode}>{compact ? getRecurringEventTypeLabel(entry.event.type) : entry.event.title}</span>
+        {!compact && <span className={styles.eventType}>{getRecurringEventTypeLabel(entry.event.type)} · Non-class item</span>}
+        {!compact && entry.event.detail && <span className={styles.entryRoom}>{entry.event.detail}</span>}
       </div>
     );
   }

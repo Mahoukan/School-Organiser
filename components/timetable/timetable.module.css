@@ -242,10 +242,12 @@
 }
 
 .eventCard {
-  border-color: #bfc7d3;
-  color: #354257;
-  background: #e9edf2;
+  border-color: var(--event-border, #bfc7d3);
+  color: var(--event-text, #354257);
+  background: var(--event-background, #e9edf2);
 }
+
+.eventType { margin-top: .1rem; font-size: .68rem; font-weight: 750; }
 
 .freeCard {
   border-style: dashed;

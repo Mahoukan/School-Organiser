@@ -9,7 +9,7 @@ import TimetableCard from "./TimetableCard";
 import styles from "./timetable.module.css";
 
 export default function WeekGrid({ monday, compact = false, onOpenLesson }) {
-  const { recurringAssignments, teachingWeeks, timetableBlocks, lessonMovements } = useSchoolData();
+  const { recurringAssignments, recurringEvents, teachingWeeks, timetableBlocks, lessonMovements } = useSchoolData();
   const teachingWeek = getTeachingWeekForDate(monday, teachingWeeks);
   if (!teachingWeek) return <div className={styles.nonTeachingWeek}><strong>No teaching week configured.</strong><span>This Monday–Friday range has no configured teaching timetable.</span></div>;
 
@@ -22,7 +22,7 @@ export default function WeekGrid({ monday, compact = false, onOpenLesson }) {
         <header><strong>{weekday.shortLabel}</strong><span>{date.getDate()}</span></header>
         {blocks.length ? blocks.map((period) => <div className={`${styles.weekColumnBlock} ${!period.isTeaching ? styles.weekColumnBreak : ""}`} key={period.id}>
           <div className={styles.weekBlockMeta}><strong>{period.name}</strong>{!compact && <span>{formatBlockTime(period.startTime)}–{formatBlockTime(period.endTime)}</span>}</div>
-          <TimetableCard entry={getDatedTimetableEntry({ recurringAssignments, lessonMovements, date: dateKey, cycleWeek: teachingWeek.cycleWeek, weekday: weekday.key, period })} detail={compact ? "fortnight" : "week"} date={date} period={period} onOpenLesson={onOpenLesson} />
+          <TimetableCard entry={getDatedTimetableEntry({ recurringAssignments, recurringEvents, lessonMovements, date: dateKey, cycleWeek: teachingWeek.cycleWeek, weekday: weekday.key, period })} detail={compact ? "fortnight" : "week"} date={date} period={period} onOpenLesson={onOpenLesson} />
         </div>) : <p className={styles.noDayBlocks}>No blocks configured.</p>}
       </section>;
     })}

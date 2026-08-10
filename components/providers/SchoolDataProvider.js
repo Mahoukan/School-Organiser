@@ -16,10 +16,8 @@ import {
 } from "../../data/sampleAcademicCalendar";
 import { sampleClasses } from "../../data/sampleClasses";
 import { sampleTimetableBlocks } from "../../data/samplePeriodStructures";
-import {
-  getTemporaryEvent,
-  weekdays,
-} from "../../data/sampleTimetable";
+import { weekdays } from "../../data/sampleTimetable";
+import { sampleRecurringEvents } from "../../data/sampleRecurringEvents";
 import { findAssignmentForSlot } from "../../lib/recurringTimetable";
 import {
   moveTimetableBlock,
@@ -48,6 +46,10 @@ import {
   getMovementForOccurrence,
   validateLessonMovement,
 } from "../../lib/lessonMovements";
+import {
+  getRecurringEventForBlock,
+  validateRecurringEvent,
+} from "../../lib/recurringEvents";
 
 const SchoolDataContext = createContext(null);
 
@@ -71,6 +73,7 @@ export default function SchoolDataProvider({ children }) {
   const [classAbsences, setClassAbsences] = useState([]);
   const [calendarExceptions, setCalendarExceptions] = useState([]);
   const [lessonMovements, setLessonMovements] = useState([]);
+  const [recurringEvents, setRecurringEvents] = useState(() => sampleRecurringEvents.map((event) => ({ ...event })));
 
   const createClass = useCallback((values) => {
     const newClass = {
@@ -146,7 +149,7 @@ export default function SchoolDataProvider({ children }) {
       const classItem = classes.find((candidate) => candidate.id === classId);
       const period = resolveTimetableBlock(timetableBlocks, periodId);
       const validWeekday = weekdays.some((candidate) => candidate.key === weekday);
-      const event = getTemporaryEvent(cycleWeek, weekday, periodId);
+      const event = getRecurringEventForBlock(recurringEvents, cycleWeek, weekday, periodId);
 
       if (
         !classItem ||
@@ -190,7 +193,7 @@ export default function SchoolDataProvider({ children }) {
       });
       return { ok: true };
     },
-    [classes, timetableBlocks],
+    [classes, recurringEvents, timetableBlocks],
   );
 
   const removeAssignment = useCallback((cycleWeek, weekday, periodId) => {
@@ -288,6 +291,9 @@ export default function SchoolDataProvider({ children }) {
             "This block is used by one-off lesson movements. Restore or change those moved lessons before removing it.",
         };
       }
+      if (recurringEvents.some((event) => event.periodId === blockId)) {
+        return { ok: false, message: "This block is used by recurring timetable items. Remove those items before removing it." };
+      }
       const block = resolveTimetableBlock(timetableBlocks, blockId);
       setTimetableBlocks((current) =>
         normalizeDisplayOrders(
@@ -298,7 +304,7 @@ export default function SchoolDataProvider({ children }) {
       );
       return { ok: true };
     },
-    [lessonMovements, recurringAssignments, timetableBlocks],
+    [lessonMovements, recurringAssignments, recurringEvents, timetableBlocks],
   );
 
   const moveBlock = useCallback((blockId, direction) => {
@@ -333,6 +339,19 @@ export default function SchoolDataProvider({ children }) {
   const removeClassAbsence = useCallback((id) => setClassAbsences((current) => current.filter((item) => item.id !== id)), []);
   const removeCalendarException = useCallback((id) => setCalendarExceptions((current) => current.filter((item) => item.id !== id)), []);
 
+  const saveRecurringEvent = useCallback((values) => {
+    const errors = validateRecurringEvent(values, timetableBlocks, recurringAssignments, recurringEvents);
+    if (Object.keys(errors).length) return { ok: false, errors };
+    const event = { id: values.id ?? `event-${crypto.randomUUID()}`, type: values.type, title: values.title.trim(), detail: (values.detail ?? "").trim(), colour: values.colour, cycleWeek: values.cycleWeek, weekday: values.weekday, periodId: values.periodId };
+    setRecurringEvents((current) => values.id ? current.map((item) => item.id === values.id ? event : item) : [...current, event]);
+    return { ok: true, event };
+  }, [recurringAssignments, recurringEvents, timetableBlocks]);
+
+  const removeRecurringEvent = useCallback((eventId) => {
+    setRecurringEvents((current) => current.filter((event) => event.id !== eventId));
+    return { ok: true };
+  }, []);
+
   const findLessonMovement = useCallback(
     (date, recurringAssignmentId) =>
       getMovementForOccurrence(lessonMovements, date, recurringAssignmentId),
@@ -346,6 +365,7 @@ export default function SchoolDataProvider({ children }) {
         recurringAssignments,
         timetableBlocks,
         lessonMovements,
+        recurringEvents,
         teachingWeeks,
       });
       if (!validation.ok) return validation;
@@ -367,7 +387,7 @@ export default function SchoolDataProvider({ children }) {
       );
       return { ok: true, movement };
     },
-    [lessonMovements, recurringAssignments, teachingWeeks, timetableBlocks],
+    [lessonMovements, recurringAssignments, recurringEvents, teachingWeeks, timetableBlocks],
   );
 
   const removeLessonMovement = useCallback(
@@ -383,6 +403,7 @@ export default function SchoolDataProvider({ children }) {
         periodId: assignment.periodId,
         recurringAssignments,
         lessonMovements,
+        recurringEvents,
         ignoreAssignmentId: recurringAssignmentId,
       });
       if (occupant) {
@@ -407,7 +428,7 @@ export default function SchoolDataProvider({ children }) {
       );
       return { ok: true };
     },
-    [classes, lessonMovements, recurringAssignments],
+    [classes, lessonMovements, recurringAssignments, recurringEvents],
   );
 
   const saveTerm = useCallback(
@@ -538,6 +559,7 @@ export default function SchoolDataProvider({ children }) {
       classAbsences,
       calendarExceptions,
       lessonMovements,
+      recurringEvents,
       createClass,
       updateClass,
       archiveClass,
@@ -564,6 +586,8 @@ export default function SchoolDataProvider({ children }) {
       findLessonMovement,
       saveLessonMovement,
       removeLessonMovement,
+      saveRecurringEvent,
+      removeRecurringEvent,
     }),
     [
       academicYear,
@@ -577,6 +601,7 @@ export default function SchoolDataProvider({ children }) {
       classAbsences,
       calendarExceptions,
       lessonMovements,
+      recurringEvents,
       createClass,
       updateClass,
       archiveClass,
@@ -603,6 +628,8 @@ export default function SchoolDataProvider({ children }) {
       findLessonMovement,
       saveLessonMovement,
       removeLessonMovement,
+      saveRecurringEvent,
+      removeRecurringEvent,
     ],
   );
 

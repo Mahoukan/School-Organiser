@@ -9,26 +9,38 @@ import AssignmentDialog from "./AssignmentDialog";
 import MobileSetupDay from "./MobileSetupDay";
 import SetupWeekGrid from "./SetupWeekGrid";
 import styles from "./setup.module.css";
+import { getRecurringEventForBlock } from "../../lib/recurringEvents";
+import OccupantTypeDialog from "./OccupantTypeDialog";
+import RecurringEventForm from "./RecurringEventForm";
+import ModalDialog from "../classes/ModalDialog";
 
 export default function RecurringTimetableSetup() {
   const {
     classes,
     recurringAssignments,
     assignClassToSlot,
+    recurringEvents,
+    saveRecurringEvent,
+    removeRecurringEvent,
   } = useSchoolData();
   const [cycleWeek, setCycleWeek] = useState("A");
   const [selectedWeekday, setSelectedWeekday] = useState(0);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [message, setMessage] = useState("");
+  const [removeTarget, setRemoveTarget] = useState(null);
   const triggerRef = useRef(null);
 
   function openSlot(weekday, period, trigger) {
     triggerRef.current = trigger;
+    const assignment = findAssignmentForSlot(recurringAssignments, cycleWeek, weekday, period.id);
+    const event = getRecurringEventForBlock(recurringEvents, cycleWeek, weekday, period.id);
     setSelectedSlot({
       cycleWeek,
       weekday,
       weekdayLabel: weekdays.find((item) => item.key === weekday).label,
       period,
+      mode: event ? "event" : assignment ? "class" : period.isTeaching ? "choose" : "event",
+      event,
     });
   }
 
@@ -39,13 +51,32 @@ export default function RecurringTimetableSetup() {
   }
 
   function chooseClass(classId) {
-    assignClassToSlot({
+    const result = assignClassToSlot({
       classId,
       cycleWeek: selectedSlot.cycleWeek,
       weekday: selectedSlot.weekday,
       periodId: selectedSlot.period.id,
     });
-    closeSelector();
+    if (result.ok) closeSelector();
+    else setMessage("That timetable block is already occupied.");
+  }
+
+  function saveEvent(values) {
+    const result = saveRecurringEvent(values);
+    if (result.ok) { setMessage(`${result.event.title} saved.`); closeSelector(); }
+    return result;
+  }
+
+  function requestRemoveEvent(event) {
+    setRemoveTarget(event);
+    setSelectedSlot(null);
+  }
+
+  function confirmRemoveEvent() {
+    removeRecurringEvent(removeTarget.id);
+    setMessage(`${removeTarget.title} removed.`);
+    setRemoveTarget(null);
+    requestAnimationFrame(() => triggerRef.current?.focus());
   }
 
   const selectedAssignment = selectedSlot
@@ -97,14 +128,15 @@ export default function RecurringTimetableSetup() {
           />
         </div>
       {selectedSlot && (
-        <AssignmentDialog
+        selectedSlot.mode === "choose" ? <OccupantTypeDialog slot={selectedSlot} onClass={() => setSelectedSlot({ ...selectedSlot, mode: "class" })} onEvent={() => setSelectedSlot({ ...selectedSlot, mode: "event" })} onClose={closeSelector} /> : selectedSlot.mode === "class" ? <AssignmentDialog
           slot={selectedSlot}
           classes={classes}
           assignedClassId={selectedAssignment?.classId}
           onSelect={chooseClass}
           onClose={closeSelector}
-        />
+        /> : <RecurringEventForm key={selectedSlot.event?.id ?? `${selectedSlot.cycleWeek}-${selectedSlot.weekday}-${selectedSlot.period.id}`} slot={selectedSlot} event={selectedSlot.event} onSave={saveEvent} onRemove={requestRemoveEvent} onClose={closeSelector} />
       )}
+      {removeTarget && <ModalDialog className={styles.assignmentDialog} labelledBy="remove-event-title" describedBy="remove-event-description" onClose={() => setRemoveTarget(null)}><h2 id="remove-event-title">Remove {removeTarget.title}?</h2><p id="remove-event-description">This will remove it from the repeating Week {removeTarget.cycleWeek} timetable.</p><div className={styles.formActions}><button className={styles.secondarySetupButton} onClick={() => setRemoveTarget(null)}>Cancel</button><button className={styles.dangerSetupButton} onClick={confirmRemoveEvent}>Remove</button></div></ModalDialog>}
     </section>
   );
 }
