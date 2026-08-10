@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 
-import { sampleClasses } from "../../data/sampleClasses";
+import { useSchoolData } from "../providers/SchoolDataProvider";
 import ClassArchiveDialog from "./ClassArchiveDialog";
 import ClassFormPanel from "./ClassFormPanel";
 import ClassList from "./ClassList";
@@ -18,9 +18,14 @@ function sortByShortCode(classes) {
 }
 
 export default function ClassManager() {
-  const [classes, setClasses] = useState(() =>
-    sampleClasses.map((classItem) => ({ ...classItem })),
-  );
+  const {
+    classes,
+    createClass,
+    updateClass,
+    archiveClass,
+    restoreClass: restoreSharedClass,
+    getAssignmentCount,
+  } = useSchoolData();
   const [view, setView] = useState("active");
   const [formState, setFormState] = useState(null);
   const [archiveTarget, setArchiveTarget] = useState(null);
@@ -48,20 +53,10 @@ export default function ClassManager() {
 
   function saveClass(values) {
     if (formState.mode === "edit") {
-      setClasses((current) =>
-        current.map((classItem) =>
-          classItem.id === formState.classItem.id
-            ? { ...classItem, ...values }
-            : classItem,
-        ),
-      );
+      updateClass(formState.classItem.id, values);
       setNotice({ type: "success", message: `${values.shortCode} updated.` });
     } else {
-      const newClass = {
-        id: `class-${crypto.randomUUID()}`,
-        ...values,
-      };
-      setClasses((current) => [...current, newClass]);
+      createClass(values);
       setView("active");
       setNotice({ type: "success", message: `${values.shortCode} created.` });
     }
@@ -69,13 +64,16 @@ export default function ClassManager() {
   }
 
   function confirmArchive() {
-    setClasses((current) =>
-      current.map((classItem) =>
-        classItem.id === archiveTarget.id
-          ? { ...classItem, archived: true }
-          : classItem,
-      ),
-    );
+    const result = archiveClass(archiveTarget.id);
+    if (!result.ok) {
+      setNotice({
+        type: "error",
+        message: `${archiveTarget.shortCode} is still assigned to ${result.assignmentCount} timetable periods. Remove those assignments in Setup before archiving the class.`,
+      });
+      setArchiveTarget(null);
+      return;
+    }
+
     setNotice({
       type: "success",
       message: `${archiveTarget.shortCode} archived.`,
@@ -83,16 +81,24 @@ export default function ClassManager() {
     setArchiveTarget(null);
   }
 
-  function restoreClass(classItem) {
-    const duplicate = classes.some(
-      (candidate) =>
-        candidate.id !== classItem.id &&
-        !candidate.archived &&
-        candidate.academicYear === classItem.academicYear &&
-        candidate.shortCode.toUpperCase() === classItem.shortCode.toUpperCase(),
-    );
+  function requestArchive(classItem) {
+    const assignmentCount = getAssignmentCount(classItem.id);
+    if (assignmentCount > 0) {
+      const periodLabel = assignmentCount === 1 ? "period" : "periods";
+      setNotice({
+        type: "error",
+        message: `${classItem.shortCode} is still assigned to ${assignmentCount} timetable ${periodLabel}. Remove those assignments in Setup before archiving the class.`,
+      });
+      return;
+    }
 
-    if (duplicate) {
+    setNotice(null);
+    setArchiveTarget(classItem);
+  }
+
+  function restoreClass(classItem) {
+    const result = restoreSharedClass(classItem.id);
+    if (!result.ok) {
       setNotice({
         type: "error",
         message: `Restore blocked: an active 2026 class already uses ${classItem.shortCode}.`,
@@ -100,13 +106,6 @@ export default function ClassManager() {
       return;
     }
 
-    setClasses((current) =>
-      current.map((candidate) =>
-        candidate.id === classItem.id
-          ? { ...candidate, archived: false }
-          : candidate,
-      ),
-    );
     setNotice({ type: "success", message: `${classItem.shortCode} restored.` });
   }
 
@@ -161,7 +160,7 @@ export default function ClassManager() {
         showingArchived={view === "archived"}
         onAdd={openCreateForm}
         onEdit={openEditForm}
-        onArchive={setArchiveTarget}
+        onArchive={requestArchive}
         onRestore={restoreClass}
       />
 

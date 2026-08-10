@@ -1,10 +1,11 @@
 import {
   getClassColourOption,
-  sampleClassesById,
 } from "../../data/sampleClasses";
+import { useSchoolData } from "../providers/SchoolDataProvider";
 import styles from "./timetable.module.css";
 
 export default function TimetableCard({ entry, detail = "week" }) {
+  const { classes } = useSchoolData();
   const compact = detail === "fortnight";
 
   if (entry.type === "free") {
@@ -35,7 +36,14 @@ export default function TimetableCard({ entry, detail = "week" }) {
     );
   }
 
-  const classDetails = sampleClassesById[entry.classId];
+  const classDetails = classes.find((classItem) => classItem.id === entry.classId);
+  if (!classDetails || classDetails.archived) {
+    return (
+      <div className={`${styles.entryCard} ${styles.freeCard}`}>
+        <span className={styles.freeLabel}>Free</span>
+      </div>
+    );
+  }
   const colourDetails = getClassColourOption(classDetails.colour);
 
   return (

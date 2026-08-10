@@ -1,0 +1,560 @@
+.setupPage {
+  min-width: 0;
+}
+
+.pageHeader {
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.pageHeader h1 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+}
+
+.pageHeader p {
+  margin-top: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: clamp(1rem, 2vw, 1.125rem);
+}
+
+.editorSection {
+  margin-top: var(--space-5);
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.sectionHeading h2 {
+  margin: 0;
+  font-size: 1.35rem;
+  letter-spacing: -0.025em;
+}
+
+.sectionHeading p {
+  max-width: 38rem;
+  margin-top: 0.3rem;
+  color: var(--color-text-muted);
+}
+
+.weekSelector,
+.weekdaySelector {
+  display: inline-flex;
+  padding: 0.2rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.65rem;
+  background: var(--color-surface-subtle);
+}
+
+.weekSelector button,
+.weekdaySelector button {
+  min-height: 2.5rem;
+  padding-inline: var(--space-3);
+  border: 0;
+  border-radius: 0.45rem;
+  color: var(--color-text-muted);
+  background: transparent;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.weekSelector button:hover,
+.weekdaySelector button:hover {
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+
+.weekSelector button[aria-pressed="true"],
+.weekdaySelector button[aria-pressed="true"] {
+  color: var(--color-primary);
+  background: var(--color-surface);
+  box-shadow: 0 1px 3px rgb(23 32 51 / 12%);
+}
+
+.prototypeNotice {
+  margin-block: var(--space-3);
+  padding: 0.7rem var(--space-3);
+  border: 1px solid #ccd6eb;
+  border-radius: 0.55rem;
+  color: #53627c;
+  background: #eef2f9;
+  font-size: 0.8rem;
+}
+
+.setupGrid {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.setupGridRow {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(5.25rem, 0.65fr) repeat(5, minmax(0, 1fr));
+  border-bottom: 1px solid var(--color-border);
+}
+
+.setupGridRow:last-child {
+  border-bottom: 0;
+}
+
+.setupGridRow > * {
+  min-width: 0;
+  border-right: 1px solid var(--color-border);
+}
+
+.setupGridRow > *:last-child {
+  border-right: 0;
+}
+
+.cornerCell,
+.dayHeader {
+  min-height: 3.5rem;
+  padding: var(--space-2);
+  background: var(--color-surface-subtle);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.cornerCell {
+  display: flex;
+  align-items: center;
+  color: var(--color-primary);
+}
+
+.dayHeader {
+  display: grid;
+  place-items: center;
+}
+
+.periodCell {
+  display: flex;
+  min-height: 7.3rem;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--space-2);
+  background: #fafbfc;
+}
+
+.periodCell strong {
+  font-size: 0.78rem;
+}
+
+.periodCell span {
+  margin-top: 0.15rem;
+  color: var(--color-text-muted);
+  font-size: 0.65rem;
+  line-height: 1.25;
+}
+
+.slotCell {
+  display: flex;
+  min-width: 0;
+  padding: 0.35rem;
+}
+
+.setupSlot {
+  width: 100%;
+  min-width: 0;
+  min-height: 6.6rem;
+  padding: 0.55rem;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: 0.55rem;
+}
+
+.emptySlot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border-style: dashed;
+  color: var(--color-primary);
+  background: #fafbff;
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+
+.emptySlot span {
+  font-size: 1rem;
+}
+
+.emptySlot:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.assignedSlot {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.4rem;
+  border-color: var(--slot-border);
+  color: var(--slot-text);
+  background: var(--slot-background);
+  box-shadow: inset 3px 0 var(--slot-accent);
+}
+
+.assignedDetails {
+  min-width: 0;
+}
+
+.assignedDetails strong,
+.assignedDetails span,
+.assignedDetails small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.assignedDetails strong {
+  font-size: 0.82rem;
+}
+
+.assignedDetails span {
+  margin-top: 0.1rem;
+  font-size: 0.65rem;
+}
+
+.assignedDetails small {
+  margin-top: 0.1rem;
+  font-size: 0.65rem;
+  opacity: 0.82;
+}
+
+.slotActions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.slotActions button {
+  min-width: 0;
+  min-height: 1.8rem;
+  flex: 1;
+  padding: 0.2rem;
+  border: 1px solid rgb(23 32 51 / 15%);
+  border-radius: 0.35rem;
+  color: inherit;
+  background: rgb(255 255 255 / 60%);
+  font-size: 0.62rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.slotActions button:hover {
+  background: rgb(255 255 255 / 90%);
+}
+
+.eventSlot,
+.breakSlot {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-color: #c8d0dc;
+  color: #59667a;
+  background: #e9edf2;
+}
+
+.eventSlot strong,
+.eventSlot span,
+.eventSlot small,
+.breakSlot strong,
+.breakSlot small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.eventSlot strong,
+.breakSlot strong {
+  font-size: 0.78rem;
+}
+
+.eventSlot span {
+  margin-top: 0.1rem;
+  font-size: 0.68rem;
+}
+
+.eventSlot small,
+.breakSlot small {
+  margin-top: 0.15rem;
+  font-size: 0.62rem;
+}
+
+.breakGridRow,
+.breakGridRow .periodCell,
+.breakGridRow .slotCell {
+  background: var(--color-surface-subtle);
+}
+
+.breakGridRow .periodCell,
+.breakGridRow .setupSlot {
+  min-height: 4.2rem;
+}
+
+.mobileEditorWrapper {
+  display: none;
+}
+
+.weekdaySelector {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  width: 100%;
+}
+
+.weekdaySelector button {
+  min-width: 0;
+  padding-inline: var(--space-1);
+}
+
+.mobileEditor h3 {
+  margin: var(--space-3) 0 var(--space-2);
+  font-size: 1rem;
+}
+
+.mobilePeriods {
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.mobilePeriodRow {
+  display: grid;
+  grid-template-columns: minmax(4.75rem, 5.5rem) minmax(0, 1fr);
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.mobilePeriodRow:last-child {
+  border-bottom: 0;
+}
+
+.mobilePeriodMeta {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.mobilePeriodMeta strong {
+  font-size: 0.78rem;
+}
+
+.mobilePeriodMeta span {
+  margin-top: 0.1rem;
+  color: var(--color-text-muted);
+  font-size: 0.65rem;
+}
+
+.mobilePeriodRow .setupSlot {
+  min-height: 5.4rem;
+}
+
+.mobileBreakRow {
+  background: var(--color-surface-subtle);
+}
+
+.mobileBreakRow .setupSlot {
+  min-height: 3.5rem;
+}
+
+.assignmentDialog {
+  width: min(30rem, calc(100% - 2rem));
+  max-width: 30rem;
+  max-height: min(42rem, calc(100dvh - 2rem));
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-text);
+  background: var(--color-surface);
+  box-shadow: 0 1.5rem 4rem rgb(23 32 51 / 22%);
+}
+
+.assignmentDialog::backdrop {
+  background: rgb(23 32 51 / 38%);
+  backdrop-filter: blur(2px);
+}
+
+.dialogHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dialogHeader p {
+  color: var(--color-primary);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dialogHeader h2 {
+  margin: 0.15rem 0 0;
+  font-size: 1.25rem;
+}
+
+.dialogHeader button {
+  width: 2.5rem;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  border: 0;
+  border-radius: 0.5rem;
+  color: var(--color-text-muted);
+  background: transparent;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.dialogHeader button:hover {
+  color: var(--color-text);
+  background: var(--color-surface-subtle);
+}
+
+.dialogDescription {
+  padding: var(--space-3) var(--space-4) 0;
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+}
+
+.classChoices {
+  display: grid;
+  gap: var(--space-2);
+  max-height: 28rem;
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  overflow-y: auto;
+}
+
+.classChoice {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--space-2);
+  align-items: center;
+  min-height: 4rem;
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: 0.55rem;
+  color: var(--color-text);
+  background: var(--color-surface);
+  text-align: left;
+  cursor: pointer;
+}
+
+.classChoice:hover,
+.classChoice[aria-pressed="true"] {
+  border-color: var(--choice-border);
+  background: var(--choice-background);
+}
+
+.choiceSwatch {
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 50%;
+  background: var(--choice-accent);
+}
+
+.classChoice strong,
+.classChoice small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.classChoice strong {
+  font-size: 0.85rem;
+}
+
+.classChoice small {
+  margin-top: 0.1rem;
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+}
+
+.classChoice em {
+  color: var(--color-primary);
+  font-size: 0.68rem;
+  font-style: normal;
+  font-weight: 750;
+}
+
+.noClasses {
+  display: grid;
+  min-height: 12rem;
+  padding: var(--space-4);
+  place-items: center;
+  align-content: center;
+  text-align: center;
+}
+
+.noClasses p {
+  color: var(--color-text-muted);
+}
+
+.noClasses a {
+  margin-top: var(--space-2);
+  color: var(--color-primary);
+  font-weight: 750;
+}
+
+.weekSelector button:focus-visible,
+.weekdaySelector button:focus-visible,
+.emptySlot:focus-visible,
+.slotActions button:focus-visible,
+.dialogHeader button:focus-visible,
+.classChoice:focus-visible,
+.noClasses a:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+@media (max-width: 64rem) {
+  .desktopEditor {
+    display: none;
+  }
+
+  .mobileEditorWrapper {
+    display: block;
+  }
+}
+
+@media (max-width: 42rem) {
+  .sectionHeading {
+    flex-direction: column;
+  }
+
+  .weekSelector {
+    width: 100%;
+  }
+
+  .weekSelector button {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .assignmentDialog {
+    width: calc(100% - 1rem);
+    max-height: calc(100dvh - 1rem);
+  }
+
+  .dialogHeader,
+  .dialogDescription,
+  .classChoices {
+    padding-inline: var(--space-3);
+  }
+}

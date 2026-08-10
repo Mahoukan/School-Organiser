@@ -1,10 +1,5 @@
-import SectionIntro from "../../components/SectionIntro";
+import RecurringTimetableSetup from "../../components/setup/RecurringTimetableSetup";
 
 export default function SetupPage() {
-  return (
-    <SectionIntro
-      title="Setup"
-      description="Configure your school year and recurring timetable."
-    />
-  );
+  return <RecurringTimetableSetup />;
 }

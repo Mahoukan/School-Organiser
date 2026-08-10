@@ -1,5 +1,4 @@
 import {
-  getSampleEntry,
   periods,
   weekdays,
 } from "../../data/sampleTimetable";
@@ -8,10 +7,13 @@ import {
   getWeekType,
   isWeekend,
 } from "../../lib/timetableDates";
+import { getTimetableEntry } from "../../lib/recurringTimetable";
+import { useSchoolData } from "../providers/SchoolDataProvider";
 import TimetableCard from "./TimetableCard";
 import styles from "./timetable.module.css";
 
 export default function DayTimetable({ date, compact = false, showHeading = true }) {
+  const { recurringAssignments } = useSchoolData();
   const weekType = getWeekType(date);
 
   if (isWeekend(date)) {
@@ -43,7 +45,12 @@ export default function DayTimetable({ date, compact = false, showHeading = true
 
       <div className={styles.daySchedule}>
         {periods.map((period) => {
-          const entry = getSampleEntry(weekType, weekday.key, period);
+          const entry = getTimetableEntry(
+            recurringAssignments,
+            weekType,
+            weekday.key,
+            period,
+          );
           const isBreak = period.type === "break";
 
           return (

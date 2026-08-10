@@ -1,13 +1,15 @@
 import {
-  getSampleEntry,
   periods,
   weekdays,
 } from "../../data/sampleTimetable";
 import { addDays, getWeekType } from "../../lib/timetableDates";
+import { getTimetableEntry } from "../../lib/recurringTimetable";
+import { useSchoolData } from "../providers/SchoolDataProvider";
 import TimetableCard from "./TimetableCard";
 import styles from "./timetable.module.css";
 
 export default function WeekGrid({ monday, compact = false }) {
+  const { recurringAssignments } = useSchoolData();
   const weekType = getWeekType(monday);
 
   return (
@@ -44,7 +46,12 @@ export default function WeekGrid({ monday, compact = false }) {
           {weekdays.map((weekday) => (
             <div key={weekday.key} className={styles.gridEntryCell} role="cell">
               <TimetableCard
-                entry={getSampleEntry(weekType, weekday.key, period)}
+                entry={getTimetableEntry(
+                  recurringAssignments,
+                  weekType,
+                  weekday.key,
+                  period,
+                )}
                 detail={compact ? "fortnight" : "week"}
               />
             </div>

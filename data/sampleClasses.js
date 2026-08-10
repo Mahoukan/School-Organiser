@@ -103,10 +103,6 @@ export const sampleClasses = [
   },
 ];
 
-export const sampleClassesById = Object.fromEntries(
-  sampleClasses.map((classItem) => [classItem.id, classItem]),
-);
-
 export function getClassColourOption(colour) {
   return (
     classColourOptions.find((option) => option.value === colour) ??
