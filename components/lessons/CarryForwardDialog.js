@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 
 import { getDateFromKey } from "../../lib/lessonOccurrences";
 import { formatDayHeading } from "../../lib/timetableDates";
+import { formatBlockTime } from "../../lib/periodStructures";
 import styles from "./lessons.module.css";
 
 export default function CarryForwardDialog({
@@ -40,7 +41,7 @@ export default function CarryForwardDialog({
           <strong>Next {classDetails.shortCode} lesson</strong>
           <span>{formatDayHeading(date)}</span>
           <span>
-            {period.label} · {period.start}–{period.end}
+            {period.name} · {formatBlockTime(period.startTime)}–{formatBlockTime(period.endTime)}
           </span>
         </div>
         <div className={styles.confirmActions}>

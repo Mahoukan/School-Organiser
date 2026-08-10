@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { getClassColourOption } from "../../data/sampleClasses";
-import { periods } from "../../data/sampleTimetable";
 import {
   CANCELLATION_REASONS,
   LESSON_STATUSES,
@@ -16,6 +15,7 @@ import {
   getCarryForwardAvailability,
 } from "../../lib/carryForward";
 import { getTeachingWeekForDate } from "../../lib/academicCalendar";
+import { formatBlockTime, resolveTimetableBlock } from "../../lib/periodStructures";
 import { formatDayHeading } from "../../lib/timetableDates";
 import { useSchoolData } from "../providers/SchoolDataProvider";
 import CarryForwardDialog from "./CarryForwardDialog";
@@ -31,11 +31,6 @@ const emptyContent = {
   cancellationReason: "",
   cancellationNote: "",
 };
-
-function getPeriodName(period) {
-  const periodNumber = period.label.match(/^P(\d+)$/)?.[1];
-  return periodNumber ? `Period ${periodNumber}` : period.label;
-}
 
 function getDraft(occurrence) {
   return occurrence
@@ -56,6 +51,7 @@ export default function LessonPanel({ selection, onClose }) {
     recurringAssignments,
     lessonOccurrences,
     teachingWeeks,
+    timetableBlocks,
     getLessonOccurrence,
     saveLessonOccurrence,
   } = useSchoolData();
@@ -78,7 +74,7 @@ export default function LessonPanel({ selection, onClose }) {
   const classDetails = classes.find(
     (classItem) => classItem.id === selection.classId,
   );
-  const period = periods.find((item) => item.id === selection.periodId);
+  const period = resolveTimetableBlock(timetableBlocks, selection.periodId);
   const date = getDateFromKey(selection.date);
   const effectiveStatus = getEffectiveLessonStatus(occurrence);
   const teachingWeek = getTeachingWeekForDate(date, teachingWeeks);
@@ -158,6 +154,7 @@ export default function LessonPanel({ selection, onClose }) {
       recurringAssignments,
       lessonOccurrences,
       teachingWeeks,
+      timetableBlocks,
     });
 
     if (!destination) {
@@ -188,8 +185,9 @@ export default function LessonPanel({ selection, onClose }) {
   }
 
   function confirmCarryForward() {
-    const destinationPeriod = periods.find(
-      (item) => item.id === carryTarget.periodId,
+    const destinationPeriod = resolveTimetableBlock(
+      timetableBlocks,
+      carryTarget.periodId,
     );
 
     saveLessonOccurrence({
@@ -209,7 +207,7 @@ export default function LessonPanel({ selection, onClose }) {
       type: "success",
       message: `Lesson carried forward to ${formatDayHeading(
         getDateFromKey(carryTarget.date),
-      )}, ${destinationPeriod.label}.`,
+      )}, ${destinationPeriod.name}.`,
     });
     requestAnimationFrame(() => carryForwardButtonRef.current?.focus());
   }
@@ -276,7 +274,7 @@ export default function LessonPanel({ selection, onClose }) {
         <div className={styles.lessonContext}>
           <strong>{formatDayHeading(date)}</strong>
           <span>
-            Week {teachingWeek?.cycleWeek ?? "unconfigured"} · {getPeriodName(period)} · {period.start}–{period.end}
+            Week {teachingWeek?.cycleWeek ?? "unconfigured"} · {period.name} · {formatBlockTime(period.startTime)}–{formatBlockTime(period.endTime)}
           </span>
           <span>{classDetails.room ? `Room ${classDetails.room}` : "No room set"}</span>
         </div>
@@ -563,7 +561,7 @@ export default function LessonPanel({ selection, onClose }) {
         <CarryForwardDialog
           classDetails={classDetails}
           destination={carryTarget}
-          period={periods.find((item) => item.id === carryTarget.periodId)}
+          period={resolveTimetableBlock(timetableBlocks, carryTarget.periodId)}
           replacesPlan={carryTarget.replacesPlan}
           onCancel={closeCarryForward}
           onConfirm={confirmCarryForward}

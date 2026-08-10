@@ -383,6 +383,42 @@
   color: var(--color-text);
 }
 
+.weekDayColumns {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.weekDayColumn {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.weekDayColumn > header {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-2);
+  background: var(--color-surface-subtle);
+}
+
+.weekColumnBlock {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.4rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.weekColumnBreak { background: var(--color-surface-subtle); }
+.weekBlockMeta { display: grid; }
+.weekBlockMeta strong { font-size: 0.72rem; }
+.weekBlockMeta span { color: var(--color-text-muted); font-size: 0.6rem; }
+.weekColumnBlock .entryCard { min-height: 4rem; }
+.compactWeekColumns .weekColumnBlock .entryCard { min-height: 3.2rem; }
+.noDayBlocks { padding: var(--space-2); color: var(--color-text-muted); font-size: 0.75rem; }
+
 .weekGridRow {
   display: grid;
   min-width: 0;

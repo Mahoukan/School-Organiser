@@ -57,12 +57,6 @@ export default function RecurringTimetableSetup() {
     : null;
 
   return (
-    <section className={styles.setupPage} aria-labelledby="setup-title">
-      <header className={styles.pageHeader}>
-        <h1 id="setup-title">Setup</h1>
-        <p>Configure your school year and recurring timetable.</p>
-      </header>
-
       <section className={styles.editorSection} aria-labelledby="recurring-title">
         <div className={styles.sectionHeading}>
           <div>
@@ -88,10 +82,6 @@ export default function RecurringTimetableSetup() {
           </div>
         </div>
 
-        <div className={styles.prototypeNotice}>
-          Period times and school calendar configuration will be added later.
-        </div>
-
         <div className={styles.desktopEditor}>
           <SetupWeekGrid cycleWeek={cycleWeek} onChooseSlot={openSlot} />
         </div>
@@ -103,8 +93,6 @@ export default function RecurringTimetableSetup() {
             onChooseSlot={openSlot}
           />
         </div>
-      </section>
-
       {selectedSlot && (
         <AssignmentDialog
           slot={selectedSlot}

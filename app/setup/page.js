@@ -1,5 +1,5 @@
-import RecurringTimetableSetup from "../../components/setup/RecurringTimetableSetup";
+import SetupManager from "../../components/setup/SetupManager";
 
 export default function SetupPage() {
-  return <RecurringTimetableSetup />;
+  return <SetupManager />;
 }

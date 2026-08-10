@@ -15,12 +15,18 @@ import {
   sampleTerms,
 } from "../../data/sampleAcademicCalendar";
 import { sampleClasses } from "../../data/sampleClasses";
+import { sampleTimetableBlocks } from "../../data/samplePeriodStructures";
 import {
   getTemporaryEvent,
-  periods,
   weekdays,
 } from "../../data/sampleTimetable";
 import { findAssignmentForSlot } from "../../lib/recurringTimetable";
+import {
+  moveTimetableBlock,
+  normalizeDisplayOrders,
+  resolveTimetableBlock,
+  validateTimetableBlock,
+} from "../../lib/periodStructures";
 import {
   generateMissingWeeks,
   validateTeachingWeek,
@@ -46,6 +52,9 @@ export default function SchoolDataProvider({ children }) {
   );
   const [recurringAssignments, setRecurringAssignments] = useState(() =>
     sampleRecurringAssignments.map((assignment) => ({ ...assignment })),
+  );
+  const [timetableBlocks, setTimetableBlocks] = useState(() =>
+    sampleTimetableBlocks.map((block) => ({ ...block })),
   );
   const [lessonOccurrences, setLessonOccurrences] = useState([]);
 
@@ -121,7 +130,7 @@ export default function SchoolDataProvider({ children }) {
   const assignClassToSlot = useCallback(
     ({ classId, cycleWeek, weekday, periodId }) => {
       const classItem = classes.find((candidate) => candidate.id === classId);
-      const period = periods.find((candidate) => candidate.id === periodId);
+      const period = resolveTimetableBlock(timetableBlocks, periodId);
       const validWeekday = weekdays.some((candidate) => candidate.key === weekday);
       const event = getTemporaryEvent(cycleWeek, weekday, periodId);
 
@@ -130,7 +139,9 @@ export default function SchoolDataProvider({ children }) {
         classItem.archived ||
         !["A", "B"].includes(cycleWeek) ||
         !validWeekday ||
-        period?.type !== "teaching" ||
+        !period?.isTeaching ||
+        period.cycleWeek !== cycleWeek ||
+        period.weekday !== weekday ||
         event
       ) {
         return { ok: false };
@@ -165,7 +176,7 @@ export default function SchoolDataProvider({ children }) {
       });
       return { ok: true };
     },
-    [classes],
+    [classes, timetableBlocks],
   );
 
   const removeAssignment = useCallback((cycleWeek, weekday, periodId) => {
@@ -179,6 +190,62 @@ export default function SchoolDataProvider({ children }) {
           ),
       ),
     );
+  }, []);
+
+  const saveTimetableBlock = useCallback(
+    (values) => {
+      const errors = validateTimetableBlock(values, timetableBlocks, values.id);
+      if (Object.keys(errors).length) return { ok: false, errors };
+      const assignmentCount = values.id
+        ? recurringAssignments.filter((item) => item.periodId === values.id).length
+        : 0;
+      const existing = values.id
+        ? resolveTimetableBlock(timetableBlocks, values.id)
+        : null;
+      if (existing?.isTeaching && !values.isTeaching && assignmentCount) {
+        return { ok: false, errors: { isTeaching: `${existing.name} is used by recurring assignments. Remove those assignments first.` } };
+      }
+      const dayBlocks = timetableBlocks.filter((block) => block.cycleWeek === values.cycleWeek && block.weekday === values.weekday);
+      const block = {
+        id: values.id ?? `block-${crypto.randomUUID()}`,
+        cycleWeek: values.cycleWeek,
+        weekday: values.weekday,
+        name: values.name.trim(),
+        startTime: values.startTime,
+        endTime: values.endTime,
+        displayOrder: existing?.displayOrder ?? Math.max(0, ...dayBlocks.map((item) => item.displayOrder)) + 1,
+        isTeaching: Boolean(values.isTeaching),
+      };
+      setTimetableBlocks((current) =>
+        values.id
+          ? current.map((item) => (item.id === values.id ? block : item))
+          : [...current, block],
+      );
+      return { ok: true, block };
+    },
+    [recurringAssignments, timetableBlocks],
+  );
+
+  const removeTimetableBlock = useCallback(
+    (blockId) => {
+      if (recurringAssignments.some((item) => item.periodId === blockId)) {
+        return { ok: false, message: "Remove recurring class assignments from this block first." };
+      }
+      const block = resolveTimetableBlock(timetableBlocks, blockId);
+      setTimetableBlocks((current) =>
+        normalizeDisplayOrders(
+          current.filter((item) => item.id !== blockId),
+          block.cycleWeek,
+          block.weekday,
+        ),
+      );
+      return { ok: true };
+    },
+    [recurringAssignments, timetableBlocks],
+  );
+
+  const moveBlock = useCallback((blockId, direction) => {
+    setTimetableBlocks((current) => moveTimetableBlock(current, blockId, direction));
   }, []);
 
   const saveTerm = useCallback(
@@ -303,6 +370,7 @@ export default function SchoolDataProvider({ children }) {
       teachingWeeks,
       classes,
       recurringAssignments,
+      timetableBlocks,
       lessonOccurrences,
       createClass,
       updateClass,
@@ -311,6 +379,9 @@ export default function SchoolDataProvider({ children }) {
       getAssignmentCount,
       assignClassToSlot,
       removeAssignment,
+      saveTimetableBlock,
+      removeTimetableBlock,
+      moveTimetableBlock: moveBlock,
       saveTerm,
       removeTerm,
       saveTeachingWeek,
@@ -325,6 +396,7 @@ export default function SchoolDataProvider({ children }) {
       teachingWeeks,
       classes,
       recurringAssignments,
+      timetableBlocks,
       lessonOccurrences,
       createClass,
       updateClass,
@@ -333,6 +405,9 @@ export default function SchoolDataProvider({ children }) {
       getAssignmentCount,
       assignClassToSlot,
       removeAssignment,
+      saveTimetableBlock,
+      removeTimetableBlock,
+      moveBlock,
       saveTerm,
       removeTerm,
       saveTeachingWeek,

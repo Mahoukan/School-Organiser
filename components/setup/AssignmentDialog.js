@@ -35,7 +35,7 @@ export default function AssignmentDialog({
         <div>
           <p>Week {slot.cycleWeek}</p>
           <h2 id="assignment-dialog-title">
-            {slot.weekdayLabel} · {slot.period.label}
+            {slot.weekdayLabel} · {slot.period.name}
           </h2>
         </div>
         <button

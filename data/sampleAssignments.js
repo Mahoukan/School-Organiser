@@ -45,11 +45,11 @@ const assignmentRows = [
 ];
 
 export const sampleRecurringAssignments = assignmentRows.map(
-  ([cycleWeek, weekday, periodId, classId]) => ({
-    id: `assignment-${cycleWeek.toLowerCase()}-${weekday}-${periodId}`,
+  ([cycleWeek, weekday, periodKey, classId]) => ({
+    id: `assignment-${cycleWeek.toLowerCase()}-${weekday}-${periodKey}`,
     classId,
     cycleWeek,
     weekday,
-    periodId,
+    periodId: `${cycleWeek.toLowerCase()}-${weekday}-${periodKey}`,
   }),
 );

@@ -24,11 +24,11 @@ export default function SetupSlot({
     );
   }
 
-  if (period.type === "break") {
+  if (!period.isTeaching) {
     return (
       <div className={`${styles.setupSlot} ${styles.breakSlot}`}>
-        <strong>{period.label}</strong>
-        <small>Read-only break</small>
+        <strong>{period.name}</strong>
+        <small>Non-teaching block</small>
       </div>
     );
   }
@@ -48,7 +48,7 @@ export default function SetupSlot({
       <button
         type="button"
         className={`${styles.setupSlot} ${styles.emptySlot}`}
-        aria-label={`Add class to Week ${cycleWeek}, ${weekdayLabel}, ${period.label}`}
+        aria-label={`Add class to Week ${cycleWeek}, ${weekdayLabel}, ${period.name}`}
         onClick={(eventObject) => onChoose(period, eventObject.currentTarget)}
       >
         <span aria-hidden="true">+</span>
@@ -77,14 +77,14 @@ export default function SetupSlot({
       <div className={styles.slotActions}>
         <button
           type="button"
-          aria-label={`Change class for Week ${cycleWeek}, ${weekdayLabel}, ${period.label}`}
+          aria-label={`Change class for Week ${cycleWeek}, ${weekdayLabel}, ${period.name}`}
           onClick={(eventObject) => onChoose(period, eventObject.currentTarget)}
         >
           Change
         </button>
         <button
           type="button"
-          aria-label={`Remove ${classItem.shortCode} from Week ${cycleWeek}, ${weekdayLabel}, ${period.label}`}
+          aria-label={`Remove ${classItem.shortCode} from Week ${cycleWeek}, ${weekdayLabel}, ${period.name}`}
           onClick={() => removeAssignment(cycleWeek, weekday, period.id)}
         >
           Remove

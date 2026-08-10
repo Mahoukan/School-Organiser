@@ -2,6 +2,198 @@
   min-width: 0;
 }
 
+.setupTabs {
+  display: inline-flex;
+  margin-top: var(--space-4);
+  padding: 0.2rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.65rem;
+  background: var(--color-surface-subtle);
+}
+
+.setupTabs button,
+.typeSelector button {
+  min-height: 2.5rem;
+  padding-inline: var(--space-3);
+  border: 0;
+  border-radius: 0.45rem;
+  color: var(--color-text-muted);
+  background: transparent;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.setupTabs button[aria-pressed="true"],
+.typeSelector button[aria-pressed="true"] {
+  color: var(--color-primary);
+  background: var(--color-surface);
+  box-shadow: 0 1px 3px rgb(23 32 51 / 12%);
+}
+
+.structureHeading,
+.formActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-block: var(--space-3);
+}
+
+.structureHeading h3 {
+  margin: 0;
+}
+
+.blockList,
+.blockForm {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.blockRow {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--space-2);
+  align-items: center;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: 0.65rem;
+  background: var(--color-surface);
+}
+
+.orderNumber {
+  display: grid;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 50%;
+  color: var(--color-text-muted);
+  background: var(--color-surface-subtle);
+  font-weight: 800;
+  place-items: center;
+}
+
+.blockRow > div:nth-child(2) {
+  display: grid;
+}
+
+.blockRow span,
+.blockRow small {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
+.blockActions,
+.typeSelector,
+.timeFields {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.blockActions button {
+  min-height: 2.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.4rem;
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+.blockActions button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.blockForm {
+  margin-bottom: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.blockForm h3,
+.blockForm p {
+  margin: 0;
+}
+
+.blockForm label,
+.blockForm legend {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+
+.blockForm input {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.6rem;
+  border: 1px solid #cbd2dd;
+  border-radius: 0.5rem;
+}
+
+.blockForm fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.blockForm label span,
+.blockForm fieldset > span,
+.setupError,
+.setupMessage {
+  color: #9b3535;
+  font-size: 0.75rem;
+}
+
+.timeFields > * {
+  flex: 1;
+}
+
+.typeSelector {
+  margin-top: 0.3rem;
+  padding: 0.2rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.55rem;
+  background: var(--color-surface-subtle);
+}
+
+.primarySetupButton,
+.secondarySetupButton,
+.dangerSetupButton {
+  min-height: 2.5rem;
+  padding-inline: var(--space-3);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 750;
+}
+
+.primarySetupButton { border: 0; color: white; background: var(--color-primary); }
+.secondarySetupButton { border: 1px solid var(--color-border); background: var(--color-surface); }
+.dangerSetupButton { border: 0; color: white; background: #a53b3b; }
+.emptyStructure { display: grid; min-height: 12rem; place-content: center; text-align: center; }
+.blockConfirmDialog { width: min(28rem, calc(100% - 2rem)); padding: var(--space-4); border: 0; border-radius: var(--radius); }
+.blockConfirmDialog::backdrop { background: rgb(23 32 51 / 35%); }
+
+.setupDayColumns {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.setupDayColumn {
+  min-width: 0;
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.setupDayColumn h3 { margin: 0 0 var(--space-2); font-size: 0.9rem; }
+.dayBlock { display: grid; gap: 0.35rem; margin-bottom: var(--space-2); padding-bottom: var(--space-2); border-bottom: 1px solid var(--color-border); }
+.dayBlock > div:first-child { display: grid; }
+.dayBlock > div:first-child span { color: var(--color-text-muted); font-size: 0.65rem; }
+.noSetupBlocks { color: var(--color-text-muted); font-size: 0.75rem; }
+
 .pageHeader {
   padding-bottom: var(--space-4);
   border-bottom: 1px solid var(--color-border);
@@ -534,6 +726,13 @@
 }
 
 @media (max-width: 42rem) {
+  .setupTabs { display: flex; width: 100%; }
+  .setupTabs button { min-width: 0; flex: 1; padding-inline: var(--space-1); }
+  .structureHeading, .timeFields { align-items: stretch; flex-direction: column; }
+  .blockRow { grid-template-columns: auto minmax(0, 1fr); }
+  .blockActions { grid-column: 1 / -1; flex-wrap: wrap; }
+  .blockActions button { flex: 1; }
+  .typeSelector button { min-width: 0; flex: 1; padding-inline: var(--space-1); }
   .sectionHeading {
     flex-direction: column;
   }

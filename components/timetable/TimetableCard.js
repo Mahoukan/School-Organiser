@@ -85,7 +85,7 @@ export default function TimetableCard({
     <button
       type="button"
       className={`${styles.entryCard} ${styles.classCard} ${styles[`classCard-${status}`]}`}
-      aria-label={`${classDetails.shortCode} on ${formatDayHeading(date)}, ${period.label}. Status: ${statusLabel}. Open lesson details.`}
+      aria-label={`${classDetails.shortCode} on ${formatDayHeading(date)}, ${period.name}. Status: ${statusLabel}. Open lesson details.`}
       onClick={openLesson}
       style={{
         "--class-background": colourDetails.background,

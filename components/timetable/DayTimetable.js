@@ -1,7 +1,5 @@
-import {
-  periods,
-  weekdays,
-} from "../../data/sampleTimetable";
+import { weekdays } from "../../data/sampleTimetable";
+import { formatBlockTime, getBlocksForDay } from "../../lib/periodStructures";
 import {
   formatDayHeading,
   isWeekend,
@@ -18,7 +16,7 @@ export default function DayTimetable({
   showHeading = true,
   onOpenLesson,
 }) {
-  const { recurringAssignments, teachingWeeks } = useSchoolData();
+  const { recurringAssignments, teachingWeeks, timetableBlocks } = useSchoolData();
   const teachingWeek = getTeachingWeekForDate(date, teachingWeeks);
 
   if (isWeekend(date)) {
@@ -46,6 +44,20 @@ export default function DayTimetable({
   }
 
   const weekday = weekdays[date.getDay() - 1];
+  const periods = getBlocksForDay(
+    timetableBlocks,
+    teachingWeek.cycleWeek,
+    weekday.key,
+  );
+
+  if (!periods.length) {
+    return (
+      <section className={styles.dayPanel}>
+        {showHeading && <div className={styles.dayHeading}><h2>{formatDayHeading(date)}</h2><span className={styles.cycleBadge}>Week {teachingWeek.cycleWeek}</span></div>}
+        <div className={styles.emptyDay}><p>No timetable blocks are configured for this day.</p></div>
+      </section>
+    );
+  }
 
   return (
     <section className={styles.dayPanel}>
@@ -64,7 +76,7 @@ export default function DayTimetable({
             weekday.key,
             period,
           );
-          const isBreak = period.type === "break";
+          const isBreak = !period.isTeaching;
 
           return (
             <div
@@ -72,9 +84,9 @@ export default function DayTimetable({
               className={`${styles.dayRow} ${isBreak ? styles.dayBreakRow : ""}`}
             >
               <div className={styles.periodMeta}>
-                <span className={styles.periodLabel}>{period.label}</span>
+                <span className={styles.periodLabel}>{period.name}</span>
                 <span className={styles.periodTime}>
-                  {period.start}–{period.end}
+                  {formatBlockTime(period.startTime)}–{formatBlockTime(period.endTime)}
                 </span>
               </div>
               <TimetableCard
