@@ -1,17 +1,17 @@
-.todayPage { display: grid; gap: 1.5rem; padding-bottom: 2rem; }
+.todayPage { display: grid; gap: var(--density-section-gap); padding-bottom: 2rem; }
 .header { display: flex; align-items: end; justify-content: space-between; gap: 1rem; padding-block: 1rem 1.25rem; border-bottom: 1px solid var(--color-border); }
 .header h1 { margin: .25rem 0; font-size: clamp(2rem, 5vw, 3rem); letter-spacing: -.04em; }
 .header p, .sectionHeading > span { margin: 0; color: var(--color-text-muted); }
 .eyebrow { color: var(--color-primary); font-size: .75rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
 .primaryLink, .notice a { display: inline-flex; min-height: 2.75rem; align-items: center; justify-content: center; padding: .65rem 1rem; border-radius: .6rem; font-weight: 700; }
-.primaryLink { color: white; background: var(--color-primary); }
+.primaryLink { color: var(--app-accent-text); background: var(--color-primary); }
 .headerActions { display: flex; align-items: center; gap: .5rem; }
 .secondaryAction { min-height: 2.75rem; padding: .6rem .9rem; border: 1px solid var(--color-border); border-radius: .6rem; background: var(--color-surface); font-weight: 750; cursor: pointer; }
-.notice { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.15rem; border: 1px solid #e8ca82; border-radius: .8rem; background: #fff8e5; }
+.notice { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.15rem; border: 1px solid var(--app-warning-border); border-radius: .8rem; background: var(--app-warning-soft); }
 .notice p { margin: .25rem 0 0; color: var(--color-text-muted); }
-.notice a { color: var(--color-primary); background: white; }
+.notice a { color: var(--color-primary); background: var(--color-surface); }
 .summaryGrid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 1rem; }
-.currentCard, .overview { padding: 1.25rem; border: 1px solid var(--color-border); border-radius: 1rem; background: var(--color-surface); box-shadow: 0 .5rem 1.75rem rgb(23 32 51 / 6%); }
+.currentCard, .overview { padding: var(--density-card-padding); border: 1px solid var(--color-border); border-radius: 1rem; background: var(--color-surface); box-shadow: 0 .5rem 1.75rem var(--app-shadow); }
 button.currentCard { width: 100%; color: var(--color-text); font: inherit; text-align: left; cursor: pointer; }
 button.currentCard:hover { border-color: var(--color-primary); }
 .currentCard h2, .overview h2 { margin: .45rem 0; font-size: 1.15rem; }
@@ -24,13 +24,13 @@ button.currentCard:hover { border-color: var(--color-primary); }
 .sectionHeading h2 { margin: .25rem 0 0; font-size: 1.5rem; }
 .schedule { display: grid; gap: 1rem; }
 .scheduleList { display: grid; gap: .65rem; }
-.scheduleItem { display: grid; width: 100%; grid-template-columns: minmax(8rem, .3fr) minmax(0, 1fr); gap: 1rem; padding: 1rem; border: 1px solid var(--item-border, var(--color-border)); border-left-width: .3rem; border-radius: .8rem; color: var(--item-text, var(--color-text)); background: var(--item-bg, var(--color-surface)); font: inherit; text-align: left; }
+.scheduleItem { display: grid; width: 100%; grid-template-columns: minmax(8rem, .3fr) minmax(0, 1fr); gap: 1rem; padding: var(--density-row-padding); border: 1px solid var(--item-border, var(--color-border)); border-left-width: .3rem; border-radius: .8rem; color: var(--item-text, var(--color-text)); background: var(--item-bg, var(--color-surface)); font: inherit; text-align: left; }
 button.scheduleItem { cursor: pointer; }
 button.scheduleItem:hover { filter: brightness(.985); box-shadow: 0 .35rem 1rem rgb(23 32 51 / 8%); }
 button.scheduleItem:focus-visible, .primaryLink:focus-visible, .secondaryAction:focus-visible, .notice a:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
 .periodMeta, .occupant { display: flex; flex-direction: column; gap: .25rem; }
 .periodMeta span, .occupant small, .occupant > span { color: var(--color-text-muted); }
-.nowMarker { width: fit-content; margin-top: .3rem; padding: .15rem .45rem; border-radius: 999px; color: white !important; background: var(--color-primary); font-size: .7rem; font-weight: 800; text-transform: uppercase; }
+.nowMarker { width: fit-content; margin-top: .3rem; padding: .15rem .45rem; border-radius: 999px; color: var(--app-accent-text) !important; background: var(--color-primary); font-size: .7rem; font-weight: 800; text-transform: uppercase; }
 .classHeading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 .classHeading strong { font-size: 1.15rem; }
 .classHeading span { font-size: .78rem; font-weight: 750; }
@@ -51,18 +51,18 @@ button.scheduleItem:focus-visible, .primaryLink:focus-visible, .secondaryAction:
 .planningFilters { display: flex; align-items: end; gap: .65rem; }
 .planningFilters label { display: grid; gap: .25rem; color: var(--color-text-muted); font-size: .72rem; font-weight: 750; }
 .planningFilters select { min-height: 2.6rem; max-width: 12rem; padding: .45rem 2rem .45rem .65rem; border: 1px solid var(--color-border); border-radius: .55rem; color: var(--color-text); background: var(--color-surface); }
-.configurationNotice { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .8rem 1rem; border: 1px solid #e8ca82; border-radius: .7rem; background: #fff8e5; }
+.configurationNotice { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .8rem 1rem; border: 1px solid var(--app-warning-border); border-radius: .7rem; background: var(--app-warning-soft); }
 .configurationNotice a { color: var(--color-primary); font-weight: 750; }
 .planningGroups, .planningGroup { display: grid; gap: .75rem; }
 .planningGroup h3 { margin: .35rem 0 0; font-size: 1rem; }
 .planningDateHeading { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-2); }
 .planningDateHeading a { color: var(--color-primary); font-size: .8rem; font-weight: 750; }
 .planningList { display: grid; gap: .5rem; }
-.planningItem { display: grid; width: 100%; min-height: 5.25rem; grid-template-columns: minmax(9rem, .8fr) minmax(0, 1.25fr) minmax(8rem, .65fr); align-items: center; gap: 1rem; padding: .8rem 1rem; border: 1px solid var(--planning-border); border-left-width: .3rem; border-radius: .7rem; color: var(--planning-text); background: var(--planning-bg); font: inherit; text-align: left; cursor: pointer; }
+.planningItem { display: grid; width: 100%; min-height: 5.25rem; grid-template-columns: minmax(9rem, .8fr) minmax(0, 1.25fr) minmax(8rem, .65fr); align-items: center; gap: 1rem; padding: var(--density-row-padding); border: 1px solid var(--planning-border); border-left-width: .3rem; border-radius: .7rem; color: var(--planning-text); background: var(--planning-bg); font: inherit; text-align: left; cursor: pointer; }
 .planningItem:hover { filter: brightness(.985); box-shadow: 0 .3rem .9rem rgb(23 32 51 / 8%); }
 .planningIdentity, .planningLesson, .planningPeriod { display: grid; gap: .15rem; min-width: 0; }
 .planningIdentity span, .planningIdentity small, .planningLesson span, .planningPeriod span, .planningPeriod small { color: var(--color-text-muted); font-size: .78rem; }
-.planningState { width: fit-content; margin-top: .2rem; padding: .15rem .45rem; border-radius: 999px; color: #75401f; background: #fff3cd; font-weight: 750; }
+.planningState { width: fit-content; margin-top: .2rem; padding: .15rem .45rem; border-radius: 999px; color: var(--app-warning); background: var(--app-warning-soft); font-weight: 750; }
 .planningPeriod { justify-self: end; text-align: right; }
 .showMore { width: fit-content; min-height: 2.75rem; justify-self: center; padding: .55rem 1rem; border: 1px solid var(--color-border); border-radius: .55rem; color: var(--color-primary); background: var(--color-surface); font-weight: 750; cursor: pointer; }
 @media (max-width: 55rem) { .header, .planningHeading { align-items: start; flex-direction: column; } .summaryGrid { grid-template-columns: 1fr; } .overview dl { grid-template-columns: repeat(3, minmax(0, 1fr)); } .planningFilters { width: 100%; flex-wrap: wrap; } .planningFilters label { min-width: min(12rem, 100%); flex: 1; } .planningFilters select { width: 100%; max-width: none; } .planningItem { grid-template-columns: minmax(8rem, .8fr) minmax(0, 1.2fr); } .planningPeriod { grid-column: 1 / -1; justify-self: start; text-align: left; } }

@@ -13,8 +13,8 @@
 .overlayForm { display: grid; gap: var(--space-3); padding: var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); }
 .overlayForm h2 { margin: 0; }
 .overlayForm label, .overlayForm legend { display: grid; gap: .3rem; font-size: .78rem; font-weight: 750; }
-.overlayForm input, .overlayForm select, .overlayForm textarea { width: 100%; min-height: 2.75rem; padding: .6rem; border: 1px solid #cbd2dd; border-radius: .5rem; font: inherit; }
-.overlayForm label > span, .overlayForm fieldset > span { color: #9b3535; font-size: .72rem; }
+.overlayForm input, .overlayForm select, .overlayForm textarea { width: 100%; min-height: 2.75rem; padding: .6rem; border: 1px solid var(--app-border-strong); border-radius: .5rem; color: var(--color-text); background: var(--color-surface); font: inherit; }
+.overlayForm label > span, .overlayForm fieldset > span { color: var(--app-error); font-size: .72rem; }
 .overlayForm fieldset { margin: 0; padding: 0; border: 0; }
 .classChecks { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: var(--space-2); margin-top: .35rem; }
 .classChecks label { display: flex; align-items: center; gap: .55rem; padding: .55rem; border: 1px solid var(--color-border); border-left: 4px solid var(--check-colour); border-radius: .5rem; }
@@ -43,22 +43,22 @@
 .cycleSelector button { min-height: 2.2rem; border: 0; border-radius: .35rem; color: var(--color-text-muted); background: transparent; cursor: pointer; }
 .cycleSelector button[aria-pressed="true"] { color: var(--color-primary); background: var(--color-surface); box-shadow: 0 1px 3px rgb(23 32 51 / 12%); }
 .primary, .secondary, .danger, .dangerText, .textButton { min-height: 2.5rem; padding: .45rem .75rem; border-radius: .5rem; font-weight: 700; cursor: pointer; }
-.primary { border: 0; color: white; background: var(--color-primary); }
+.primary { border: 0; color: var(--app-accent-text); background: var(--color-primary); }
 .secondary { border: 1px solid var(--color-border); color: var(--color-text); background: var(--color-surface); }
-.danger { border: 0; color: white; background: #a53b3b; }
-.dangerText, .textButton { border: 0; color: #8b3b43; background: transparent; }
+.danger { border: 0; color: #fff; background: var(--app-error-strong); }
+.dangerText, .textButton { border: 0; color: var(--app-error); background: transparent; }
 .textButton:first-child { color: var(--color-primary); }
 .editor, .weekEditor { margin-bottom: var(--space-4); }
 .editor h2 { margin-top: 0; }
 .formGrid { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: var(--space-3); }
 .editor label, .weekEditor label, .weekEditor legend { display: grid; gap: .3rem; font-size: .78rem; font-weight: 750; }
-.editor input, .weekEditor input { width: 100%; min-height: 2.75rem; padding: .6rem; border: 1px solid #cbd2dd; border-radius: .5rem; }
-.editor label span, .weekEditor label span, .formError { color: #9b3535; font-size: .72rem; }
+.editor input, .weekEditor input { width: 100%; min-height: 2.75rem; padding: .6rem; border: 1px solid var(--app-border-strong); border-radius: .5rem; color: var(--color-text); background: var(--color-surface); }
+.editor label span, .weekEditor label span, .formError { color: var(--app-error); font-size: .72rem; }
 .weekEditor { display: grid; gap: var(--space-3); }
 .weekEditor fieldset { margin: 0; padding: 0; border: 0; }
 .formActions { justify-content: flex-end; margin-top: var(--space-3); }
-.notice { margin-bottom: var(--space-3); padding: var(--space-2); border: 1px solid #b9decf; border-radius: .5rem; color: #176342; background: #e5f4ed; }
+.notice { margin-bottom: var(--space-3); padding: var(--space-2); border: 1px solid var(--app-success-border); border-radius: .5rem; color: var(--app-success); background: var(--app-success-soft); }
 .confirmDialog { width: min(28rem, calc(100% - 2rem)); padding: var(--space-4); border: 0; border-radius: var(--radius); }
-.confirmDialog::backdrop { background: rgb(23 32 51 / 35%); }
+.confirmDialog::backdrop { background: var(--app-overlay); }
 .primary:focus-visible, .secondary:focus-visible, .danger:focus-visible, .textButton:focus-visible, .dangerText:focus-visible, .cycleSelector button:focus-visible, .sectionTabs button:focus-visible, .editor input:focus-visible, .weekEditor input:focus-visible, .overlayForm input:focus-visible, .overlayForm select:focus-visible, .overlayForm textarea:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
 @media (max-width: 42rem) { .heading, .termCard header, .termCard footer, .overlayCard { align-items: stretch; flex-direction: column; } .sectionTabs { overflow-x: auto; } .sectionTabs button { flex: 0 0 auto; } .formGrid { grid-template-columns: 1fr; } .cardActions > *, .heading > button { flex: 1; } .cardActions { display: flex; } .weekRow { align-items: flex-start; flex-wrap: wrap; } .weekRow > span:first-child { width: 100%; } .generate { justify-content: flex-start; } .generate > span { text-align: left; } .generate .primary { width: 100%; } }

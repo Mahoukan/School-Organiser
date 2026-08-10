@@ -13,7 +13,7 @@
 .panel p { margin: 0; }
 .panel p { color: var(--color-text-muted); }
 .panel .guidance { font-size: .82rem; }
-.panel .error { color: #9b3535; font-weight: 650; }
+.panel .error { color: var(--app-error); font-weight: 650; }
 
 .panel button {
   width: fit-content;
@@ -22,7 +22,7 @@
   padding-inline: var(--space-3);
   border: 0;
   border-radius: .55rem;
-  color: #fff;
+  color: var(--app-accent-text);
   background: var(--color-primary);
   font-weight: 750;
   cursor: pointer;
@@ -31,6 +31,32 @@
 .panel button:disabled { cursor: wait; opacity: .65; }
 .panel button:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
 
+.appearancePanel { gap: var(--space-4); }
+.panelHeading { display: flex; align-items: start; justify-content: space-between; gap: var(--space-3); }
+.panelHeading > div { display: grid; gap: var(--space-1); }
+.saveStatus { min-width: 4rem; color: var(--color-text-muted); font-size: .8rem; text-align: right; }
+.choiceGroup { min-width: 0; margin: 0; padding: 0; border: 0; }
+.choiceGroup legend { margin-bottom: var(--space-2); font-weight: 750; }
+.segmentedChoices, .accentChoices { display: grid; gap: var(--space-2); }
+.segmentedChoices { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.choice { position: relative; min-width: 0; cursor: pointer; }
+.choice input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.choiceLabel { display: flex; min-height: 2.75rem; align-items: center; gap: var(--space-2); padding: .55rem .75rem; border: 1px solid var(--color-border); border-radius: .6rem; color: var(--color-text); background: var(--color-surface-subtle); font-weight: 650; }
+.choice input:checked + .choiceLabel { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-primary-soft); box-shadow: inset 3px 0 var(--color-primary); }
+.choice input:focus-visible + .choiceLabel { outline: 3px solid var(--color-primary); outline-offset: 2px; }
+.choiceGroup:disabled .choice { cursor: wait; }
+.selectedText { margin-left: auto; color: var(--color-text-muted); font-size: .72rem; font-weight: 600; }
+.accentChoices { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.swatch { width: 1rem; height: 1rem; flex: 0 0 auto; border: 2px solid var(--app-surface); border-radius: 50%; box-shadow: 0 0 0 1px var(--app-border-strong); }
+.swatch[data-swatch="blue"] { background: #3157c8; }
+.swatch[data-swatch="indigo"] { background: #4f46c7; }
+.swatch[data-swatch="purple"] { background: #7a3fba; }
+.swatch[data-swatch="teal"] { background: #087a78; }
+.swatch[data-swatch="green"] { background: #287345; }
+.swatch[data-swatch="orange"] { background: #a84f0c; }
+.swatch[data-swatch="rose"] { background: #b23860; }
+
 @media (max-width: 32rem) {
   .panel button { width: 100%; }
+  .segmentedChoices, .accentChoices { grid-template-columns: 1fr; }
 }

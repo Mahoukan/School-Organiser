@@ -1,21 +1,21 @@
 .dialog { width: min(38rem, calc(100% - 2rem)); max-height: calc(100dvh - 2rem); padding: 0; border: 0; border-radius: var(--radius); overflow: auto; }
-.dialog::backdrop { background: rgb(23 32 51 / 40%); }
+.dialog::backdrop { background: var(--app-overlay); }
 .form { display: grid; gap: var(--space-3); padding: var(--space-4); }
 .form header, .form footer { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
 .form header h2, .form header span, .conflicts h3, .conflicts p { margin: 0; }
 .form header span { color: var(--color-text-muted); font-size: .72rem; font-weight: 800; text-transform: uppercase; }
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
 .grid label { display: grid; gap: .35rem; min-width: 0; font-size: .78rem; font-weight: 750; }
-.grid input, .grid select, .grid textarea { width: 100%; min-width: 0; min-height: 2.75rem; padding: .6rem; border: 1px solid #cbd2dd; border-radius: .5rem; font: inherit; }
+.grid input, .grid select, .grid textarea { width: 100%; min-width: 0; min-height: 2.75rem; padding: .6rem; border: 1px solid var(--app-border-strong); border-radius: .5rem; color: var(--color-text); background: var(--color-surface); font: inherit; }
 .grid textarea { resize: vertical; }
-.grid small, .error { margin: 0; color: #9b3535; font-size: .75rem; }
+.grid small, .error { margin: 0; color: var(--app-error); font-size: .75rem; }
 .full { grid-column: 1 / -1; }
 .primary, .secondary, .warningButton, .iconButton { min-height: 2.6rem; padding: .5rem .85rem; border-radius: .5rem; font-weight: 750; cursor: pointer; }
-.primary { border: 0; color: white; background: var(--color-primary); }
-.secondary { border: 1px solid var(--color-border); background: white; }
-.warningButton { justify-self: start; border: 0; color: white; background: #8b5b17; }
+.primary { border: 0; color: var(--app-accent-text); background: var(--color-primary); }
+.secondary { border: 1px solid var(--color-border); color: var(--color-text); background: var(--color-surface); }
+.warningButton { justify-self: start; border: 0; color: #fff; background: var(--app-warning-strong); }
 .iconButton { min-width: 2.6rem; border: 0; background: transparent; font-size: 1.4rem; }
-.conflicts { display: grid; gap: .6rem; padding: var(--space-3); border: 1px solid #e1bd77; border-radius: .6rem; background: #fff8e8; }
+.conflicts { display: grid; gap: .6rem; padding: var(--space-3); border: 1px solid var(--app-warning-border); border-radius: .6rem; background: var(--app-warning-soft); }
 .conflicts > div { display: flex; justify-content: space-between; gap: 1rem; }
 .conflicts span { color: var(--color-text-muted); font-size: .82rem; }
 .card { display: grid; gap: .2rem; width: 100%; min-height: 3.6rem; padding: .7rem .8rem; border: 1px solid var(--event-border); border-left: 4px solid var(--event-border); border-radius: .55rem; color: var(--event-text); background: var(--event-bg); text-align: left; }
@@ -39,12 +39,12 @@ button.card { cursor: pointer; }
 .managerRow > .rowActions { display: flex; grid-template-columns: none; align-items: center; gap: var(--space-1); }
 .rowActions a { color: var(--color-primary); font-size: .78rem; font-weight: 750; white-space: nowrap; }
 .pastHeading { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
-.deleteLink { min-height: 2.6rem; padding: .4rem .6rem; border: 0; color: #8b3b43; background: transparent; font-weight: 750; cursor: pointer; }
+.deleteLink { min-height: 2.6rem; padding: .4rem .6rem; border: 0; color: var(--app-error); background: transparent; font-weight: 750; cursor: pointer; }
 .empty { display: grid; justify-items: start; gap: var(--space-2); padding: var(--space-5); border: 1px dashed var(--color-border); border-radius: var(--radius); }
 .confirmDialog { width: min(28rem, calc(100% - 2rem)); padding: var(--space-4); border: 0; border-radius: var(--radius); }
-.confirmDialog::backdrop { background: rgb(23 32 51 / 40%); }
+.confirmDialog::backdrop { background: var(--app-overlay); }
 .confirmActions { display: flex; justify-content: flex-end; gap: var(--space-2); }
-.danger { min-height: 2.6rem; padding: .5rem .85rem; border: 0; border-radius: .5rem; color: white; background: #a53b3b; font-weight: 750; }
+.danger { min-height: 2.6rem; padding: .5rem .85rem; border: 0; border-radius: .5rem; color: #fff; background: var(--app-error-strong); font-weight: 750; }
 @media (max-width: 32rem) { .managerHeading { align-items: stretch; flex-direction: column; } .managerRow > div { grid-template-columns: 1fr; gap: .35rem; } }
 .strip { display: grid; gap: var(--space-2); margin-bottom: var(--space-3); }
 .strip > div { display: grid; gap: var(--space-2); }

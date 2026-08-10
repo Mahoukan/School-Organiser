@@ -7,7 +7,7 @@
 .classHeader h2 { font-size: 1rem; font-weight: 700; }
 .classHeader p, .classHeader div > span { color: var(--color-text-muted); }
 .titleRow { display: flex; align-items: center; gap: var(--space-2); }
-.archivedBadge { padding: .2rem .55rem; border-radius: 999px; color: #654b23 !important; background: #f7e8c9; font-size: .7rem; font-weight: 800; text-transform: uppercase; }
+.archivedBadge { padding: .2rem .55rem; border-radius: 999px; color: var(--app-warning) !important; background: var(--app-warning-soft); font-size: .7rem; font-weight: 800; text-transform: uppercase; }
 .historySummary { display: flex; gap: var(--space-3); margin-block: var(--space-3); color: var(--color-text-muted); }
 .historySummary span { padding: .45rem .7rem; border: 1px solid var(--color-border); border-radius: .5rem; background: var(--color-surface); }
 .historySummary strong { color: var(--color-text); }
@@ -29,11 +29,11 @@
 .lessonPreview small { font-weight: 700; }
 .statusBadge, .movedLabel { flex: 0 0 auto; padding: .25rem .55rem; border-radius: 999px; font-size: .7rem; font-weight: 800; }
 .statusBadge { border: 1px solid var(--color-border); background: var(--color-surface-subtle); }
-.status-completed { color: #176342; border-color: #b9decf; background: #e5f4ed; }
-.status-partially-completed { color: #765213; border-color: #e8d39c; background: #fff5d8; }
-.status-cancelled { color: #8b3b43; border-color: #dcbec2; background: #fbebed; }
+.status-completed { color: var(--app-success); border-color: var(--app-success-border); background: var(--app-success-soft); }
+.status-partially-completed { color: var(--app-warning); border-color: var(--app-warning-border); background: var(--app-warning-soft); }
+.status-cancelled { color: var(--app-error); border-color: var(--app-error-border); background: var(--app-error-soft); }
 .movedLabel { width: max-content; color: var(--color-primary); background: var(--color-primary-soft); }
-.cancellation { padding-top: var(--space-2); border-top: 1px solid var(--color-border); color: #8b3b43; }
+.cancellation { padding-top: var(--space-2); border-top: 1px solid var(--color-border); color: var(--app-error); }
 .emptyState, .notFound { padding: var(--space-5); border: 1px dashed var(--color-border); border-radius: var(--radius); background: var(--color-surface); text-align: center; }
 .emptyState h3, .emptyState p, .notFound h1, .notFound p { margin: 0; }
 .notFound { margin-top: var(--space-5); }

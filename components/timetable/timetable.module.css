@@ -250,9 +250,9 @@
 }
 
 .classCard-cancelled {
-  border-color: #b7bec9;
-  color: #5e6776;
-  background: #e8ebef;
+  border-color: var(--app-border-strong);
+  color: var(--color-text-muted);
+  background: var(--color-surface-subtle);
   opacity: 0.78;
 }
 
@@ -266,24 +266,24 @@
 }
 
 .eventCard {
-  border-color: var(--event-border, #bfc7d3);
-  color: var(--event-text, #354257);
-  background: var(--event-background, #e9edf2);
+  border-color: var(--event-border, var(--app-border-strong));
+  color: var(--event-text, var(--color-text));
+  background: var(--event-background, var(--color-surface-subtle));
 }
 
 .eventType { margin-top: .1rem; font-size: .68rem; font-weight: 750; }
 
 .freeCard {
   border-style: dashed;
-  color: #788396;
-  background: #fafbfc;
+  color: var(--color-text-muted);
+  background: var(--color-surface-subtle);
 }
 
 .breakCard {
   min-height: 2.75rem;
   border-color: transparent;
-  color: #697589;
-  background: #e9edf2;
+  color: var(--color-text-muted);
+  background: var(--color-surface-subtle);
   font-size: 0.8rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -437,7 +437,7 @@
 }
 
 .dayNotices { display: grid; gap: var(--space-2); margin: var(--space-3); }
-.dayNotices aside { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-2); padding: var(--space-2) var(--space-3); border: 1px solid #e8ca82; border-radius: .6rem; background: #fff8e5; }
+.dayNotices aside { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-2); padding: var(--space-2) var(--space-3); border: 1px solid var(--app-warning-border); border-radius: .6rem; background: var(--app-warning-soft); }
 .dayNotices span { color: var(--color-text-muted); }
 
 .todayColumn {
@@ -522,7 +522,7 @@
   flex-direction: column;
   justify-content: center;
   padding: var(--space-2);
-  background: #fafbfc;
+  background: var(--color-surface-subtle);
 }
 
 .gridPeriodCell strong {

@@ -9,12 +9,14 @@ import { validateRecurringEvent } from "../../lib/recurringEvents";
 import { validateTeachingWeek, validateTerm } from "../../lib/academicCalendar";
 import { validateCalendarException, validateClassAbsence, validateTeacherAbsence } from "../../lib/scheduleOverlays";
 import { validateDatedEvent } from "../../lib/datedEvents";
+import { normalizeUserPreferences } from "../../lib/userPreferences";
 
 const SchoolDataContext = createContext(null);
 
 function hydrateSchoolData(payload) {
   return {
     ...payload,
+    preferences: normalizeUserPreferences(payload.preferences),
     lessonOccurrences: (payload.lessonOccurrences ?? []).map((occurrence) => ({
       ...occurrence,
       title: occurrence.title ?? "",
@@ -27,12 +29,16 @@ function hydrateSchoolData(payload) {
   };
 }
 
-export default function SchoolDataProvider({ children }) {
+export default function SchoolDataProvider({ children, initialPreferences }) {
   const router = useRouter();
   const [data, setData] = useState(null);
+  const [appearance, setAppearance] = useState(() => normalizeUserPreferences(initialPreferences));
+  const [preferenceSavePending, setPreferenceSavePending] = useState(false);
+  const [preferenceSaveError, setPreferenceSaveError] = useState("");
   const [loadError, setLoadError] = useState("");
   const [loading, setLoading] = useState(true);
   const pendingOperations = useRef(new Set());
+  const preferenceSaveLock = useRef(false);
 
   const load = useCallback(async () => {
     setLoading(true); setLoadError("");
@@ -41,7 +47,9 @@ export default function SchoolDataProvider({ children }) {
       if (response.status === 401) { router.replace("/signin"); return; }
       const body = await response.json();
       if (!response.ok) throw new Error(body.error || "We couldn't load your organiser data.");
-      setData(hydrateSchoolData(body));
+      const hydrated = hydrateSchoolData(body);
+      setData(hydrated);
+      setAppearance(hydrated.preferences);
     } catch (error) { setLoadError(error.message); }
     finally { setLoading(false); }
   }, [router]);
@@ -106,12 +114,43 @@ export default function SchoolDataProvider({ children }) {
   const saveDatedEvent = useCallback(async (values) => { const errors = validateDatedEvent(values, data.academicYear); if (Object.keys(errors).length) return { ok: false, errors }; return operation("dated-events", "save", { values }, { event: values }); }, [data, operation]);
   const removeDatedEvent = useCallback(async (id) => operation("dated-events", "remove", { id }), [operation]);
 
-  const value = useMemo(() => data ? { ...data, createClass, updateClass, archiveClass, restoreClass, getAssignmentCount, assignClassToSlot, removeAssignment, createDayTemplate, renameDayTemplate, deleteDayTemplate, saveDayTemplateBlock, removeDayTemplateBlock, moveDayTemplateBlock, assignDayTemplate, bulkAssignDayTemplate, saveTerm, removeTerm, saveTeachingWeek, removeTeachingWeek, generateTeachingWeeks, getLessonOccurrence, saveLessonOccurrence, saveTeacherAbsence, saveClassAbsence, saveCalendarException, removeTeacherAbsence, removeClassAbsence, removeCalendarException, findLessonMovement, saveLessonMovement, removeLessonMovement, saveRecurringEvent, removeRecurringEvent, saveDatedEvent, removeDatedEvent } : null, [data, createClass, updateClass, archiveClass, restoreClass, getAssignmentCount, assignClassToSlot, removeAssignment, createDayTemplate, renameDayTemplate, deleteDayTemplate, saveDayTemplateBlock, removeDayTemplateBlock, moveDayTemplateBlock, assignDayTemplate, bulkAssignDayTemplate, saveTerm, removeTerm, saveTeachingWeek, removeTeachingWeek, generateTeachingWeeks, getLessonOccurrence, saveLessonOccurrence, saveTeacherAbsence, saveClassAbsence, saveCalendarException, removeTeacherAbsence, removeClassAbsence, removeCalendarException, findLessonMovement, saveLessonMovement, removeLessonMovement, saveRecurringEvent, removeRecurringEvent, saveDatedEvent, removeDatedEvent]);
+  const updatePreferences = useCallback(async (patch) => {
+    if (preferenceSaveLock.current) return { ok: false, pending: true, message: "Another appearance choice is still being saved." };
+    preferenceSaveLock.current = true;
+    const previous = appearance;
+    const optimistic = normalizeUserPreferences({ ...appearance, ...patch });
+    setAppearance(optimistic);
+    setData((current) => current ? { ...current, preferences: optimistic } : current);
+    setPreferenceSavePending(true);
+    setPreferenceSaveError("");
+    try {
+      const response = await fetch("/api/preferences", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch) });
+      if (response.status === 401) { router.replace("/signin"); throw new Error("Your session has expired."); }
+      const body = await response.json();
+      if (!response.ok) throw new Error(body.error || "Appearance preferences could not be saved.");
+      const saved = normalizeUserPreferences(body.preferences);
+      setAppearance(saved);
+      setData((current) => current ? { ...current, preferences: saved } : current);
+      return { ok: true, preferences: saved };
+    } catch (error) {
+      setAppearance(previous);
+      setData((current) => current ? { ...current, preferences: previous } : current);
+      setPreferenceSaveError(`${error.message} Your previous appearance has been restored.`);
+      return { ok: false, message: error.message };
+    } finally {
+      preferenceSaveLock.current = false;
+      setPreferenceSavePending(false);
+    }
+  }, [appearance, router]);
 
-  if (loading) return <div className="data-state" role="status">Loading your organiser…</div>;
-  if (loadError) return <div className="data-state" role="alert"><h1>We couldn&apos;t load your organiser.</h1><p>{loadError}</p><p>Your saved data has not been changed.</p><button type="button" onClick={load}>Try Again</button></div>;
-  if (!data?.academicYear) return <div className="data-state"><h1>Your organiser is ready for setup.</h1><p>No academic year is configured for this account yet.</p><button type="button" onClick={load}>Check Again</button></div>;
-  return <SchoolDataContext.Provider value={value}>{children}</SchoolDataContext.Provider>;
+  const value = useMemo(() => data ? { ...data, preferences: appearance, updatePreferences, preferenceSavePending, preferenceSaveError, createClass, updateClass, archiveClass, restoreClass, getAssignmentCount, assignClassToSlot, removeAssignment, createDayTemplate, renameDayTemplate, deleteDayTemplate, saveDayTemplateBlock, removeDayTemplateBlock, moveDayTemplateBlock, assignDayTemplate, bulkAssignDayTemplate, saveTerm, removeTerm, saveTeachingWeek, removeTeachingWeek, generateTeachingWeeks, getLessonOccurrence, saveLessonOccurrence, saveTeacherAbsence, saveClassAbsence, saveCalendarException, removeTeacherAbsence, removeClassAbsence, removeCalendarException, findLessonMovement, saveLessonMovement, removeLessonMovement, saveRecurringEvent, removeRecurringEvent, saveDatedEvent, removeDatedEvent } : null, [data, appearance, updatePreferences, preferenceSavePending, preferenceSaveError, createClass, updateClass, archiveClass, restoreClass, getAssignmentCount, assignClassToSlot, removeAssignment, createDayTemplate, renameDayTemplate, deleteDayTemplate, saveDayTemplateBlock, removeDayTemplateBlock, moveDayTemplateBlock, assignDayTemplate, bulkAssignDayTemplate, saveTerm, removeTerm, saveTeachingWeek, removeTeachingWeek, generateTeachingWeeks, getLessonOccurrence, saveLessonOccurrence, saveTeacherAbsence, saveClassAbsence, saveCalendarException, removeTeacherAbsence, removeClassAbsence, removeCalendarException, findLessonMovement, saveLessonMovement, removeLessonMovement, saveRecurringEvent, removeRecurringEvent, saveDatedEvent, removeDatedEvent]);
+
+  let content;
+  if (loading) content = <div className="data-state" role="status">Loading your organiser…</div>;
+  else if (loadError) content = <div className="data-state" role="alert"><h1>We couldn&apos;t load your organiser.</h1><p>{loadError}</p><p>Your saved data has not been changed.</p><button type="button" onClick={load}>Try Again</button></div>;
+  else if (!data?.academicYear) content = <div className="data-state"><h1>Your organiser is ready for setup.</h1><p>No academic year is configured for this account yet.</p><button type="button" onClick={load}>Check Again</button></div>;
+  else content = <SchoolDataContext.Provider value={value}>{children}</SchoolDataContext.Provider>;
+  return <div className="appearance-root" data-theme={appearance.theme} data-accent={appearance.accentColour} data-density={appearance.density}>{content}</div>;
 }
 
 export function useSchoolData() { const context = useContext(SchoolDataContext); if (!context) throw new Error("useSchoolData must be used within SchoolDataProvider."); return context; }

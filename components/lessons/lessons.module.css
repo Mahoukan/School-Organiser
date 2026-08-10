@@ -15,7 +15,7 @@
 }
 
 .lessonDialog::backdrop {
-  background: rgb(23 32 51 / 32%);
+  background: var(--app-overlay);
   backdrop-filter: blur(1px);
 }
 
@@ -213,21 +213,21 @@
 }
 
 .status-completed {
-  border-color: #b9decf;
-  color: #176342;
-  background: #e5f4ed;
+  border-color: var(--app-success-border);
+  color: var(--app-success);
+  background: var(--app-success-soft);
 }
 
 .status-partially-completed {
-  border-color: #ead1a9;
-  color: #82520c;
-  background: #fbf0dc;
+  border-color: var(--app-warning-border);
+  color: var(--app-warning);
+  background: var(--app-warning-soft);
 }
 
 .status-cancelled {
-  border-color: #d2bfc1;
-  color: #7a3d43;
-  background: #f5e8e9;
+  border-color: var(--app-error-border);
+  color: var(--app-error);
+  background: var(--app-error-soft);
 }
 
 .savedLesson section {
@@ -249,9 +249,9 @@
 
 .cancellationDetails {
   padding: var(--space-3);
-  border: 1px solid #d2bfc1;
+  border: 1px solid var(--app-error-border);
   border-radius: 0.55rem;
-  background: #fbf2f3;
+  background: var(--app-error-soft);
 }
 
 .cancellationDetails strong {
@@ -265,10 +265,10 @@
 .overlayNotice {
   margin: 0;
   padding: var(--space-2);
-  border: 1px solid #d2bfc1;
+  border: 1px solid var(--app-error-border);
   border-radius: 0.5rem;
-  color: #71383d;
-  background: #fbf2f3;
+  color: var(--app-error);
+  background: var(--app-error-soft);
   font-size: 0.8rem;
 }
 
@@ -326,7 +326,7 @@
 .formField select {
   width: 100%;
   padding: 0.7rem 0.75rem;
-  border: 1px solid #cbd2dd;
+  border: 1px solid var(--app-border-strong);
   border-radius: 0.55rem;
   color: var(--color-text);
   background: var(--color-surface);
@@ -353,9 +353,9 @@
   display: grid;
   gap: var(--space-3);
   padding: var(--space-3);
-  border: 1px solid #d2bfc1;
+  border: 1px solid var(--app-error-border);
   border-radius: 0.6rem;
-  background: #fbf7f7;
+  background: var(--app-error-soft);
 }
 
 .planFieldHeader {
@@ -522,7 +522,7 @@
 .markdownContent code {
   padding: 0.12em 0.32em;
   border-radius: 0.3rem;
-  background: #e8ebf0;
+  background: var(--color-surface-subtle);
   font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
   font-size: 0.88em;
 }
@@ -533,8 +533,8 @@
   padding: var(--space-3);
   border: 1px solid var(--color-border);
   border-radius: 0.55rem;
-  background: #20283a;
-  color: #f4f6fa;
+  background: var(--app-code-background);
+  color: var(--app-code-text);
   white-space: pre;
 }
 
@@ -566,12 +566,12 @@
 .formField input[aria-invalid="true"],
 .formField textarea[aria-invalid="true"],
 .formField select[aria-invalid="true"] {
-  border-color: #b84a4a;
+  border-color: var(--app-error-strong);
 }
 
 .fieldError {
   margin-top: 0.3rem;
-  color: #9b3535;
+  color: var(--app-error);
   font-size: 0.75rem;
   font-weight: 650;
 }
@@ -598,12 +598,12 @@
 
 .primaryButton {
   border: 0;
-  color: #ffffff;
+  color: var(--app-accent-text);
   background: var(--color-primary);
 }
 
 .primaryButton:hover {
-  background: #2849aa;
+  background: var(--app-accent-hover);
 }
 
 .secondaryButton {
@@ -619,11 +619,11 @@
 .dangerButton {
   border: 0;
   color: #ffffff;
-  background: #a53b3b;
+  background: var(--app-error-strong);
 }
 
 .dangerButton:hover {
-  background: #893030;
+  background: var(--app-error-hover);
 }
 
 .confirmOverlay {
@@ -632,7 +632,7 @@
   z-index: 2;
   display: grid;
   padding: var(--space-3);
-  background: rgb(23 32 51 / 34%);
+  background: var(--app-overlay);
   place-items: center;
 }
 
@@ -680,15 +680,15 @@
 }
 
 .feedbackSuccess {
-  border-color: #b9decf;
-  color: #176342;
-  background: #e5f4ed;
+  border-color: var(--app-success-border);
+  color: var(--app-success);
+  background: var(--app-success-soft);
 }
 
 .feedbackError {
-  border-color: #d2bfc1;
-  color: #7a3d43;
-  background: #f5e8e9;
+  border-color: var(--app-error-border);
+  color: var(--app-error);
+  background: var(--app-error-soft);
 }
 
 .confirmActions {

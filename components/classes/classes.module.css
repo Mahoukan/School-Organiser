@@ -45,12 +45,12 @@
 }
 
 .primaryButton {
-  color: #ffffff;
+  color: var(--app-accent-text);
   background: var(--color-primary);
 }
 
 .primaryButton:hover {
-  background: #2849aa;
+  background: var(--app-accent-hover);
 }
 
 .secondaryButton {
@@ -65,11 +65,11 @@
 
 .dangerButton {
   color: #ffffff;
-  background: #a53b3b;
+  background: var(--app-error-strong);
 }
 
 .dangerButton:hover {
-  background: #893030;
+  background: var(--app-error-hover);
 }
 
 .listToolbar {
@@ -111,18 +111,18 @@
 .notice {
   margin-bottom: var(--space-3);
   padding: var(--space-2) var(--space-3);
-  border: 1px solid #a7d1b8;
+  border: 1px solid var(--app-success-border);
   border-radius: 0.55rem;
-  color: #245a3b;
-  background: #e9f6ee;
+  color: var(--app-success);
+  background: var(--app-success-soft);
   font-size: 0.875rem;
   font-weight: 600;
 }
 
 .errorNotice {
-  border-color: #e2aaaa;
-  color: #7e2e2e;
-  background: #faeded;
+  border-color: var(--app-error-border);
+  color: var(--app-error);
+  background: var(--app-error-soft);
 }
 
 .classList {
@@ -227,12 +227,12 @@
 }
 
 .cardActions .archiveButton {
-  color: #873535;
+  color: var(--app-error);
 }
 
 .archivedCard {
   border-left-color: #9ca5b4;
-  background: #fafbfc;
+  background: var(--color-surface-subtle);
 }
 
 .archivedCard .colourMarker {
@@ -244,9 +244,9 @@
   display: grid;
   min-height: 16rem;
   padding: var(--space-5);
-  border: 1px dashed #cbd2dd;
+  border: 1px dashed var(--app-border-strong);
   border-radius: var(--radius);
-  background: rgb(255 255 255 / 55%);
+  background: var(--app-surface-translucent);
   place-items: center;
   align-content: center;
   text-align: center;
@@ -279,7 +279,7 @@
 
 .formPanel::backdrop,
 .confirmDialog::backdrop {
-  background: rgb(23 32 51 / 38%);
+  background: var(--app-overlay);
   backdrop-filter: blur(2px);
 }
 
@@ -368,23 +368,23 @@
   width: 100%;
   min-height: 2.75rem;
   padding: 0.65rem 0.75rem;
-  border: 1px solid #cbd2dd;
+  border: 1px solid var(--app-border-strong);
   border-radius: 0.5rem;
   color: var(--color-text);
   background: var(--color-surface);
 }
 
 .formField input::placeholder {
-  color: #9aa3b1;
+  color: var(--color-text-muted);
 }
 
 .formField input[aria-invalid="true"] {
-  border-color: #b84a4a;
+  border-color: var(--app-error-strong);
 }
 
 .fieldError {
   margin-top: 0.3rem;
-  color: #9b3535;
+  color: var(--app-error);
   font-size: 0.75rem;
   font-weight: 600;
 }

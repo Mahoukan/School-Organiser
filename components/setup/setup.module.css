@@ -127,7 +127,7 @@
   width: 100%;
   min-height: 2.75rem;
   padding: 0.6rem;
-  border: 1px solid #cbd2dd;
+  border: 1px solid var(--app-border-strong);
   border-radius: 0.5rem;
 }
 
@@ -141,7 +141,7 @@
 .blockForm fieldset > span,
 .setupError,
 .setupMessage {
-  color: #9b3535;
+  color: var(--app-error);
   font-size: 0.75rem;
 }
 
@@ -167,12 +167,12 @@
   font-weight: 750;
 }
 
-.primarySetupButton { border: 0; color: white; background: var(--color-primary); }
+.primarySetupButton { border: 0; color: var(--app-accent-text); background: var(--color-primary); }
 .secondarySetupButton { border: 1px solid var(--color-border); background: var(--color-surface); }
-.dangerSetupButton { border: 0; color: white; background: #a53b3b; }
+.dangerSetupButton { border: 0; color: #fff; background: var(--app-error-strong); }
 .emptyStructure { display: grid; min-height: 12rem; place-content: center; text-align: center; }
 .blockConfirmDialog { width: min(28rem, calc(100% - 2rem)); padding: var(--space-4); border: 0; border-radius: var(--radius); }
-.blockConfirmDialog::backdrop { background: rgb(23 32 51 / 35%); }
+.blockConfirmDialog::backdrop { background: var(--app-overlay); }
 
 .setupDayColumns {
   display: grid;
@@ -273,10 +273,10 @@
 .prototypeNotice {
   margin-block: var(--space-3);
   padding: 0.7rem var(--space-3);
-  border: 1px solid #ccd6eb;
+  border: 1px solid var(--app-border-strong);
   border-radius: 0.55rem;
-  color: #53627c;
-  background: #eef2f9;
+  color: var(--color-text-muted);
+  background: var(--color-surface-subtle);
   font-size: 0.8rem;
 }
 
@@ -334,7 +334,7 @@
   flex-direction: column;
   justify-content: center;
   padding: var(--space-2);
-  background: #fafbfc;
+  background: var(--color-surface-subtle);
 }
 
 .periodCell strong {
@@ -371,7 +371,7 @@
   gap: 0.35rem;
   border-style: dashed;
   color: var(--color-primary);
-  background: #fafbff;
+  background: var(--color-surface-subtle);
   font-size: 0.72rem;
   cursor: pointer;
 }
@@ -437,14 +437,14 @@
   border: 1px solid rgb(23 32 51 / 15%);
   border-radius: 0.35rem;
   color: inherit;
-  background: rgb(255 255 255 / 60%);
+  background: var(--app-surface-translucent);
   font-size: 0.62rem;
   font-weight: 750;
   cursor: pointer;
 }
 
 .slotActions button:hover {
-  background: rgb(255 255 255 / 90%);
+  background: var(--color-surface);
 }
 
 .eventSlot,
@@ -452,9 +452,9 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  border-color: #c8d0dc;
-  color: #59667a;
-  background: #e9edf2;
+  border-color: var(--app-border-strong);
+  color: var(--color-text-muted);
+  background: var(--color-surface-subtle);
 }
 
 .eventSlot { border-color: var(--event-border); border-left: 4px solid var(--event-accent); color: var(--event-text); background: var(--event-background); }
@@ -577,7 +577,7 @@
 }
 
 .assignmentDialog::backdrop {
-  background: rgb(23 32 51 / 38%);
+  background: var(--app-overlay);
   backdrop-filter: blur(2px);
 }
 
@@ -585,8 +585,8 @@
 .eventForm { display: grid; }
 .eventFormBody { display: grid; gap: var(--space-3); padding: var(--space-4); }
 .eventFormBody label, .eventFormBody legend { display: grid; gap: .3rem; font-size: .78rem; font-weight: 750; }
-.eventFormBody input, .eventFormBody select, .eventFormBody textarea { width: 100%; min-height: 2.75rem; padding: .6rem; border: 1px solid #cbd2dd; border-radius: .5rem; font: inherit; }
-.eventFormBody label > span, .eventFormBody fieldset > span { color: #9b3535; font-size: .72rem; }
+.eventFormBody input, .eventFormBody select, .eventFormBody textarea { width: 100%; min-height: 2.75rem; padding: .6rem; border: 1px solid var(--app-border-strong); border-radius: .5rem; color: var(--color-text); background: var(--color-surface); font: inherit; }
+.eventFormBody label > span, .eventFormBody fieldset > span { color: var(--app-error); font-size: .72rem; }
 .eventFormBody fieldset { margin: 0; padding: 0; border: 0; }
 .eventColours { display: grid; grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr)); gap: var(--space-2); }
 .eventColours label { display: flex; align-items: center; gap: .4rem; padding: .5rem; border: 1px solid var(--color-border); border-left: 4px solid var(--event-colour); border-radius: .45rem; }
@@ -606,8 +606,8 @@
 .templateForm { display: grid; gap: var(--space-3); padding: var(--space-4); }
 .templateForm h3 { margin: 0; }
 .templateForm label, .bulkAssignment label { display: grid; gap: .3rem; font-size: .78rem; font-weight: 750; }
-.templateForm input, .templateForm select, .dayAssignments select, .bulkAssignment select { width: 100%; min-width: 0; min-height: 2.75rem; padding: .6rem; border: 1px solid #cbd2dd; border-radius: .5rem; background: var(--color-surface); font: inherit; }
-.templateForm label > span { color: #9b3535; font-size: .72rem; }
+.templateForm input, .templateForm select, .dayAssignments select, .bulkAssignment select { width: 100%; min-width: 0; min-height: 2.75rem; padding: .6rem; border: 1px solid var(--app-border-strong); border-radius: .5rem; color: var(--color-text); background: var(--color-surface); font: inherit; }
+.templateForm label > span { color: var(--app-error); font-size: .72rem; }
 .dayAssignments { display: grid; gap: var(--space-3); margin-top: var(--space-5); padding-top: var(--space-4); border-top: 1px solid var(--color-border); }
 .assignmentWeeks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
 .assignmentWeeks fieldset { display: grid; gap: var(--space-2); min-width: 0; margin: 0; padding: var(--space-3); border: 1px solid var(--color-border); border-radius: var(--radius); }
