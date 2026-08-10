@@ -4,7 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { useRouter } from "next/navigation";
 import { findLessonOccurrence } from "../../lib/lessonOccurrences";
 import { getMovementForOccurrence, validateLessonMovement } from "../../lib/lessonMovements";
-import { validateTimetableBlock } from "../../lib/periodStructures";
+import { validateDayTemplateName, validateTemplateBlock } from "../../lib/dayTimetableTemplates";
 import { validateRecurringEvent } from "../../lib/recurringEvents";
 import { validateTeachingWeek, validateTerm } from "../../lib/academicCalendar";
 import { validateCalendarException, validateClassAbsence, validateTeacherAbsence } from "../../lib/scheduleOverlays";
@@ -68,13 +68,14 @@ export default function SchoolDataProvider({ children }) {
   const assignClassToSlot = useCallback(async (values) => operation("recurring-items", "save-class", values), [operation]);
   const removeAssignment = useCallback(async (cycleWeek, weekday, periodId) => operation("recurring-items", "remove-class", { cycleWeek, weekday, periodId }), [operation]);
 
-  const saveTimetableBlock = useCallback(async (values) => {
-    const errors = validateTimetableBlock(values, data.timetableBlocks, values.id);
-    if (Object.keys(errors).length) return { ok: false, errors };
-    return operation("period-blocks", "save", { values }, { block: values });
-  }, [data, operation]);
-  const removeTimetableBlock = useCallback(async (id) => operation("period-blocks", "remove", { id }), [operation]);
-  const moveTimetableBlock = useCallback(async (id, direction) => operation("period-blocks", "move", { id, direction }), [operation]);
+  const createDayTemplate = useCallback(async (name, sourceTemplateId) => { const errors = validateDayTemplateName({ name }, data.dayTimetableTemplates); if (Object.keys(errors).length) return { ok: false, errors }; return operation("day-templates", sourceTemplateId ? "duplicate" : "create", { name, sourceTemplateId }); }, [data, operation]);
+  const renameDayTemplate = useCallback(async (id, name) => { const errors = validateDayTemplateName({ name }, data.dayTimetableTemplates, id); if (Object.keys(errors).length) return { ok: false, errors }; return operation("day-templates", "rename", { id, name }); }, [data, operation]);
+  const deleteDayTemplate = useCallback(async (id) => operation("day-templates", "delete", { id }), [operation]);
+  const saveDayTemplateBlock = useCallback(async (values) => { const errors = validateTemplateBlock(values, data.dayTimetableTemplateBlocks, values.templateId, values.id); if (Object.keys(errors).length) return { ok: false, errors }; return operation("day-templates", "save-block", values); }, [data, operation]);
+  const removeDayTemplateBlock = useCallback(async (id) => operation("day-templates", "remove-block", { id }), [operation]);
+  const moveDayTemplateBlock = useCallback(async (id, direction) => operation("day-templates", "move-block", { id, direction }), [operation]);
+  const assignDayTemplate = useCallback(async (templateId, cycleWeek, weekday) => operation("day-templates", "assign", { templateId, cycleWeek, weekday }), [operation]);
+  const bulkAssignDayTemplate = useCallback(async (templateId, days) => operation("day-templates", "bulk-assign", { templateId, days }), [operation]);
 
   const saveTeacherAbsence = useCallback(async (values) => { const errors = validateTeacherAbsence(values, data.academicYear); if (Object.keys(errors).length) return { ok: false, errors }; return operation("overlays", "save", { kind: "teacher", values }, { record: values }); }, [data, operation]);
   const saveClassAbsence = useCallback(async (values) => { const errors = validateClassAbsence(values, data.academicYear); if (Object.keys(errors).length) return { ok: false, errors }; return operation("overlays", "save", { kind: "class", values }, { record: values }); }, [data, operation]);
@@ -97,7 +98,7 @@ export default function SchoolDataProvider({ children }) {
   const getLessonOccurrence = useCallback((date, recurringAssignmentId) => findLessonOccurrence(data.lessonOccurrences, date, recurringAssignmentId), [data]);
   const saveLessonOccurrence = useCallback(async (values) => operation("lesson-occurrences", "save", { values }), [operation]);
 
-  const value = useMemo(() => data ? { ...data, createClass, updateClass, archiveClass, restoreClass, getAssignmentCount, assignClassToSlot, removeAssignment, saveTimetableBlock, removeTimetableBlock, moveTimetableBlock, saveTerm, removeTerm, saveTeachingWeek, removeTeachingWeek, generateTeachingWeeks, getLessonOccurrence, saveLessonOccurrence, saveTeacherAbsence, saveClassAbsence, saveCalendarException, removeTeacherAbsence, removeClassAbsence, removeCalendarException, findLessonMovement, saveLessonMovement, removeLessonMovement, saveRecurringEvent, removeRecurringEvent } : null, [data, createClass, updateClass, archiveClass, restoreClass, getAssignmentCount, assignClassToSlot, removeAssignment, saveTimetableBlock, removeTimetableBlock, moveTimetableBlock, saveTerm, removeTerm, saveTeachingWeek, removeTeachingWeek, generateTeachingWeeks, getLessonOccurrence, saveLessonOccurrence, saveTeacherAbsence, saveClassAbsence, saveCalendarException, removeTeacherAbsence, removeClassAbsence, removeCalendarException, findLessonMovement, saveLessonMovement, removeLessonMovement, saveRecurringEvent, removeRecurringEvent]);
+  const value = useMemo(() => data ? { ...data, createClass, updateClass, archiveClass, restoreClass, getAssignmentCount, assignClassToSlot, removeAssignment, createDayTemplate, renameDayTemplate, deleteDayTemplate, saveDayTemplateBlock, removeDayTemplateBlock, moveDayTemplateBlock, assignDayTemplate, bulkAssignDayTemplate, saveTerm, removeTerm, saveTeachingWeek, removeTeachingWeek, generateTeachingWeeks, getLessonOccurrence, saveLessonOccurrence, saveTeacherAbsence, saveClassAbsence, saveCalendarException, removeTeacherAbsence, removeClassAbsence, removeCalendarException, findLessonMovement, saveLessonMovement, removeLessonMovement, saveRecurringEvent, removeRecurringEvent } : null, [data, createClass, updateClass, archiveClass, restoreClass, getAssignmentCount, assignClassToSlot, removeAssignment, createDayTemplate, renameDayTemplate, deleteDayTemplate, saveDayTemplateBlock, removeDayTemplateBlock, moveDayTemplateBlock, assignDayTemplate, bulkAssignDayTemplate, saveTerm, removeTerm, saveTeachingWeek, removeTeachingWeek, generateTeachingWeeks, getLessonOccurrence, saveLessonOccurrence, saveTeacherAbsence, saveClassAbsence, saveCalendarException, removeTeacherAbsence, removeClassAbsence, removeCalendarException, findLessonMovement, saveLessonMovement, removeLessonMovement, saveRecurringEvent, removeRecurringEvent]);
 
   if (loading) return <div className="data-state" role="status">Loading your organiser…</div>;
   if (loadError) return <div className="data-state" role="alert"><h1>We couldn&apos;t load your organiser data.</h1><p>{loadError}</p><button type="button" onClick={load}>Try Again</button></div>;
