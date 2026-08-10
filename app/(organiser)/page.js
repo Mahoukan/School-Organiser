@@ -1,5 +1,5 @@
-import SectionIntro from "../../components/SectionIntro";
+import TodayDashboard from "../../components/today/TodayDashboard";
 
 export default function HomePage() {
-  return <SectionIntro title="Today" description="Your teaching day at a glance." />;
+  return <TodayDashboard />;
 }
