@@ -15,7 +15,8 @@ import {
   findNextClassOccurrence,
   getCarryForwardAvailability,
 } from "../../lib/carryForward";
-import { formatDayHeading, getWeekType } from "../../lib/timetableDates";
+import { getTeachingWeekForDate } from "../../lib/academicCalendar";
+import { formatDayHeading } from "../../lib/timetableDates";
 import { useSchoolData } from "../providers/SchoolDataProvider";
 import CarryForwardDialog from "./CarryForwardDialog";
 import MarkdownContent from "./MarkdownContent";
@@ -54,6 +55,7 @@ export default function LessonPanel({ selection, onClose }) {
     classes,
     recurringAssignments,
     lessonOccurrences,
+    teachingWeeks,
     getLessonOccurrence,
     saveLessonOccurrence,
   } = useSchoolData();
@@ -79,6 +81,7 @@ export default function LessonPanel({ selection, onClose }) {
   const period = periods.find((item) => item.id === selection.periodId);
   const date = getDateFromKey(selection.date);
   const effectiveStatus = getEffectiveLessonStatus(occurrence);
+  const teachingWeek = getTeachingWeekForDate(date, teachingWeeks);
   const isDirty = Object.keys(emptyContent).some(
     (field) => draft[field] !== savedContent[field],
   );
@@ -154,6 +157,7 @@ export default function LessonPanel({ selection, onClose }) {
       currentPeriodId: selection.periodId,
       recurringAssignments,
       lessonOccurrences,
+      teachingWeeks,
     });
 
     if (!destination) {
@@ -272,7 +276,7 @@ export default function LessonPanel({ selection, onClose }) {
         <div className={styles.lessonContext}>
           <strong>{formatDayHeading(date)}</strong>
           <span>
-            Week {getWeekType(date)} · {getPeriodName(period)} · {period.start}–{period.end}
+            Week {teachingWeek?.cycleWeek ?? "unconfigured"} · {getPeriodName(period)} · {period.start}–{period.end}
           </span>
           <span>{classDetails.room ? `Room ${classDetails.room}` : "No room set"}</span>
         </div>

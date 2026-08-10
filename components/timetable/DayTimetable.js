@@ -4,9 +4,9 @@ import {
 } from "../../data/sampleTimetable";
 import {
   formatDayHeading,
-  getWeekType,
   isWeekend,
 } from "../../lib/timetableDates";
+import { getTeachingWeekForDate } from "../../lib/academicCalendar";
 import { getTimetableEntry } from "../../lib/recurringTimetable";
 import { useSchoolData } from "../providers/SchoolDataProvider";
 import TimetableCard from "./TimetableCard";
@@ -18,8 +18,8 @@ export default function DayTimetable({
   showHeading = true,
   onOpenLesson,
 }) {
-  const { recurringAssignments } = useSchoolData();
-  const weekType = getWeekType(date);
+  const { recurringAssignments, teachingWeeks } = useSchoolData();
+  const teachingWeek = getTeachingWeekForDate(date, teachingWeeks);
 
   if (isWeekend(date)) {
     return (
@@ -27,12 +27,20 @@ export default function DayTimetable({
         {showHeading && (
           <div className={styles.dayHeading}>
             <h2>{formatDayHeading(date)}</h2>
-            <span className={styles.cycleBadge}>Week {weekType}</span>
           </div>
         )}
         <div className={styles.emptyDay}>
           <p>No school timetable for this day.</p>
         </div>
+      </section>
+    );
+  }
+
+  if (!teachingWeek) {
+    return (
+      <section className={styles.dayPanel}>
+        {showHeading && <div className={styles.dayHeading}><h2>{formatDayHeading(date)}</h2><span className={styles.cycleBadge}>No teaching week</span></div>}
+        <div className={styles.emptyDay}><p>No teaching week is configured for this date.</p></div>
       </section>
     );
   }
@@ -44,7 +52,7 @@ export default function DayTimetable({
       {showHeading && (
         <div className={styles.dayHeading}>
           <h2>{formatDayHeading(date)}</h2>
-          <span className={styles.cycleBadge}>Week {weekType}</span>
+          <span className={styles.cycleBadge}>Week {teachingWeek.cycleWeek}</span>
         </div>
       )}
 
@@ -52,7 +60,7 @@ export default function DayTimetable({
         {periods.map((period) => {
           const entry = getTimetableEntry(
             recurringAssignments,
-            weekType,
+            teachingWeek.cycleWeek,
             weekday.key,
             period,
           );

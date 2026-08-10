@@ -8,10 +8,11 @@ import {
   formatDayHeading,
   getFortnightStart,
   getMonday,
-  getWeekType,
   getWeekdayIndex,
   toDateOnly,
 } from "../../lib/timetableDates";
+import { getTeachingWeekForDate } from "../../lib/academicCalendar";
+import { useSchoolData } from "../providers/SchoolDataProvider";
 import LessonPanel from "../lessons/LessonPanel";
 import DayTimetable from "./DayTimetable";
 import FortnightTimetable from "./FortnightTimetable";
@@ -25,11 +26,15 @@ const navigationSteps = {
   fortnight: 14,
 };
 
-function getToolbarDetails(view, displayedDate) {
+function getToolbarDetails(view, displayedDate, teachingWeeks) {
+  const labelFor = (date) => {
+    const week = getTeachingWeekForDate(date, teachingWeeks);
+    return week ? `Week ${week.cycleWeek}` : "No teaching week";
+  };
   if (view === "day") {
     return {
       dateLabel: formatDayHeading(displayedDate),
-      cycleLabel: `Week ${getWeekType(displayedDate)}`,
+      cycleLabel: labelFor(displayedDate),
     };
   }
 
@@ -37,18 +42,19 @@ function getToolbarDetails(view, displayedDate) {
     const start = getFortnightStart(displayedDate);
     return {
       dateLabel: formatDateRange(start, addDays(start, 11)),
-      cycleLabel: "Week A + Week B",
+      cycleLabel: `${labelFor(start)} · ${labelFor(addDays(start, 7))}`,
     };
   }
 
   const monday = getMonday(displayedDate);
   return {
     dateLabel: formatDateRange(monday, addDays(monday, 4)),
-    cycleLabel: `Week ${getWeekType(monday)}`,
+    cycleLabel: labelFor(monday),
   };
 }
 
 export default function TimetablePrototype() {
+  const { teachingWeeks } = useSchoolData();
   const [view, setView] = useState("week");
   const [displayedDate, setDisplayedDate] = useState(() =>
     toDateOnly(new Date()),
@@ -58,7 +64,7 @@ export default function TimetablePrototype() {
   );
   const [selectedLesson, setSelectedLesson] = useState(null);
   const lessonTriggerRef = useRef(null);
-  const toolbarDetails = getToolbarDetails(view, displayedDate);
+  const toolbarDetails = getToolbarDetails(view, displayedDate, teachingWeeks);
 
   function changeView(nextView) {
     setView(nextView);

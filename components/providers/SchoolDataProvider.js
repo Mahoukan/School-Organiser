@@ -9,6 +9,11 @@ import {
 } from "react";
 
 import { sampleRecurringAssignments } from "../../data/sampleAssignments";
+import {
+  sampleAcademicYear,
+  sampleTeachingWeeks,
+  sampleTerms,
+} from "../../data/sampleAcademicCalendar";
 import { sampleClasses } from "../../data/sampleClasses";
 import {
   getTemporaryEvent,
@@ -16,6 +21,11 @@ import {
   weekdays,
 } from "../../data/sampleTimetable";
 import { findAssignmentForSlot } from "../../lib/recurringTimetable";
+import {
+  generateMissingWeeks,
+  validateTeachingWeek,
+  validateTerm,
+} from "../../lib/academicCalendar";
 import {
   findLessonOccurrence,
   getLessonOccurrenceId,
@@ -26,6 +36,11 @@ import {
 const SchoolDataContext = createContext(null);
 
 export default function SchoolDataProvider({ children }) {
+  const [academicYear] = useState(() => ({ ...sampleAcademicYear }));
+  const [terms, setTerms] = useState(() => sampleTerms.map((term) => ({ ...term })));
+  const [teachingWeeks, setTeachingWeeks] = useState(() =>
+    sampleTeachingWeeks.map((week) => ({ ...week })),
+  );
   const [classes, setClasses] = useState(() =>
     sampleClasses.map((classItem) => ({ ...classItem })),
   );
@@ -166,6 +181,77 @@ export default function SchoolDataProvider({ children }) {
     );
   }, []);
 
+  const saveTerm = useCallback(
+    (values) => {
+      const errors = validateTerm(values, terms, teachingWeeks, academicYear, values.id);
+      if (Object.keys(errors).length) return { ok: false, errors };
+      const term = {
+        id: values.id ?? `term-${crypto.randomUUID()}`,
+        academicYear: academicYear.year,
+        name: values.name.trim(),
+        startDate: values.startDate,
+        endDate: values.endDate,
+        displayOrder:
+          values.displayOrder ?? Math.max(0, ...terms.map((item) => item.displayOrder)) + 1,
+      };
+      setTerms((current) =>
+        values.id
+          ? current.map((item) => (item.id === values.id ? term : item))
+          : [...current, term],
+      );
+      return { ok: true, term };
+    },
+    [academicYear, teachingWeeks, terms],
+  );
+
+  const removeTerm = useCallback(
+    (termId) => {
+      if (teachingWeeks.some((week) => week.termId === termId)) {
+        return { ok: false, message: "Remove this term's teaching weeks first." };
+      }
+      setTerms((current) => current.filter((term) => term.id !== termId));
+      return { ok: true };
+    },
+    [teachingWeeks],
+  );
+
+  const saveTeachingWeek = useCallback(
+    (values) => {
+      const term = terms.find((item) => item.id === values.termId);
+      if (!term) return { ok: false, errors: { weekStartDate: "Term not found." } };
+      const errors = validateTeachingWeek(values, term, teachingWeeks, values.id);
+      if (Object.keys(errors).length) return { ok: false, errors };
+      const week = {
+        id: values.weekStartDate,
+        termId: values.termId,
+        weekStartDate: values.weekStartDate,
+        cycleWeek: values.cycleWeek,
+      };
+      setTeachingWeeks((current) =>
+        values.id
+          ? current.map((item) => (item.id === values.id ? week : item))
+          : [...current, week],
+      );
+      return { ok: true, week };
+    },
+    [teachingWeeks, terms],
+  );
+
+  const removeTeachingWeek = useCallback((weekId) => {
+    setTeachingWeeks((current) => current.filter((week) => week.id !== weekId));
+  }, []);
+
+  const generateTeachingWeeks = useCallback(
+    (termId, firstCycleWeek) => {
+      const term = terms.find((item) => item.id === termId);
+      if (!term) return 0;
+      const generated = generateMissingWeeks(term, teachingWeeks, firstCycleWeek);
+      setTeachingWeeks((current) => [...current, ...generated]);
+      return generated.length;
+    },
+    [teachingWeeks, terms],
+  );
+
   const getLessonOccurrence = useCallback(
     (dateKey, recurringAssignmentId) =>
       findLessonOccurrence(
@@ -212,6 +298,9 @@ export default function SchoolDataProvider({ children }) {
 
   const value = useMemo(
     () => ({
+      academicYear,
+      terms,
+      teachingWeeks,
       classes,
       recurringAssignments,
       lessonOccurrences,
@@ -222,10 +311,18 @@ export default function SchoolDataProvider({ children }) {
       getAssignmentCount,
       assignClassToSlot,
       removeAssignment,
+      saveTerm,
+      removeTerm,
+      saveTeachingWeek,
+      removeTeachingWeek,
+      generateTeachingWeeks,
       getLessonOccurrence,
       saveLessonOccurrence,
     }),
     [
+      academicYear,
+      terms,
+      teachingWeeks,
       classes,
       recurringAssignments,
       lessonOccurrences,
@@ -236,6 +333,11 @@ export default function SchoolDataProvider({ children }) {
       getAssignmentCount,
       assignClassToSlot,
       removeAssignment,
+      saveTerm,
+      removeTerm,
+      saveTeachingWeek,
+      removeTeachingWeek,
+      generateTeachingWeeks,
       getLessonOccurrence,
       saveLessonOccurrence,
     ],

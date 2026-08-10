@@ -1,0 +1,43 @@
+.page { min-width: 0; }
+.yearSummary { display: grid; gap: .2rem; margin-top: var(--space-4); padding: var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); }
+.yearSummary span { color: var(--color-text-muted); font-size: .75rem; font-weight: 750; text-transform: uppercase; }
+.yearSummary strong { font-size: 1.7rem; }
+.heading, .termCard header, .termCard footer, .weekRow, .formActions { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.heading { margin: var(--space-5) 0 var(--space-3); }
+.heading h2, .heading p, .termCard h2, .termCard p { margin: 0; }
+.heading p, .termCard p, .termCard header span { color: var(--color-text-muted); }
+.termList { display: grid; gap: var(--space-4); }
+.termCard, .editor, .weekEditor { padding: var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); }
+.cardActions, .generate, .cycleSelector { display: flex; align-items: center; gap: var(--space-1); }
+.weekList { margin: var(--space-4) 0; border-block: 1px solid var(--color-border); }
+.weekRow { min-height: 3.2rem; padding: .55rem 0; border-bottom: 1px solid var(--color-border); }
+.weekRow:last-child { border: 0; }
+.weekRow > div { display: flex; gap: .25rem; }
+.weekBadge { padding: .2rem .55rem; border: 1px solid #cbd6f6; border-radius: 999px; color: var(--color-primary); background: var(--color-primary-soft); font-size: .72rem; font-weight: 800; }
+.emptyWeeks { padding: var(--space-3) 0; color: var(--color-text-muted); }
+.termCard footer { align-items: flex-end; }
+.generate { flex-wrap: wrap; justify-content: flex-end; }
+.generate > span { width: 100%; color: var(--color-text-muted); font-size: .7rem; text-align: right; }
+.cycleSelector { padding: .15rem; border: 1px solid var(--color-border); border-radius: .5rem; background: var(--color-surface-subtle); }
+.cycleSelector button { min-height: 2.2rem; border: 0; border-radius: .35rem; color: var(--color-text-muted); background: transparent; cursor: pointer; }
+.cycleSelector button[aria-pressed="true"] { color: var(--color-primary); background: var(--color-surface); box-shadow: 0 1px 3px rgb(23 32 51 / 12%); }
+.primary, .secondary, .danger, .dangerText, .textButton { min-height: 2.5rem; padding: .45rem .75rem; border-radius: .5rem; font-weight: 700; cursor: pointer; }
+.primary { border: 0; color: white; background: var(--color-primary); }
+.secondary { border: 1px solid var(--color-border); color: var(--color-text); background: var(--color-surface); }
+.danger { border: 0; color: white; background: #a53b3b; }
+.dangerText, .textButton { border: 0; color: #8b3b43; background: transparent; }
+.textButton:first-child { color: var(--color-primary); }
+.editor, .weekEditor { margin-bottom: var(--space-4); }
+.editor h2 { margin-top: 0; }
+.formGrid { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: var(--space-3); }
+.editor label, .weekEditor label, .weekEditor legend { display: grid; gap: .3rem; font-size: .78rem; font-weight: 750; }
+.editor input, .weekEditor input { width: 100%; min-height: 2.75rem; padding: .6rem; border: 1px solid #cbd2dd; border-radius: .5rem; }
+.editor label span, .weekEditor label span, .formError { color: #9b3535; font-size: .72rem; }
+.weekEditor { display: grid; gap: var(--space-3); }
+.weekEditor fieldset { margin: 0; padding: 0; border: 0; }
+.formActions { justify-content: flex-end; margin-top: var(--space-3); }
+.notice { margin-bottom: var(--space-3); padding: var(--space-2); border: 1px solid #b9decf; border-radius: .5rem; color: #176342; background: #e5f4ed; }
+.confirmDialog { width: min(28rem, calc(100% - 2rem)); padding: var(--space-4); border: 0; border-radius: var(--radius); }
+.confirmDialog::backdrop { background: rgb(23 32 51 / 35%); }
+.primary:focus-visible, .secondary:focus-visible, .danger:focus-visible, .textButton:focus-visible, .dangerText:focus-visible, .cycleSelector button:focus-visible, .editor input:focus-visible, .weekEditor input:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
+@media (max-width: 42rem) { .heading, .termCard header, .termCard footer { align-items: stretch; flex-direction: column; } .formGrid { grid-template-columns: 1fr; } .cardActions > *, .heading > button { flex: 1; } .cardActions { display: flex; } .weekRow { align-items: flex-start; flex-wrap: wrap; } .weekRow > span:first-child { width: 100%; } .generate { justify-content: flex-start; } .generate > span { text-align: left; } .generate .primary { width: 100%; } }

@@ -1,10 +1,5 @@
-import SectionIntro from "../../components/SectionIntro";
+import CalendarManager from "../../components/calendar/CalendarManager";
 
 export default function CalendarPage() {
-  return (
-    <SectionIntro
-      title="Calendar"
-      description="Manage teaching weeks, absences and calendar exceptions."
-    />
-  );
+  return <CalendarManager />;
 }

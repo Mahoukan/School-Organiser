@@ -2,15 +2,18 @@ import {
   periods,
   weekdays,
 } from "../../data/sampleTimetable";
-import { addDays, getWeekType } from "../../lib/timetableDates";
+import { addDays } from "../../lib/timetableDates";
+import { getTeachingWeekForDate } from "../../lib/academicCalendar";
 import { getTimetableEntry } from "../../lib/recurringTimetable";
 import { useSchoolData } from "../providers/SchoolDataProvider";
 import TimetableCard from "./TimetableCard";
 import styles from "./timetable.module.css";
 
 export default function WeekGrid({ monday, compact = false, onOpenLesson }) {
-  const { recurringAssignments } = useSchoolData();
-  const weekType = getWeekType(monday);
+  const { recurringAssignments, teachingWeeks } = useSchoolData();
+  const teachingWeek = getTeachingWeekForDate(monday, teachingWeeks);
+  if (!teachingWeek) return <div className={styles.nonTeachingWeek}><strong>No teaching week configured.</strong><span>This Monday–Friday range has no configured teaching timetable.</span></div>;
+  const weekType = teachingWeek.cycleWeek;
 
   return (
     <div className={styles.weekGrid} role="table" aria-label={`Week ${weekType} timetable`}>

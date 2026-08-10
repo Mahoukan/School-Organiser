@@ -2,8 +2,9 @@ import { weekdays } from "../../data/sampleTimetable";
 import {
   addDays,
   formatDayHeading,
-  getWeekType,
 } from "../../lib/timetableDates";
+import { getTeachingWeekForDate } from "../../lib/academicCalendar";
+import { useSchoolData } from "../providers/SchoolDataProvider";
 import DayTimetable from "./DayTimetable";
 import styles from "./timetable.module.css";
 
@@ -15,15 +16,16 @@ export default function MobileWeek({
   onOpenLesson,
 }) {
   const selectedDate = addDays(monday, selectedWeekday);
-  const weekType = getWeekType(monday);
+  const { teachingWeeks } = useSchoolData();
+  const weekType = getTeachingWeekForDate(monday, teachingWeeks)?.cycleWeek;
 
   return (
-    <section className={styles.mobileWeek} aria-label={`Week ${weekType}`}>
+    <section className={styles.mobileWeek} aria-label={weekType ? `Week ${weekType}` : "No teaching week"}>
       <div className={styles.mobileWeekHeading}>
-        <h2>Week {weekType}</h2>
+        <h2>{weekType ? `Week ${weekType}` : "No teaching week"}</h2>
         <span>{formatDayHeading(selectedDate)}</span>
       </div>
-      <div className={styles.weekdaySelector} aria-label={`Week ${weekType} day`}>
+      <div className={styles.weekdaySelector} aria-label="Choose day">
         {weekdays.map((weekday, index) => (
           <button
             key={weekday.key}
