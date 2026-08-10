@@ -31,7 +31,7 @@ function NavigationLinks({ mobile = false }) {
   );
 }
 
-export default function AppNavigation() {
+export default function AppNavigation({ user, signOutAction }) {
   return (
     <>
       <aside className="desktop-sidebar">
@@ -39,10 +39,16 @@ export default function AppNavigation() {
         <nav className="sidebar-nav" aria-label="Primary navigation">
           <NavigationLinks />
         </nav>
+        <div className="sidebar-account">
+          <strong>{user.name}</strong>
+          <span>{user.email}</span>
+          {signOutAction}
+        </div>
       </aside>
 
       <header className="mobile-header">
         <p className="mobile-header__brand">School Organiser</p>
+        <span className="mobile-header__identity">{user.name}</span>
       </header>
 
       <nav className="mobile-nav" aria-label="Primary navigation">

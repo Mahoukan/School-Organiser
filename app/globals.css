@@ -90,6 +90,92 @@ a {
   margin-top: var(--space-5);
 }
 
+.sidebar-account {
+  position: absolute;
+  inset: auto var(--space-3) var(--space-4);
+  display: grid;
+  gap: 0.2rem;
+  overflow-wrap: anywhere;
+}
+
+.sidebar-account span {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+.account-signout {
+  margin-top: var(--space-3);
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  color: var(--color-text);
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+.account-signout--compact {
+  margin-top: var(--space-2);
+  padding: 0.4rem 0.7rem;
+  font-size: 0.85rem;
+}
+
+.account-panel {
+  display: grid;
+  max-width: 36rem;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.account-panel dl,
+.account-panel dd { margin: 0; }
+.account-panel dl { display: grid; gap: var(--space-2); }
+.account-panel dl div { display: grid; grid-template-columns: 5rem minmax(0, 1fr); gap: var(--space-2); }
+.account-panel dt { color: var(--color-text-muted); }
+.account-panel dd { overflow-wrap: anywhere; }
+
+.signin-page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: var(--space-4);
+}
+
+.signin-card {
+  display: grid;
+  width: min(28rem, calc(100vw - 3rem));
+  min-width: 0;
+  gap: var(--space-3);
+  padding: clamp(var(--space-4), 7vw, var(--space-6));
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+  background: var(--color-surface);
+  box-shadow: 0 1rem 3rem rgb(23 32 51 / 8%);
+  text-align: center;
+}
+
+.signin-mark {
+  display: grid;
+  width: 3rem;
+  height: 3rem;
+  place-items: center;
+  margin-inline: auto;
+  border-radius: 0.75rem;
+  color: white;
+  background: var(--color-primary);
+  font-weight: 750;
+}
+
+.signin-card h1 { margin: 0; }
+.signin-card > p { color: var(--color-text-muted); }
+.signin-card .signin-error { padding: var(--space-2); border-radius: 0.5rem; color: #842029; background: #f8d7da; }
+.google-signin { width: 100%; padding: 0.8rem 1rem; border: 0; border-radius: 0.55rem; color: white; background: var(--color-primary); font-weight: 700; cursor: pointer; }
+.google-signin:hover, .account-signout:hover { filter: brightness(0.96); }
+.google-signin:focus-visible, .account-signout:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
+
 .sidebar-nav__list {
   display: grid;
   gap: 0.25rem;
@@ -172,6 +258,16 @@ a {
     padding-inline: var(--space-4);
     border-bottom: 1px solid var(--color-border);
     background: var(--color-surface);
+  }
+
+  .mobile-header__identity {
+    max-width: 45%;
+    margin-left: auto;
+    overflow: hidden;
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .mobile-header__brand {

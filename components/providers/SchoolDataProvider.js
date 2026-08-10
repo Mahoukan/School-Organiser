@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { findLessonOccurrence } from "../../lib/lessonOccurrences";
 import { getMovementForOccurrence, validateLessonMovement } from "../../lib/lessonMovements";
 import { validateTimetableBlock } from "../../lib/periodStructures";
@@ -26,6 +27,7 @@ function hydrateSchoolData(payload) {
 }
 
 export default function SchoolDataProvider({ children }) {
+  const router = useRouter();
   const [data, setData] = useState(null);
   const [loadError, setLoadError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -34,22 +36,24 @@ export default function SchoolDataProvider({ children }) {
     setLoading(true); setLoadError("");
     try {
       const response = await fetch("/api/school-data", { cache: "no-store" });
+      if (response.status === 401) { router.replace("/signin"); return; }
       const body = await response.json();
       if (!response.ok) throw new Error(body.error || "We couldn't load your organiser data.");
       setData(hydrateSchoolData(body));
     } catch (error) { setLoadError(error.message); }
     finally { setLoading(false); }
-  }, []);
+  }, [router]);
   useEffect(() => { const timer = setTimeout(load, 0); return () => clearTimeout(timer); }, [load]);
 
   const persist = useCallback(async (resource, action, payload = {}) => {
     const response = await fetch(`/api/school-data/${resource}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action, payload }) });
+    if (response.status === 401) { router.replace("/signin"); throw new Error("Your session has expired."); }
     const body = await response.json();
     if (!response.ok) throw new Error(body.error || "The change could not be saved.");
     const hydrated = hydrateSchoolData(body);
     setData(hydrated);
     return hydrated;
-  }, []);
+  }, [router]);
 
   const operation = useCallback(async (resource, action, payload, success = {}) => {
     try { await persist(resource, action, payload); return { ok: true, ...success }; }
@@ -97,7 +101,7 @@ export default function SchoolDataProvider({ children }) {
 
   if (loading) return <div className="data-state" role="status">Loading your organiser…</div>;
   if (loadError) return <div className="data-state" role="alert"><h1>We couldn&apos;t load your organiser data.</h1><p>{loadError}</p><button type="button" onClick={load}>Try Again</button></div>;
-  if (!data?.academicYear) return <div className="data-state"><h1>Your organiser database is ready.</h1><p>Run <code>npm run db:seed</code> once to add the initial 2026 development data.</p><button type="button" onClick={load}>Check Again</button></div>;
+  if (!data?.academicYear) return <div className="data-state"><h1>Your organiser is ready for setup.</h1><p>No academic year is configured for this account yet.</p><button type="button" onClick={load}>Check Again</button></div>;
   return <SchoolDataContext.Provider value={value}>{children}</SchoolDataContext.Provider>;
 }
 

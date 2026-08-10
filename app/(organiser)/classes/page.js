@@ -1,4 +1,4 @@
-import ClassManager from "../../components/classes/ClassManager";
+import ClassManager from "../../../components/classes/ClassManager";
 
 export default function ClassesPage() {
   return <ClassManager />;
