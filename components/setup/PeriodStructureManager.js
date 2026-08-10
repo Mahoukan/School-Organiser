@@ -10,7 +10,7 @@ import styles from "./setup.module.css";
 function BlockForm({ initial, cycleWeek, weekday, onSave, onCancel }) {
   const [values, setValues] = useState(initial ?? { cycleWeek, weekday, name: "", startTime: "", endTime: "", isTeaching: true });
   const [errors, setErrors] = useState({});
-  function submit(event) { event.preventDefault(); const result = onSave(values); if (!result.ok) setErrors(result.errors); }
+  async function submit(event) { event.preventDefault(); const result = await onSave(values); if (!result.ok) setErrors(result.errors); }
   return <form className={styles.blockForm} onSubmit={submit} noValidate>
     <h3>{initial ? "Edit Block" : "Add Block"}</h3><p>Week {cycleWeek} · {weekdays.find((day) => day.key === weekday).label}</p>
     <label>Name<input maxLength={40} value={values.name} aria-invalid={Boolean(errors.name)} onChange={(e) => setValues({ ...values, name: e.target.value })} />{errors.name && <span>{errors.name}</span>}</label>
@@ -30,8 +30,8 @@ export default function PeriodStructureManager() {
   const [message, setMessage] = useState("");
   const weekday = weekdays[weekdayIndex];
   const blocks = getBlocksForDay(timetableBlocks, cycleWeek, weekday.key);
-  function save(values) { const result = saveTimetableBlock({ ...form, ...values }); if (result.ok) setForm(null); return result; }
-  function confirmRemove() { const result = removeTimetableBlock(removeTarget.id); if (!result.ok) setMessage(result.message); setRemoveTarget(null); }
+  async function save(values) { const result = await saveTimetableBlock({ ...form, ...values }); if (result.ok) setForm(null); return result; }
+  async function confirmRemove() { const result = await removeTimetableBlock(removeTarget.id); if (!result.ok) setMessage(result.message); setRemoveTarget(null); }
   return <section className={styles.editorSection} aria-labelledby="period-structures-title">
     <div className={styles.sectionHeading}><div><h2 id="period-structures-title">Period Structures</h2><p>Configure when teaching and non-teaching blocks occur.</p></div><div className={styles.weekSelector} aria-label="Cycle week">{["A", "B"].map((week) => <button key={week} type="button" aria-pressed={cycleWeek === week} onClick={() => { setCycleWeek(week); setForm(null); }}>Week {week}</button>)}</div></div>
     <div className={styles.weekdaySelector} aria-label="Weekday">{weekdays.map((day, index) => <button key={day.key} type="button" aria-pressed={weekdayIndex === index} onClick={() => { setWeekdayIndex(index); setForm(null); }}>{day.shortLabel}</button>)}</div>

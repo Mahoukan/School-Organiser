@@ -6,15 +6,23 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint app components data lib eslint.config.mjs"
+    "lint": "eslint app components data lib scripts eslint.config.mjs drizzle.config.js",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "node scripts/migrate-database.js",
+    "db:check": "node scripts/check-database.js",
+    "db:seed": "node scripts/seed-database.js"
   },
   "dependencies": {
+    "drizzle-orm": "^0.45.2",
     "next": "^16.3.0",
+    "pg": "^8.23.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-markdown": "^10.1.0"
   },
   "devDependencies": {
+    "dotenv": "^17.4.2",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^9.39.5",
     "eslint-config-next": "^16.3.0"
   }

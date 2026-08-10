@@ -139,7 +139,7 @@ export default function LessonPanel({ selection, onClose }) {
     setIsEditing(false);
   }
 
-  function saveLesson(event) {
+  async function saveLesson(event) {
     event.preventDefault();
     const nextErrors = {};
     if (draft.title.length > 100) {
@@ -158,10 +158,11 @@ export default function LessonPanel({ selection, onClose }) {
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
 
-    saveLessonOccurrence({
+    const result = await saveLessonOccurrence({
       ...selection,
       ...draft,
     });
+    if (!result.ok) { setErrors({ form: result.message }); return; }
     setIsEditing(false);
   }
 
@@ -216,13 +217,13 @@ export default function LessonPanel({ selection, onClose }) {
     requestAnimationFrame(() => carryForwardButtonRef.current?.focus());
   }
 
-  function confirmCarryForward() {
+  async function confirmCarryForward() {
     const destinationPeriod = resolveTimetableBlock(
       timetableBlocks,
       carryTarget.periodId,
     );
 
-    saveLessonOccurrence({
+    const result = await saveLessonOccurrence({
       date: carryTarget.date,
       recurringAssignmentId: carryTarget.recurringAssignmentId,
       classId: carryTarget.classId,
@@ -234,6 +235,7 @@ export default function LessonPanel({ selection, onClose }) {
       cancellationReason: "",
       cancellationNote: "",
     });
+    if (!result.ok) { setCarryTarget(null); setFeedback({ type: "error", message: result.message }); return; }
     setCarryTarget(null);
     setFeedback({
       type: "success",
@@ -257,8 +259,8 @@ export default function LessonPanel({ selection, onClose }) {
     requestAnimationFrame(() => moveLessonButtonRef.current?.focus());
   }
 
-  function saveMovement(destinationPeriodId) {
-    const result = saveLessonMovement({ date: selection.date, recurringAssignmentId: selection.recurringAssignmentId, destinationPeriodId });
+  async function saveMovement(destinationPeriodId) {
+    const result = await saveLessonMovement({ date: selection.date, recurringAssignmentId: selection.recurringAssignmentId, destinationPeriodId });
     if (result.ok) {
       const destination = resolveTimetableBlock(timetableBlocks, destinationPeriodId);
       setShowMoveDialog(false);
@@ -268,8 +270,8 @@ export default function LessonPanel({ selection, onClose }) {
     return result;
   }
 
-  function restoreMovement() {
-    const result = removeLessonMovement(selection.date, selection.recurringAssignmentId);
+  async function restoreMovement() {
+    const result = await removeLessonMovement(selection.date, selection.recurringAssignmentId);
     setShowRestoreConfirmation(false);
     setFeedback(result.ok
       ? { type: "success", message: `${classDetails.shortCode} restored to ${originalPeriod.name}.` }

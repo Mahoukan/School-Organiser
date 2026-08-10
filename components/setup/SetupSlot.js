@@ -85,8 +85,8 @@ export default function SetupSlot({
         <button
           type="button"
           aria-label={`Remove ${classItem.shortCode} from Week ${cycleWeek}, ${weekdayLabel}, ${period.name}`}
-          onClick={() => {
-            const result = removeAssignment(cycleWeek, weekday, period.id);
+          onClick={async () => {
+            const result = await removeAssignment(cycleWeek, weekday, period.id);
             if (!result.ok) onMessage?.(result.message);
           }}
         >

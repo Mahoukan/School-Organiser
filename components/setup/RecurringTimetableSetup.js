@@ -50,8 +50,8 @@ export default function RecurringTimetableSetup() {
     requestAnimationFrame(() => trigger?.focus());
   }
 
-  function chooseClass(classId) {
-    const result = assignClassToSlot({
+  async function chooseClass(classId) {
+    const result = await assignClassToSlot({
       classId,
       cycleWeek: selectedSlot.cycleWeek,
       weekday: selectedSlot.weekday,
@@ -61,8 +61,8 @@ export default function RecurringTimetableSetup() {
     else setMessage("That timetable block is already occupied.");
   }
 
-  function saveEvent(values) {
-    const result = saveRecurringEvent(values);
+  async function saveEvent(values) {
+    const result = await saveRecurringEvent(values);
     if (result.ok) { setMessage(`${result.event.title} saved.`); closeSelector(); }
     return result;
   }
@@ -72,8 +72,8 @@ export default function RecurringTimetableSetup() {
     setSelectedSlot(null);
   }
 
-  function confirmRemoveEvent() {
-    removeRecurringEvent(removeTarget.id);
+  async function confirmRemoveEvent() {
+    await removeRecurringEvent(removeTarget.id);
     setMessage(`${removeTarget.title} removed.`);
     setRemoveTarget(null);
     requestAnimationFrame(() => triggerRef.current?.focus());

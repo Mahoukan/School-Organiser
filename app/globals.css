@@ -258,3 +258,17 @@ a {
     padding-inline: var(--space-3);
   }
 }
+
+.data-state {
+  display: grid;
+  min-height: 60vh;
+  place-content: center;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  text-align: center;
+}
+
+.data-state p {
+  max-width: 38rem;
+  color: var(--color-text-muted);
+}

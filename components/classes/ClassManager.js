@@ -51,24 +51,26 @@ export default function ClassManager() {
     setFormState({ mode: "edit", classItem });
   }
 
-  function saveClass(values) {
+  async function saveClass(values) {
     if (formState.mode === "edit") {
-      updateClass(formState.classItem.id, values);
+      const result = await updateClass(formState.classItem.id, values);
+      if (!result.ok) { setNotice({ type: "error", message: result.message }); return; }
       setNotice({ type: "success", message: `${values.shortCode} updated.` });
     } else {
-      createClass(values);
+      const result = await createClass(values);
+      if (!result.ok) { setNotice({ type: "error", message: result.message }); return; }
       setView("active");
       setNotice({ type: "success", message: `${values.shortCode} created.` });
     }
     setFormState(null);
   }
 
-  function confirmArchive() {
-    const result = archiveClass(archiveTarget.id);
+  async function confirmArchive() {
+    const result = await archiveClass(archiveTarget.id);
     if (!result.ok) {
       setNotice({
         type: "error",
-        message: `${archiveTarget.shortCode} is still assigned to ${result.assignmentCount} timetable periods. Remove those assignments in Setup before archiving the class.`,
+        message: result.message,
       });
       setArchiveTarget(null);
       return;
@@ -96,12 +98,12 @@ export default function ClassManager() {
     setArchiveTarget(classItem);
   }
 
-  function restoreClass(classItem) {
-    const result = restoreSharedClass(classItem.id);
+  async function restoreClass(classItem) {
+    const result = await restoreSharedClass(classItem.id);
     if (!result.ok) {
       setNotice({
         type: "error",
-        message: `Restore blocked: an active 2026 class already uses ${classItem.shortCode}.`,
+        message: result.message,
       });
       return;
     }

@@ -12,9 +12,9 @@ const emptyTerm = { name: "", startDate: "", endDate: "" };
 function TermForm({ initial, onSave, onCancel }) {
   const [values, setValues] = useState(initial ?? emptyTerm);
   const [errors, setErrors] = useState({});
-  function submit(event) {
+  async function submit(event) {
     event.preventDefault();
-    const result = onSave(values);
+    const result = await onSave(values);
     if (!result.ok) setErrors(result.errors);
   }
   return (
@@ -34,9 +34,9 @@ function TermForm({ initial, onSave, onCancel }) {
 function WeekForm({ term, initial, onSave, onCancel }) {
   const [values, setValues] = useState(initial ?? { termId: term.id, weekStartDate: "", cycleWeek: "A" });
   const [errors, setErrors] = useState({});
-  function submit(event) {
+  async function submit(event) {
     event.preventDefault();
-    const result = onSave(values);
+    const result = await onSave(values);
     if (!result.ok) setErrors(result.errors);
   }
   return (
@@ -69,11 +69,11 @@ export default function CalendarManager() {
   const [confirmation, setConfirmation] = useState(null);
   const [message, setMessage] = useState("");
   const sortedTerms = [...terms].sort((a, b) => a.displayOrder - b.displayOrder || a.startDate.localeCompare(b.startDate));
-  function saveCurrentTerm(values) { const result = saveTerm({ ...termForm, ...values }); if (result.ok) setTermForm(null); return result; }
-  function saveCurrentWeek(values) { const result = saveTeachingWeek({ ...weekForm, ...values }); if (result.ok) setWeekForm(null); return result; }
+  async function saveCurrentTerm(values) { const result = await saveTerm({ ...termForm, ...values }); if (result.ok) setTermForm(null); return result; }
+  async function saveCurrentWeek(values) { const result = await saveTeachingWeek({ ...weekForm, ...values }); if (result.ok) setWeekForm(null); return result; }
   function askRemoveTerm(term, count) { if (count) { setMessage("Remove this term's teaching weeks before removing the term."); return; } setConfirmation({ type: "term", item: term }); }
-  function confirmRemove() { if (confirmation.type === "term") removeTerm(confirmation.item.id); else removeTeachingWeek(confirmation.item.id); setConfirmation(null); }
-  function generate(termId, firstCycle) { const count = generateTeachingWeeks(termId, firstCycle); setMessage(count ? `${count} missing teaching weeks generated.` : "All complete Mondays are already configured; nothing was overwritten."); }
+  async function confirmRemove() { const result = confirmation.type === "term" ? await removeTerm(confirmation.item.id) : await removeTeachingWeek(confirmation.item.id); if (!result.ok) setMessage(result.message); setConfirmation(null); }
+  async function generate(termId, firstCycle) { const count = await generateTeachingWeeks(termId, firstCycle); setMessage(count ? `${count} missing teaching weeks generated.` : "All complete Mondays are already configured; nothing was overwritten."); }
   return (
     <section className={styles.page}>
       <div className={styles.yearSummary}><span>Academic Year</span><strong>{academicYear.name}</strong></div>

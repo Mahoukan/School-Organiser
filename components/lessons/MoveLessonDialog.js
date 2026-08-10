@@ -9,9 +9,9 @@ export default function MoveLessonDialog({ classDetails, date, originalBlock, cu
   const [destinationPeriodId, setDestinationPeriodId] = useState("");
   const [error, setError] = useState("");
   useEffect(() => cancelRef.current?.focus(), []);
-  function submit(event) {
+  async function submit(event) {
     event.preventDefault();
-    const result = onSave(destinationPeriodId);
+    const result = await onSave(destinationPeriodId);
     if (!result.ok) setError(result.message);
   }
   return <div className={styles.confirmOverlay}>

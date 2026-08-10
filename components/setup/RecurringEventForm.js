@@ -11,9 +11,9 @@ export default function RecurringEventForm({ slot, event, onSave, onRemove, onCl
     const option = RECURRING_EVENT_TYPES.find((item) => item.value === type);
     setValues((current) => ({ ...current, type, title: current.title === RECURRING_EVENT_TYPES.find((item) => item.value === current.type)?.label ? option.label : current.title, colour: event ? current.colour : option.colour }));
   }
-  function submit(formEvent) {
+  async function submit(formEvent) {
     formEvent.preventDefault();
-    const result = onSave({ ...values, id: event?.id, cycleWeek: slot.cycleWeek, weekday: slot.weekday, periodId: slot.period.id });
+    const result = await onSave({ ...values, id: event?.id, cycleWeek: slot.cycleWeek, weekday: slot.weekday, periodId: slot.period.id });
     if (!result.ok) setErrors(result.errors);
   }
   return <ModalDialog className={styles.eventDialog} labelledBy="event-form-title" describedBy="event-form-context" onClose={onClose}>

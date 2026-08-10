@@ -18,7 +18,7 @@ function OverlayForm({ kind, initial, classes, onSave, onCancel }) {
   const defaults = kind === "teacher" ? { startDate: today, endDate: today, note: "" } : kind === "class" ? { classIds: [], startDate: today, endDate: today, reason: "" } : { type: "public-holiday", startDate: today, endDate: today, note: "" };
   const [values, setValues] = useState(initial ?? defaults);
   const [errors, setErrors] = useState({});
-  function submit(event) { event.preventDefault(); const result = onSave(values); if (!result.ok) setErrors(result.errors); }
+  async function submit(event) { event.preventDefault(); const result = await onSave(values); if (!result.ok) setErrors(result.errors); }
   const title = kind === "teacher" ? "Teacher Absence" : kind === "class" ? "Class Absence" : "Calendar Exception";
   return <form className={styles.overlayForm} onSubmit={submit} noValidate><h2>{initial?.id ? `Edit ${title}` : `Add ${title}`}</h2>
     {kind === "exception" && <label>Type<select value={values.type} aria-invalid={Boolean(errors.type)} onChange={(e) => setValues({ ...values, type: e.target.value })}>{CALENDAR_EXCEPTION_TYPES.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select>{errors.type && <span>{errors.type}</span>}</label>}
@@ -36,8 +36,8 @@ export default function OverlayManager({ mode }) {
   const [form, setForm] = useState(null);
   const [removeTarget, setRemoveTarget] = useState(null);
   const kind = form?.kind;
-  function save(values) { const fn = kind === "teacher" ? data.saveTeacherAbsence : kind === "class" ? data.saveClassAbsence : data.saveCalendarException; const result = fn({ ...form.record, ...values }); if (result.ok) setForm(null); return result; }
-  function remove() { const fn = removeTarget.kind === "teacher" ? data.removeTeacherAbsence : removeTarget.kind === "class" ? data.removeClassAbsence : data.removeCalendarException; fn(removeTarget.record.id); setRemoveTarget(null); }
+  async function save(values) { const fn = kind === "teacher" ? data.saveTeacherAbsence : kind === "class" ? data.saveClassAbsence : data.saveCalendarException; const result = await fn({ ...form.record, ...values }); if (result.ok) setForm(null); return result; }
+  async function remove() { const fn = removeTarget.kind === "teacher" ? data.removeTeacherAbsence : removeTarget.kind === "class" ? data.removeClassAbsence : data.removeCalendarException; await fn(removeTarget.record.id); setRemoveTarget(null); }
   const teacherRecords = [...data.teacherAbsences].sort((a, b) => a.startDate.localeCompare(b.startDate));
   const classRecords = [...data.classAbsences].sort((a, b) => a.startDate.localeCompare(b.startDate));
   const exceptionRecords = [...data.calendarExceptions].sort((a, b) => a.startDate.localeCompare(b.startDate));

@@ -123,12 +123,12 @@ export default function ClassFormPanel({
     };
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
     const result = validate();
     if (!result.valid) return;
 
-    onSave({
+    await onSave({
       ...result.values,
       academicYear: CLASS_ACADEMIC_YEAR,
       archived: editingClass?.archived ?? false,
