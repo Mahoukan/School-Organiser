@@ -115,7 +115,7 @@ export default function SchoolDataProvider({ children, initialPreferences }) {
   const removeDatedEvent = useCallback(async (id) => operation("dated-events", "remove", { id }), [operation]);
 
   const updatePreferences = useCallback(async (patch) => {
-    if (preferenceSaveLock.current) return { ok: false, pending: true, message: "Another appearance choice is still being saved." };
+    if (preferenceSaveLock.current) return { ok: false, pending: true, message: "Another preference is still being saved." };
     preferenceSaveLock.current = true;
     const previous = appearance;
     const optimistic = normalizeUserPreferences({ ...appearance, ...patch });
@@ -127,7 +127,7 @@ export default function SchoolDataProvider({ children, initialPreferences }) {
       const response = await fetch("/api/preferences", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch) });
       if (response.status === 401) { router.replace("/signin"); throw new Error("Your session has expired."); }
       const body = await response.json();
-      if (!response.ok) throw new Error(body.error || "Appearance preferences could not be saved.");
+      if (!response.ok) throw new Error(body.error || "Preferences could not be saved.");
       const saved = normalizeUserPreferences(body.preferences);
       setAppearance(saved);
       setData((current) => current ? { ...current, preferences: saved } : current);
@@ -135,7 +135,7 @@ export default function SchoolDataProvider({ children, initialPreferences }) {
     } catch (error) {
       setAppearance(previous);
       setData((current) => current ? { ...current, preferences: previous } : current);
-      setPreferenceSaveError(`${error.message} Your previous appearance has been restored.`);
+      setPreferenceSaveError(`${error.message} Your previous preferences have been restored.`);
       return { ok: false, message: error.message };
     } finally {
       preferenceSaveLock.current = false;

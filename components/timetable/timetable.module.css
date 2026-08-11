@@ -97,6 +97,13 @@
   margin-top: var(--space-4);
 }
 
+.displayFilterRow {
+  display: flex;
+  min-width: 0;
+  justify-content: flex-end;
+  margin-top: var(--space-3);
+}
+
 .datePicker {
   display: flex;
   align-items: center;
@@ -175,6 +182,25 @@
 
 .daySchedule {
   display: grid;
+}
+
+.filterEmpty {
+  margin: var(--space-3);
+  padding: var(--space-3);
+  border: 1px dashed var(--color-border);
+  border-radius: 0.65rem;
+  color: var(--color-text-muted);
+  background: var(--color-surface-subtle);
+  font-size: 0.85rem;
+  font-weight: 650;
+}
+
+.noMatchingItems {
+  margin: 0;
+  padding: var(--space-3);
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 650;
 }
 
 .dayRow {
@@ -683,6 +709,10 @@
 
   .dateNavigation {
     justify-content: space-between;
+  }
+
+  .displayFilterRow {
+    justify-content: stretch;
   }
 
   .datePicker {

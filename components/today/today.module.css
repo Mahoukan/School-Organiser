@@ -23,7 +23,9 @@ button.currentCard:hover { border-color: var(--color-primary); }
 .sectionHeading { display: flex; align-items: end; justify-content: space-between; gap: 1rem; }
 .sectionHeading h2 { margin: .25rem 0 0; font-size: 1.5rem; }
 .schedule { display: grid; gap: 1rem; }
+.scheduleControls { display: flex; min-width: 0; justify-content: flex-end; }
 .scheduleList { display: grid; gap: .65rem; }
+.filterEmpty { margin: 0; padding: .85rem 1rem; border: 1px dashed var(--color-border); border-radius: .7rem; color: var(--color-text-muted); background: var(--color-surface-subtle); font-weight: 650; }
 .scheduleItem { display: grid; width: 100%; grid-template-columns: minmax(8rem, .3fr) minmax(0, 1fr); gap: 1rem; padding: var(--density-row-padding); border: 1px solid var(--item-border, var(--color-border)); border-left-width: .3rem; border-radius: .8rem; color: var(--item-text, var(--color-text)); background: var(--item-bg, var(--color-surface)); font: inherit; text-align: left; }
 button.scheduleItem { cursor: pointer; }
 button.scheduleItem:hover { filter: brightness(.985); box-shadow: 0 .35rem 1rem rgb(23 32 51 / 8%); }
@@ -65,5 +67,5 @@ button.scheduleItem:focus-visible, .primaryLink:focus-visible, .secondaryAction:
 .planningState { width: fit-content; margin-top: .2rem; padding: .15rem .45rem; border-radius: 999px; color: var(--app-warning); background: var(--app-warning-soft); font-weight: 750; }
 .planningPeriod { justify-self: end; text-align: right; }
 .showMore { width: fit-content; min-height: 2.75rem; justify-self: center; padding: .55rem 1rem; border: 1px solid var(--color-border); border-radius: .55rem; color: var(--color-primary); background: var(--color-surface); font-weight: 750; cursor: pointer; }
-@media (max-width: 55rem) { .header, .planningHeading { align-items: start; flex-direction: column; } .summaryGrid { grid-template-columns: 1fr; } .overview dl { grid-template-columns: repeat(3, minmax(0, 1fr)); } .planningFilters { width: 100%; flex-wrap: wrap; } .planningFilters label { min-width: min(12rem, 100%); flex: 1; } .planningFilters select { width: 100%; max-width: none; } .planningItem { grid-template-columns: minmax(8rem, .8fr) minmax(0, 1.2fr); } .planningPeriod { grid-column: 1 / -1; justify-self: start; text-align: left; } }
+@media (max-width: 55rem) { .header, .planningHeading { align-items: start; flex-direction: column; } .summaryGrid { grid-template-columns: 1fr; } .overview dl { grid-template-columns: repeat(3, minmax(0, 1fr)); } .scheduleControls { justify-content: stretch; } .planningFilters { width: 100%; flex-wrap: wrap; } .planningFilters label { min-width: min(12rem, 100%); flex: 1; } .planningFilters select { width: 100%; max-width: none; } .planningItem { grid-template-columns: minmax(8rem, .8fr) minmax(0, 1.2fr); } .planningPeriod { grid-column: 1 / -1; justify-self: start; text-align: left; } }
 @media (max-width: 32rem) { .todayPage { gap: 1rem; } .scheduleItem, .planningItem { grid-template-columns: 1fr; gap: .65rem; } .periodMeta { display: grid; grid-template-columns: 1fr auto; } .periodMeta .nowMarker { grid-column: 1 / -1; } .overview dl { grid-template-columns: repeat(2, minmax(0, 1fr)); } .notice, .sectionHeading, .configurationNotice { align-items: start; flex-direction: column; } .primaryLink { width: 100%; } .planningPeriod { grid-column: auto; } }

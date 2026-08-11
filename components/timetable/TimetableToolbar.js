@@ -1,3 +1,4 @@
+import ScheduleDisplayControl from "../ScheduleDisplayControl";
 import styles from "./timetable.module.css";
 
 const views = [
@@ -16,6 +17,10 @@ export default function TimetableToolbar({
   onToday,
   dateValue,
   onDateChange,
+  scheduleDisplayMode,
+  onScheduleDisplayModeChange,
+  preferenceSavePending,
+  preferenceSaveError,
 }) {
   const periodName = view === "fortnight" ? "fortnight" : view;
 
@@ -69,6 +74,14 @@ export default function TimetableToolbar({
           <span>Go to date</span>
           <input type="date" value={dateValue} onChange={(event) => onDateChange(event.target.value)} />
         </label>
+      </div>
+      <div className={styles.displayFilterRow}>
+        <ScheduleDisplayControl
+          value={scheduleDisplayMode}
+          onChange={onScheduleDisplayModeChange}
+          disabled={preferenceSavePending}
+          error={preferenceSaveError}
+        />
       </div>
     </header>
   );

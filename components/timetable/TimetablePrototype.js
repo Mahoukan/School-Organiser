@@ -61,7 +61,7 @@ function getToolbarDetails(view, displayedDate, teachingWeeks, terms) {
 }
 
 export default function TimetablePrototype() {
-  const { teachingWeeks, terms } = useSchoolData();
+  const { teachingWeeks, terms, preferences, updatePreferences, preferenceSavePending, preferenceSaveError } = useSchoolData();
   const router = useRouter();
   const searchParams = useSearchParams();
   const requestedView = searchParams.get("view");
@@ -121,6 +121,10 @@ export default function TimetablePrototype() {
           if (!date) return;
           navigate(view, date);
         }}
+        scheduleDisplayMode={preferences.scheduleDisplayMode}
+        onScheduleDisplayModeChange={(scheduleDisplayMode) => updatePreferences({ scheduleDisplayMode })}
+        preferenceSavePending={preferenceSavePending}
+        preferenceSaveError={preferenceSaveError}
       />
 
       <div className={styles.timetableContent}>

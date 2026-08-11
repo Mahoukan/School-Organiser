@@ -10,8 +10,10 @@ import { deriveTodaySchedule } from "../../lib/todaySchedule";
 import { getCurrentBlockState } from "../../lib/currentBlock";
 import { getDateKey, getLessonStatusLabel, hasLessonPlanContent } from "../../lib/lessonOccurrences";
 import { getRecurringEventColour, getRecurringEventTypeLabel } from "../../lib/recurringEvents";
+import { filterScheduleItems, getScheduleFilterEmptyMessage, shouldShowDatedEvents } from "../../lib/scheduleDisplay";
 import LessonPanel from "../lessons/LessonPanel";
 import { useSchoolData } from "../providers/SchoolDataProvider";
+import ScheduleDisplayControl from "../ScheduleDisplayControl";
 import UpcomingPlanning from "./UpcomingPlanning";
 import DatedEventDialog from "../events/DatedEventDialog";
 import DatedEventsStrip from "../events/DatedEventsStrip";
@@ -63,6 +65,10 @@ export default function TodayDashboard() {
   const lessonTrigger = useRef(null);
   const eventTrigger = useRef(null);
   const schedule = useMemo(() => deriveTodaySchedule(data, today), [data, today]);
+  const scheduleDisplayMode = data.preferences.scheduleDisplayMode;
+  const visibleBlocks = useMemo(() => filterScheduleItems(schedule.blocks, scheduleDisplayMode), [schedule.blocks, scheduleDisplayMode]);
+  const showDatedEvents = shouldShowDatedEvents(scheduleDisplayMode);
+  const hasVisibleDatedEvents = showDatedEvents && data.datedEvents.some((event) => event.date === schedule.dateKey);
   const clock = getCurrentBlockState(schedule.blocks, now);
 
   useEffect(() => {
@@ -98,9 +104,18 @@ export default function TodayDashboard() {
       <section className={styles.overview} aria-labelledby="overview-title"><h2 id="overview-title">Daily overview</h2><dl>{Object.entries({ Classes: schedule.overview.classes, Completed: schedule.overview.completed, Remaining: schedule.overview.remaining, Cancelled: schedule.overview.cancelled, "Other commitments": schedule.overview.commitments, Events: data.datedEvents.filter((item) => item.date === getDateKey(today)).length }).map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl></section>
     </div>}
 
-    {schedule.weekend ? <div className={styles.emptyState}><h2>No school timetable today.</h2><p>Your weekday timetable remains available in Timetable.</p></div> : !schedule.teachingWeek ? <div className={styles.emptyState}><h2>No teaching timetable today.</h2><p>This date is not part of a configured teaching week.</p></div> : !schedule.blocks.length ? <div className={styles.emptyState}><h2>No timetable blocks are configured.</h2><p>Configure and assign a Day Timetable Template in Setup.</p></div> : <section className={styles.schedule} aria-labelledby="schedule-title"><div className={styles.sectionHeading}><div><span className={styles.eyebrow}>Full day</span><h2 id="schedule-title">Today’s schedule</h2></div>{schedule.dayTemplate && <span>{schedule.dayTemplate.name}</span>}</div><div className={styles.scheduleList}>{schedule.blocks.map((item) => { const state = clock.block?.period.id === item.period.id && clock.state === "current" ? "current" : item.period.endTime <= `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}` ? "past" : "future"; const movedFromName = item.entry.movedFromPeriodId ? data.timetableBlocks.find((block) => block.id === item.entry.movedFromPeriodId)?.name : null; return <ScheduleItem key={item.period.id} item={{ ...item, movedFromName }} timeState={state} date={today} onOpenLesson={openLesson} />; })}</div></section>}
+    <div className={styles.scheduleControls}>
+      <ScheduleDisplayControl
+        value={scheduleDisplayMode}
+        onChange={(nextMode) => data.updatePreferences({ scheduleDisplayMode: nextMode })}
+        disabled={data.preferenceSavePending}
+        error={data.preferenceSaveError}
+      />
+    </div>
 
-    <DatedEventsStrip events={data.datedEvents} date={today} title="Today’s Events" onSelect={openEvent} />
+    {schedule.weekend ? <div className={styles.emptyState}><h2>No school timetable today.</h2><p>Your weekday timetable remains available in Timetable.</p></div> : !schedule.teachingWeek ? <div className={styles.emptyState}><h2>No teaching timetable today.</h2><p>This date is not part of a configured teaching week.</p></div> : !schedule.blocks.length ? <div className={styles.emptyState}><h2>No timetable blocks are configured.</h2><p>Configure and assign a Day Timetable Template in Setup.</p></div> : <section className={styles.schedule} aria-labelledby="schedule-title"><div className={styles.sectionHeading}><div><span className={styles.eyebrow}>Full day</span><h2 id="schedule-title">Today’s schedule</h2></div>{schedule.dayTemplate && <span>{schedule.dayTemplate.name}</span>}</div>{visibleBlocks.length ? <div className={styles.scheduleList}>{visibleBlocks.map((item) => { const state = clock.block?.period.id === item.period.id && clock.state === "current" ? "current" : item.period.endTime <= `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}` ? "past" : "future"; const movedFromName = item.entry.movedFromPeriodId ? data.timetableBlocks.find((block) => block.id === item.entry.movedFromPeriodId)?.name : null; return <ScheduleItem key={item.period.id} item={{ ...item, movedFromName }} timeState={state} date={today} onOpenLesson={openLesson} />; })}</div> : <p className={styles.filterEmpty} role="status">{hasVisibleDatedEvents ? "One-off events are shown below." : getScheduleFilterEmptyMessage(scheduleDisplayMode, true)}</p>}</section>}
+
+    {showDatedEvents && <DatedEventsStrip events={data.datedEvents} date={today} title="Today’s Events" onSelect={openEvent} />}
     <UpcomingPlanning data={data} today={today} onOpenLesson={openLesson} />
     {selectedLesson && <LessonPanel key={`${selectedLesson.date}-${selectedLesson.recurringAssignmentId}`} selection={selectedLesson} onClose={closeLesson} />}
     {selectedEvent && <DatedEventDialog event={selectedEvent.new ? null : selectedEvent} defaultDate={getDateKey(today)} onClose={closeEvent} />}

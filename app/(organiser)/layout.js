@@ -12,7 +12,7 @@ export default async function OrganiserLayout({ children }) {
   try {
     initialPreferences = await getUserPreferences(session.user.id);
   } catch (error) {
-    console.error("Initial appearance preferences could not be loaded.", { name: error?.name, code: error?.code });
+    console.error("Initial user preferences could not be loaded.", { name: error?.name, code: error?.code });
   }
   return <SchoolDataProvider initialPreferences={initialPreferences}><AppShell user={session.user}>{children}</AppShell></SchoolDataProvider>;
 }

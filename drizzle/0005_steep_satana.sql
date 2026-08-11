@@ -1,0 +1,2 @@
+ALTER TABLE "user_preferences" ADD COLUMN "schedule_display_mode" varchar(20) DEFAULT 'all' NOT NULL;--> statement-breakpoint
+ALTER TABLE "user_preferences" ADD CONSTRAINT "user_preferences_schedule_display_mode_check" CHECK ("user_preferences"."schedule_display_mode" in ('all','free','classes-events','classes'));
