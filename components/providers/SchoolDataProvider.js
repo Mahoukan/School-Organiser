@@ -120,7 +120,6 @@ export default function SchoolDataProvider({ children, initialPreferences }) {
     const previous = appearance;
     const optimistic = normalizeUserPreferences({ ...appearance, ...patch });
     setAppearance(optimistic);
-    setData((current) => current ? { ...current, preferences: optimistic } : current);
     setPreferenceSavePending(true);
     setPreferenceSaveError("");
     try {
@@ -130,11 +129,9 @@ export default function SchoolDataProvider({ children, initialPreferences }) {
       if (!response.ok) throw new Error(body.error || "Preferences could not be saved.");
       const saved = normalizeUserPreferences(body.preferences);
       setAppearance(saved);
-      setData((current) => current ? { ...current, preferences: saved } : current);
       return { ok: true, preferences: saved };
     } catch (error) {
       setAppearance(previous);
-      setData((current) => current ? { ...current, preferences: previous } : current);
       setPreferenceSaveError(`${error.message} Your previous preferences have been restored.`);
       return { ok: false, message: error.message };
     } finally {
@@ -150,7 +147,7 @@ export default function SchoolDataProvider({ children, initialPreferences }) {
   else if (loadError) content = <div className="data-state" role="alert"><h1>We couldn&apos;t load your organiser.</h1><p>{loadError}</p><p>Your saved data has not been changed.</p><button type="button" onClick={load}>Try Again</button></div>;
   else if (!data?.academicYear) content = <div className="data-state"><h1>Your organiser is ready for setup.</h1><p>No academic year is configured for this account yet.</p><button type="button" onClick={load}>Check Again</button></div>;
   else content = <SchoolDataContext.Provider value={value}>{children}</SchoolDataContext.Provider>;
-  return <div className="appearance-root" data-theme={appearance.theme} data-accent={appearance.accentColour} data-density={appearance.density}>{content}</div>;
+  return <div className="appearance-root" data-theme={appearance.theme} data-accent={appearance.accentColour} data-highlight={appearance.highlightColour} data-neutral={appearance.neutralTone} data-interface-font={appearance.interfaceFont} data-heading-font={appearance.headingFont} data-content-font={appearance.contentFont} data-density={appearance.density}>{content}</div>;
 }
 
 export function useSchoolData() { const context = useContext(SchoolDataContext); if (!context) throw new Error("useSchoolData must be used within SchoolDataProvider."); return context; }

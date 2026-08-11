@@ -20,7 +20,7 @@
 .conflicts span { color: var(--color-text-muted); font-size: .82rem; }
 .card { display: grid; gap: .2rem; width: 100%; min-height: 3.6rem; padding: .7rem .8rem; border: 1px solid var(--event-border); border-left: 4px solid var(--event-border); border-radius: .55rem; color: var(--event-text); background: var(--event-bg); text-align: left; }
 button.card { cursor: pointer; }
-.card span, .card small { color: var(--color-text-muted); font-size: .78rem; }
+.card span, .card small { color: var(--event-text); font-size: .78rem; opacity: .82; }
 .eventTime { font-weight: 800; }
 .compact { min-height: 0; padding: .45rem .55rem; font-size: .8rem; }
 .compact .eventTime { font-size: .72rem; }
@@ -35,7 +35,7 @@ button.card { cursor: pointer; }
 .managerRow { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--space-2); }
 .managerRow > div { display: grid; grid-template-columns: 7rem minmax(0, 1fr); align-items: center; gap: var(--space-2); }
 .managerRow > div > span { color: var(--color-text-muted); font-size: .78rem; font-weight: 800; }
-.managerRow[data-contextual="true"] { padding: var(--space-2); border: 1px solid var(--color-primary); border-radius: .65rem; background: var(--color-primary-soft); }
+.managerRow[data-contextual="true"] { padding: var(--space-2); border: 1px solid var(--color-highlight); border-radius: .65rem; background: var(--color-highlight-soft); }
 .managerRow > .rowActions { display: flex; grid-template-columns: none; align-items: center; gap: var(--space-1); }
 .rowActions a { color: var(--color-primary); font-size: .78rem; font-weight: 750; white-space: nowrap; }
 .pastHeading { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }

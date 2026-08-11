@@ -98,6 +98,7 @@
   gap: 0.2rem;
   padding: var(--space-3) var(--space-4);
   border-bottom: 1px solid var(--color-border);
+  color: var(--lesson-text);
   background: var(--lesson-tint);
 }
 
@@ -106,9 +107,10 @@
 }
 
 .lessonContext span {
-  color: var(--color-text-muted);
+  color: inherit;
   font-size: 0.78rem;
   font-weight: 600;
+  opacity: .8;
 }
 
 .lessonNavigation {
@@ -347,6 +349,7 @@
 
 .formField .planTextarea {
   min-height: 18rem;
+  font-family: var(--font-content);
 }
 
 .cancellationFields {
@@ -425,6 +428,7 @@
   min-width: 0;
   max-width: 100%;
   overflow-wrap: anywhere;
+  font-family: var(--font-content);
   line-height: 1.65;
 }
 
@@ -443,6 +447,7 @@
 .markdownContent h5,
 .markdownContent h6 {
   margin: 1.35em 0 0.45em;
+  font-family: var(--font-content);
   line-height: 1.25;
   letter-spacing: -0.015em;
 }
@@ -523,7 +528,7 @@
   padding: 0.12em 0.32em;
   border-radius: 0.3rem;
   background: var(--color-surface-subtle);
-  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-family: var(--font-monospace);
   font-size: 0.88em;
 }
 

@@ -378,6 +378,7 @@ export default function LessonPanel({ selection, onClose }) {
         "--lesson-accent": classDetails.colour,
         "--lesson-tint": colour.background,
         "--lesson-border": colour.border,
+        "--lesson-text": colour.text,
       }}
     >
       <div

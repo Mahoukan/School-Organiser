@@ -31,8 +31,8 @@ button.scheduleItem { cursor: pointer; }
 button.scheduleItem:hover { filter: brightness(.985); box-shadow: 0 .35rem 1rem rgb(23 32 51 / 8%); }
 button.scheduleItem:focus-visible, .primaryLink:focus-visible, .secondaryAction:focus-visible, .notice a:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
 .periodMeta, .occupant { display: flex; flex-direction: column; gap: .25rem; }
-.periodMeta span, .occupant small, .occupant > span { color: var(--color-text-muted); }
-.nowMarker { width: fit-content; margin-top: .3rem; padding: .15rem .45rem; border-radius: 999px; color: var(--app-accent-text) !important; background: var(--color-primary); font-size: .7rem; font-weight: 800; text-transform: uppercase; }
+.periodMeta span, .occupant small, .occupant > span { color: inherit; opacity: .78; }
+.nowMarker { width: fit-content; margin-top: .3rem; padding: .15rem .45rem; border-radius: 999px; color: var(--app-highlight-text) !important; background: var(--color-highlight); font-size: .7rem; font-weight: 800; text-transform: uppercase; }
 .classHeading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 .classHeading strong { font-size: 1.15rem; }
 .classHeading span { font-size: .78rem; font-weight: 750; }
@@ -40,7 +40,7 @@ button.scheduleItem:focus-visible, .primaryLink:focus-visible, .secondaryAction:
 .cancelReason { font-weight: 700; }
 .free { font-weight: 700; text-transform: uppercase; }
 .nonTeaching { background: var(--color-surface-subtle); }
-.current { box-shadow: 0 0 0 2px var(--color-primary); }
+.current { box-shadow: 0 0 0 2px var(--color-highlight); }
 .past { opacity: .68; }
 .emptyState { padding: 2.5rem 1.25rem; border: 1px dashed var(--color-border); border-radius: 1rem; text-align: center; }
 .emptyState h2 { margin: 0; }
@@ -63,7 +63,7 @@ button.scheduleItem:focus-visible, .primaryLink:focus-visible, .secondaryAction:
 .planningItem { display: grid; width: 100%; min-height: 5.25rem; grid-template-columns: minmax(9rem, .8fr) minmax(0, 1.25fr) minmax(8rem, .65fr); align-items: center; gap: 1rem; padding: var(--density-row-padding); border: 1px solid var(--planning-border); border-left-width: .3rem; border-radius: .7rem; color: var(--planning-text); background: var(--planning-bg); font: inherit; text-align: left; cursor: pointer; }
 .planningItem:hover { filter: brightness(.985); box-shadow: 0 .3rem .9rem rgb(23 32 51 / 8%); }
 .planningIdentity, .planningLesson, .planningPeriod { display: grid; gap: .15rem; min-width: 0; }
-.planningIdentity span, .planningIdentity small, .planningLesson span, .planningPeriod span, .planningPeriod small { color: var(--color-text-muted); font-size: .78rem; }
+.planningIdentity span, .planningIdentity small, .planningLesson span, .planningPeriod span, .planningPeriod small { color: inherit; font-size: .78rem; opacity: .78; }
 .planningState { width: fit-content; margin-top: .2rem; padding: .15rem .45rem; border-radius: 999px; color: var(--app-warning); background: var(--app-warning-soft); font-weight: 750; }
 .planningPeriod { justify-self: end; text-align: right; }
 .showMore { width: fit-content; min-height: 2.75rem; justify-self: center; padding: .55rem 1rem; border: 1px solid var(--color-border); border-radius: .55rem; color: var(--color-primary); background: var(--color-surface); font-weight: 750; cursor: pointer; }

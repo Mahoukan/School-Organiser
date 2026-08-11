@@ -65,6 +65,10 @@ PostgreSQL backup is the primary disaster-recovery mechanism. In Railway, config
 
 Settings also provides **Export Organiser Data**, an owner-authenticated JSON download containing organiser-domain records, raw Markdown plans, and the owner's appearance preferences. It excludes Auth.js accounts, sessions, OAuth tokens, cookies, and environment secrets. Preferences are an additive optional part of the version 1 export, so the export version remains unchanged. This export supports portability and support snapshots, but it is not a PostgreSQL dump and v1 has no JSON import or automated restore.
 
+## Appearance customisation
+
+Authenticated appearance preferences follow the owner across devices. Settings supports System/Light/Dark themes, separate primary and time-context highlight colours, Cool/Neutral/Warm base tones, interface/heading/lesson typography roles, Comfortable/Compact density, and the shared schedule display modes. Curated web fonts are bundled through `next/font`; browsers do not request font files from a third-party CDN. Class, event, status, warning, error, and destructive colours remain semantic and are not replaced by appearance choices.
+
 ## Release checklist
 
 1. Take or verify a current Railway PostgreSQL backup.
