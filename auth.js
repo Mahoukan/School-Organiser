@@ -16,7 +16,9 @@ function createAdapter() {
     createUser: (user) => adapter.createUser({ ...user, emailVerified: new Date() }),
     createSession: async (session) => {
       const user = await adapter.getUser(session.userId);
-      await claimLegacyData(user);
+      if (isInitialOwnerEmail(user?.email)) {
+        await claimLegacyData(user);
+      }
       return adapter.createSession(session);
     },
   };
@@ -41,7 +43,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => ({
     signIn({ profile, user }) {
       const email = normalizeEmail(profile?.email ?? user?.email);
       const verified = profile ? profile.email_verified === true : Boolean(user?.emailVerified);
-      const allowed = verified && isInitialOwnerEmail(email);
+      const allowed = verified && Boolean(email);
       if (!allowed) console.warn("Google sign-in rejected for an unapproved account.");
       return allowed;
     },
