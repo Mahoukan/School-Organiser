@@ -1,6 +1,6 @@
 # School Timetable Organiser
 
-A private, owner-only timetable and lesson-planning application for teachers. It combines Today, Day/Week/Fortnight timetable views, lesson planning and history, academic-calendar overlays, reusable day templates, recurring commitments, and one-off events.
+A private, per-user timetable and lesson-planning application for teachers. It combines Today, Day/Week/Fortnight timetable views, lesson planning and history, academic-calendar overlays, reusable day templates, recurring commitments, and one-off events.
 
 ## Architecture
 
@@ -25,7 +25,7 @@ INITIAL_OWNER_EMAIL
 AUTH_TRUST_HOST=true
 ```
 
-`INITIAL_OWNER_EMAIL` is the single verified Google account allowed into v1. Google OAuth needs the production redirect URI `https://YOUR_HOST/api/auth/callback/google`. `AUTH_URL` is not required by the current Railway configuration because Auth.js trusts the forwarded production host; retain it if an existing deployment needs an explicit canonical URL.
+Any Google account with a verified email can sign in. `INITIAL_OWNER_EMAIL` identifies the account that may claim historical `development-user` data and whose structural school setup is copied once to users who have no academic year. It is not an access allowlist. Google OAuth needs the production redirect URI `https://YOUR_HOST/api/auth/callback/google`. `AUTH_URL` is not required by the current Railway configuration because Auth.js trusts the forwarded production host; retain it if an existing deployment needs an explicit canonical URL.
 
 Never commit real values. Local `.env*` files are ignored, except for `.env.example`.
 
@@ -63,11 +63,11 @@ The migration command must complete successfully before the new application depl
 
 PostgreSQL backup is the primary disaster-recovery mechanism. In Railway, configure scheduled backups or point-in-time recovery from the PostgreSQL service's **Backups** tab, and trigger a manual backup before risky migrations or releases. Railway restores backups into recoverable/staged infrastructure for review before deployment; follow Railway's current [backup](https://docs.railway.com/volumes/backups) or [point-in-time recovery](https://docs.railway.com/volumes/point-in-time-recovery) procedure.
 
-Settings also provides **Export Organiser Data**, an owner-authenticated JSON download containing organiser-domain records, raw Markdown plans, and the owner's appearance preferences. It excludes Auth.js accounts, sessions, OAuth tokens, cookies, and environment secrets. Preferences are an additive optional part of the version 1 export, so the export version remains unchanged. This export supports portability and support snapshots, but it is not a PostgreSQL dump and v1 has no JSON import or automated restore.
+Settings also provides **Export Organiser Data**, a user-authenticated JSON download containing that user's organiser-domain records, raw Markdown plans, and appearance preferences. It excludes Auth.js accounts, sessions, OAuth tokens, cookies, and environment secrets. Preferences are an additive optional part of the version 1 export, so the export version remains unchanged. This export supports portability and support snapshots, but it is not a PostgreSQL dump and v1 has no JSON import or automated restore.
 
 ## Appearance customisation
 
-Authenticated appearance preferences follow the owner across devices. Settings supports System/Light/Dark themes, separate primary and time-context highlight colours, Cool/Neutral/Warm base tones, interface/heading/lesson typography roles, Comfortable/Compact density, and the shared schedule display modes. Curated web fonts are bundled through `next/font`; browsers do not request font files from a third-party CDN. Class, event, status, warning, error, and destructive colours remain semantic and are not replaced by appearance choices.
+Authenticated appearance preferences follow each user across devices. Settings supports System/Light/Dark themes, separate primary and time-context highlight colours, Cool/Neutral/Warm base tones, interface/heading/lesson typography roles, Comfortable/Compact density, and the shared schedule display modes. Curated web fonts are bundled through `next/font`; browsers do not request font files from a third-party CDN. Class, event, status, warning, error, and destructive colours remain semantic and are not replaced by appearance choices.
 
 ## Release checklist
 
@@ -75,11 +75,11 @@ Authenticated appearance preferences follow the owner across devices. Settings s
 2. Run lint, build, schema generation, database check, audit, and `git diff --check`.
 3. Deploy with `npm run db:migrate` as the Railway pre-deploy command.
 4. Complete the authenticated desktop/mobile smoke test, including existing lesson persistence and JSON export inspection.
-5. Confirm sign-out, denied-account behavior, restart persistence, and healthcheck behavior.
+5. Confirm sign-out, unverified-account rejection, restart persistence, and healthcheck behavior.
 
 ## Intentional v1 limitations
 
-- One configured owner; no sharing, invitations, roles, or multi-teacher access
+- Separate private teacher accounts; no sharing, invitations, roles, or shared-school tenancy
 - Google is authentication-only; no Calendar, Classroom, Gmail, or Drive integration
 - Lesson movements remain on the same date
 - Historical lesson views can reflect current template bell metadata

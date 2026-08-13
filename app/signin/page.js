@@ -1,7 +1,7 @@
 import { signIn } from "../../auth";
 
 const errorMessages = {
-  AccessDenied: "This Google account does not currently have access to this organiser.",
+  AccessDenied: "This Google account could not be verified for sign-in.",
   OAuthCallbackError: "Google sign-in could not be completed. Please try again.",
   Configuration: "Google sign-in is not configured yet. Please contact the organiser administrator.",
 };

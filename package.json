@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint app components data lib scripts eslint.config.mjs drizzle.config.js",
+    "test": "node --test",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node scripts/migrate-database.js",
     "db:check": "node scripts/check-database.js",

@@ -44,7 +44,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => ({
       const email = normalizeEmail(profile?.email ?? user?.email);
       const verified = profile ? profile.email_verified === true : Boolean(user?.emailVerified);
       const allowed = verified && Boolean(email);
-      if (!allowed) console.warn("Google sign-in rejected for an unapproved account.");
+      if (!allowed) console.warn("Google sign-in rejected because the account email was not verified.");
       return allowed;
     },
     session({ session, user }) {
